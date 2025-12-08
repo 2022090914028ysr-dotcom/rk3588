@@ -1,0 +1,4 @@
+<launch>
+    <!-- Launch the data logger node -->
+    <node name="robot_data_logger" pkg="NavOA_ros" type="data_logger.py" output="screen" />
+</launch>

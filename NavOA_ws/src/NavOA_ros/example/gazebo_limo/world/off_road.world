@@ -1,0 +1,100 @@
+<?xml version="1.0"?>
+<sdf version="1.6">
+  <world name="off_road">
+
+    <!-- 使用确保存在的模型 -->
+    <include>
+      <uri>model://sun</uri>
+    </include>
+
+    <!-- 使用Gazebo自带的测试高度图 -->
+    <model name="terrain">
+      <static>true</static>
+      <link name="link">
+        <collision name="collision">
+          <geometry>
+            <heightmap>
+              <uri>file:///usr/share/gazebo-11/media/materials/textures/heightmap_bowl.png</uri>
+              <size>100 100 2</size>
+            </heightmap>
+          </geometry>
+        </collision>
+        <visual name="visual">
+          <geometry>
+            <heightmap>
+              <uri>file:///usr/share/gazebo-11/media/materials/textures/heightmap_bowl.png</uri>
+              <texture>
+                <diffuse>file:///usr/share/gazebo-11/media/materials/textures/dirt_diffuse.jpg</diffuse>
+                <normal>file:///usr/share/gazebo-11/media/materials/textures/flat_normal.png</normal>
+              </texture>
+              <size>100 100 2</size>
+            </heightmap>
+          </geometry>
+        </visual>
+      </link>
+    </model>
+
+    <!-- 使用基础形状替代复杂模型 -->
+    <model name="rock_obstacle">
+      <pose>5 5 0.5 0 0 0</pose>
+      <link name="link">
+        <collision name="collision">
+          <geometry>
+            <sphere>
+              <radius>1.5</radius>
+            </sphere>
+          </geometry>
+        </collision>
+        <visual name="visual">
+          <geometry>
+            <sphere>
+              <radius>1.5</radius>
+            </sphere>
+          </geometry>
+          <material>
+            <script>
+              <uri>file://media/materials/scripts/gazebo.material</uri>
+              <name>Gazebo/Grey</name>
+            </script>
+          </material>
+        </visual>
+      </link>
+    </model>
+
+    <!-- 使用简单圆柱体模拟树木 -->
+    <model name="tree_simple">
+      <pose>-5 5 0 0 0 0</pose>
+      <link name="link">
+        <collision name="trunk">
+          <geometry>
+            <cylinder>
+              <radius>0.3</radius>
+              <length>6</length>
+            </cylinder>
+          </geometry>
+        </collision>
+        <visual name="visual">
+          <geometry>
+            <cylinder>
+              <radius>0.3</radius>
+              <length>6</length>
+            </cylinder>
+          </geometry>
+          <material>
+            <script>
+              <uri>file://media/materials/scripts/gazebo.material</uri>
+              <name>Gazebo/DarkGreen</name>
+            </script>
+          </material>
+        </visual>
+      </link>
+    </model>
+
+    <!-- 基本物理引擎设置 -->
+    <physics type="ode">
+      <max_step_size>0.01</max_step_size>
+      <real_time_factor>1</real_time_factor>
+    </physics>
+
+  </world>
+</sdf>

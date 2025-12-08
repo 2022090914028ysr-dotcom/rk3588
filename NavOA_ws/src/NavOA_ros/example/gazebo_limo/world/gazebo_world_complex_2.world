@@ -1,0 +1,109 @@
+<sdf version='1.6'>
+  <world name='default'>
+    <!-- 基础环境设置（光照、地面、物理引擎等，保持不变） -->
+    <light name='sun' type='directional'>
+      <cast_shadows>1</cast_shadows>
+      <pose frame=''>0 0 10 0 -0 0</pose>
+      <diffuse>0.8 0.8 0.8 1</diffuse>
+      <specular>0.2 0.2 0.2 1</specular>
+      <attenuation>
+        <range>1000</range>
+        <constant>0.9</constant>
+        <linear>0.01</linear>
+        <quadratic>0.001</quadratic>
+      </attenuation>
+      <direction>-0.5 0.1 -0.9</direction>
+    </light>
+    <model name='ground_plane'>
+      <static>1</static>
+      <link name='link'>
+        <collision name='collision'>
+          <geometry>
+            <plane>
+              <normal>0 0 1</normal>
+              <size>100 100</size>
+            </plane>
+          </geometry>
+          <surface>
+            <friction>
+              <ode>
+                <mu>100</mu>
+                <mu2>50</mu2>
+              </ode>
+            </friction>
+          </surface>
+        </collision>
+        <visual name='visual'>
+          <geometry>
+            <plane>
+              <normal>0 0 1</normal>
+              <size>100 100</size>
+            </plane>
+          </geometry>
+          <material>
+            <script>
+              <uri>file://media/materials/scripts/gazebo.material</uri>
+              <name>Gazebo/Grey</name>
+            </script>
+          </material>
+        </visual>
+      </link>
+    </model>
+    <gravity>0 0 -9.8</gravity>
+    <physics type='ode'>
+      <max_step_size>0.002</max_step_size>
+      <real_time_factor>1</real_time_factor>
+    </physics>
+
+    <!-- ===== 动态障碍物配置 ===== -->
+    <!-- 8个动态障碍物（通过population随机生成） -->
+    <population name="dynamic_obstacles">
+      <model name='cross'>
+        <link name='link'>
+          <inertial>
+            <mass>0.5</mass>
+            <inertia>
+              <ixx>0.00455435</ixx>
+              <iyy>0.00455435</iyy>
+              <izz>0.00833187</izz>
+            </inertia>
+          </inertial>
+          <collision name='collision'>
+            <geometry>
+              <cylinder>
+                <length>0.3162</length>
+                <radius>0.1</radius>
+              </cylinder>
+            </geometry>
+          </collision>
+          <visual name='visual'>
+            <geometry>
+              <mesh>
+                <uri>model://cross_joint_part/meshes/cross_joint.dae</uri>
+              </mesh>
+            </geometry>
+          </visual>
+        </link>
+        <plugin name='obstacle_plugin' filename='libmulti_obs.so'/>
+      </model>
+      <pose>0 0 0 0 0 0</pose>
+      <box>
+        <size>10 10 0.1</size>  <!-- 障碍物生成区域 -->
+      </box>
+      <model_count>6</model_count>  <!-- 生成8个动态障碍物 -->
+      <distribution>
+        <type>random</type>
+      </distribution>
+    </population>
+
+    <!-- ===== 移除所有固定障碍物（删除cross_clone_10到cross_clone_19） ===== -->
+
+    <!-- GUI设置 -->
+    <gui fullscreen='0'>
+      <camera name='user_camera'>
+        <pose>5 -6 12 0 1 1</pose>
+        <view_controller>orbit</view_controller>
+      </camera>
+    </gui>
+  </world>
+</sdf>
