@@ -1,0 +1,2 @@
+Requirement already satisfied: diffcp in /home/ubuntu/miniconda3/envs/nav/lib/python3.10/site-packages (1.1.3)
+Requirement already satisfied: threadpoolctl>=1.1 in /home/ubuntu/miniconda3/envs/nav/lib/python3.10/site-packages (from diffcp) (3.6.0)

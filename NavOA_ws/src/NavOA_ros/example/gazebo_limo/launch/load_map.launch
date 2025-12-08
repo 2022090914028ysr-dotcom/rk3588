@@ -1,0 +1,41 @@
+<launch>
+    <!-- 参数：地图文件路径 -->
+    <arg name="map_file" default="$(find NavOA_ros)/maps/gazebo_limo_map.yaml" />
+
+    <!-- 是否启动 RViz -->
+    <arg name="use_rviz" default="true" />
+
+    <!-- ================== 1. 地图服务器：加载静态地图 ================== -->
+    <node name="map_server" 
+          pkg="map_server" 
+          type="map_server" 
+          args="$(arg map_file)" 
+          output="screen">
+        <remap from="/map" to="/map"/>
+    </node>
+
+    <!-- ================== 2. AMCL 定位节点 ================== -->
+    <node name="amcl" 
+          pkg="amcl" 
+          type="amcl" 
+          output="screen">
+
+        <!-- 告诉 AMCL 使用 /map topic 获取地图 -->
+        <param name="use_map_topic" value="true" />
+
+
+        <!-- ================== 话题重映射 ================== -->
+        <remap from="scan" to="/limo/scan" />
+
+    </node>
+
+    <!-- ================== 3. 启动 RViz（可选）================== -->
+    <!--<group if="$(arg use_rviz)">
+        <node name="rviz" 
+              pkg="rviz" 
+              type="rviz" 
+              args="-d $(find NavOA_ros)/example/gazebo_limo/rviz/limo_gazebo.rviz" 
+              required="true" />
+    </group>-->
+
+</launch>

@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<launch>
+    <!-- Robot state publisher -->
+    <param name="robot_description" command="$(find xacro)/xacro '$(find limo_description)/urdf/limo_ackerman.xacro'" />
+    <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" />
+
+    <!-- use robot pose ekf to provide odometry-->
+    <node pkg="robot_pose_ekf" name="robot_pose_ekf" type="robot_pose_ekf">
+        <param name="output_frame" value="odom" />
+        <param name="base_footprint_frame" value="base_link"/>
+        <remap from="imu_data" to="imu" />
+    </node>
+
+    <node pkg="amcl" type="amcl" name="amcl" output="screen">
+        <!--<rosparam file="$(find limo_bringup)/param/amcl_params_diff.yaml" command="load" />-->
+        <rosparam file="$(find limo_bringup)/param/amcl_params_omni.yaml" command="load" />
+        <param name="initial_pose_x" value="0"/>
+        <param name="initial_pose_y" value="0"/>
+        <param name="initial_pose_a" value="0"/>
+    </node>
+
+    <!-- RViz for navigation -->
+    <!-- <node name="rviz" pkg="rviz" type="rviz" args="-d $(find limo_description)/rviz/model_display.rviz" /> -->
+</launch>

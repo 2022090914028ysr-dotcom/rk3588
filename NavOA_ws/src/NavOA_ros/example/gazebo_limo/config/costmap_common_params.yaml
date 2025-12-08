@@ -1,0 +1,16 @@
+# 机器人几何参数
+robot_radius: 0.2
+# 或者使用footprint（根据您的LIMO机器人实际尺寸调整）
+# footprint: [[-0.2, -0.15], [-0.2, 0.15], [0.2, 0.15], [0.2, -0.15]]
+
+# 障碍物探测范围
+obstacle_range: 3.0
+raytrace_range: 3.5
+
+# 膨胀参数
+inflation_radius: 0.1
+cost_scaling_factor: 3.0
+
+# 传感器配置
+observation_sources: scan
+scan: {sensor_frame: laser_link, data_type: LaserScan, topic: /limo/scan, marking: true, clearing: true}
