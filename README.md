@@ -9,7 +9,7 @@ roslaunch lidar_ros lidar.launch
 
 ````
 conda deactivate
-python3 /home/ubuntu/ShenZhenYu-DLUT-Robot/NavOA_ws/src/NavOA_ros/scripts/real_robot_cmd/SendCommands.py
+python3 /home/ubuntu/Robit_SlamNav/NavOA_ws/src/NavOA_ros/scripts/real_robot_cmd/SendCommands.py
 ````
 
 roslaunch rf2o_laser_odometry rf2o_laser_odometry.launch
