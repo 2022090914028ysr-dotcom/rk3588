@@ -1,0 +1,8 @@
+prefix=/home/ubuntu/Robit_SlamNav/NavOA_ws/devel
+
+Name: limo_gazebo_sim
+Description: Description of limo_gazebo_sim
+Version: 0.0.1
+Cflags: -I/home/ubuntu/Robit_SlamNav/NavOA_ws/src/limo_ros/limo_gazebo_sim/include
+Libs: -L${prefix}/lib 
+Requires: roscpp sensor_msgs
