@@ -7,4 +7,7 @@
 # new environment variables
 
 # modified environment variables
-export PWD='/home/ubuntu/NavOA_ws/build_isolated/NavOA_ros'
+export CMAKE_PREFIX_PATH="/home/ubuntu/Robit_SlamNav/NavOA_ws/devel_isolated/NavOA_ros:$CMAKE_PREFIX_PATH"
+export PWD='/home/ubuntu/Robit_SlamNav/NavOA_ws/build_isolated/NavOA_ros'
+export ROSLISP_PACKAGE_DIRECTORIES="/home/ubuntu/Robit_SlamNav/NavOA_ws/devel_isolated/NavOA_ros/share/common-lisp:$ROSLISP_PACKAGE_DIRECTORIES"
+export ROS_PACKAGE_PATH="/home/ubuntu/Robit_SlamNav/NavOA_ws/src/NavOA_ros:$ROS_PACKAGE_PATH"

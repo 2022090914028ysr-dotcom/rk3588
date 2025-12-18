@@ -18,7 +18,7 @@ if not type -q bass
 end
 
 if test -z $_CATKIN_SETUP_DIR
-    set _CATKIN_SETUP_DIR /home/ubuntu/NavOA_ws/devel_isolated/camera_models
+    set _CATKIN_SETUP_DIR /home/ubuntu/Robit_SlamNav/NavOA_ws/devel_isolated/camera_models
 end
 
 set _SETUP_UTIL "$_CATKIN_SETUP_DIR/_setup_util.py"

@@ -4,5 +4,5 @@ PROJECT_PKG_CONFIG_INCLUDE_DIRS = "${prefix}/include".split(';') if "${prefix}/i
 PROJECT_CATKIN_DEPENDS = "roscpp;std_msgs".replace(';', ' ')
 PKG_CONFIG_LIBRARIES_WITH_PREFIX = "-lcamera_models".split(';') if "-lcamera_models" != "" else []
 PROJECT_NAME = "camera_models"
-PROJECT_SPACE_DIR = "/home/ubuntu/NavOA_ws/install_isolated"
+PROJECT_SPACE_DIR = "/home/ubuntu/Robit_SlamNav/NavOA_ws/install_isolated"
 PROJECT_VERSION = "0.0.0"

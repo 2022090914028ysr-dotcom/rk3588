@@ -1,8 +1,0 @@
-prefix=/home/ubuntu/NavOA_ws/devel_isolated/loop_fusion
-
-Name: loop_fusion
-Description: Description of loop_fusion
-Version: 0.0.0
-Cflags: 
-Libs: -L${prefix}/lib 
-Requires: 

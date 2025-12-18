@@ -268,7 +268,7 @@ if __name__ == '__main__':
 
         if not args.local:
             # environment at generation time
-            CMAKE_PREFIX_PATH = r'/home/ubuntu/NavOA_ws/devel_isolated/rf2o_laser_odometry;/home/ubuntu/NavOA_ws/devel_isolated/lidar_ros;/home/ubuntu/NavOA_ws/devel_isolated/fused_odom;/home/ubuntu/NavOA_ws/devel_isolated/cartographer_rviz;/home/ubuntu/NavOA_ws/devel_isolated/cartographer_ros;/home/ubuntu/NavOA_ws/devel_isolated/cartographer_ros_msgs;/home/ubuntu/NavOA_ws/devel_isolated/NavOA_ros;/opt/ros/noetic;/home/ubuntu/NavOA_ws/devel_isolated/cartographer'.split(';')
+            CMAKE_PREFIX_PATH = r'/home/ubuntu/Robit_SlamNav/NavOA_ws/devel_isolated/NavOA_ros;/home/ubuntu/NavOA_ws/devel_isolated/vins;/home/ubuntu/NavOA_ws/devel_isolated/loop_fusion;/home/ubuntu/NavOA_ws/devel_isolated/global_fusion;/home/ubuntu/NavOA_ws/devel_isolated/camera_models;/home/ubuntu/NavOA_ws/devel_isolated/rf2o_laser_odometry;/home/ubuntu/NavOA_ws/devel_isolated/lidar_ros;/home/ubuntu/NavOA_ws/devel_isolated/fused_odom;/home/ubuntu/NavOA_ws/devel_isolated/cartographer_rviz;/home/ubuntu/NavOA_ws/devel_isolated/cartographer_ros;/home/ubuntu/NavOA_ws/devel_isolated/cartographer_ros_msgs;/home/ubuntu/NavOA_ws/devel_isolated/NavOA_ros;/opt/ros/noetic;/home/ubuntu/NavOA_ws/devel_isolated/cartographer'.split(';')
         else:
             # don't consider any other prefix path than this one
             CMAKE_PREFIX_PATH = []

@@ -1,4 +1,4 @@
-prefix=/home/ubuntu/NavOA_ws/install_isolated
+prefix=/home/ubuntu/Robit_SlamNav/NavOA_ws/install_isolated
 
 Name: NavOA_ros
 Description: Description of NavOA_ros

@@ -67,14 +67,14 @@ set(camera_models_CONFIG_INCLUDED TRUE)
 
 # set variables for source/devel/install prefixes
 if("TRUE" STREQUAL "TRUE")
-  set(camera_models_SOURCE_PREFIX /home/ubuntu/NavOA_ws/src/VINS-Fusion/camera_models)
-  set(camera_models_DEVEL_PREFIX /home/ubuntu/NavOA_ws/devel_isolated/camera_models)
+  set(camera_models_SOURCE_PREFIX /home/ubuntu/Robit_SlamNav/NavOA_ws/src/VINS-Fusion/camera_models)
+  set(camera_models_DEVEL_PREFIX /home/ubuntu/Robit_SlamNav/NavOA_ws/devel_isolated/camera_models)
   set(camera_models_INSTALL_PREFIX "")
   set(camera_models_PREFIX ${camera_models_DEVEL_PREFIX})
 else()
   set(camera_models_SOURCE_PREFIX "")
   set(camera_models_DEVEL_PREFIX "")
-  set(camera_models_INSTALL_PREFIX /home/ubuntu/NavOA_ws/install_isolated)
+  set(camera_models_INSTALL_PREFIX /home/ubuntu/Robit_SlamNav/NavOA_ws/install_isolated)
   set(camera_models_PREFIX ${camera_models_INSTALL_PREFIX})
 endif()
 
@@ -91,9 +91,9 @@ endif()
 # flag project as catkin-based to distinguish if a find_package()-ed project is a catkin project
 set(camera_models_FOUND_CATKIN_PROJECT TRUE)
 
-if(NOT "/home/ubuntu/NavOA_ws/src/VINS-Fusion/camera_models/include " STREQUAL " ")
+if(NOT "/home/ubuntu/Robit_SlamNav/NavOA_ws/src/VINS-Fusion/camera_models/include " STREQUAL " ")
   set(camera_models_INCLUDE_DIRS "")
-  set(_include_dirs "/home/ubuntu/NavOA_ws/src/VINS-Fusion/camera_models/include")
+  set(_include_dirs "/home/ubuntu/Robit_SlamNav/NavOA_ws/src/VINS-Fusion/camera_models/include")
   if(NOT " " STREQUAL " ")
     set(_report "Check the issue tracker '' and consider creating a ticket if the problem has not been reported yet.")
   elseif(NOT " " STREQUAL " ")
@@ -110,7 +110,7 @@ if(NOT "/home/ubuntu/NavOA_ws/src/VINS-Fusion/camera_models/include " STREQUAL "
         message(FATAL_ERROR "Project 'camera_models' specifies '${idir}' as an include dir, which is not found.  It does not exist in '${include}'.  ${_report}")
       endif()
     else()
-      message(FATAL_ERROR "Project 'camera_models' specifies '${idir}' as an include dir, which is not found.  It does neither exist as an absolute directory nor in '/home/ubuntu/NavOA_ws/src/VINS-Fusion/camera_models/${idir}'.  ${_report}")
+      message(FATAL_ERROR "Project 'camera_models' specifies '${idir}' as an include dir, which is not found.  It does neither exist as an absolute directory nor in '/home/ubuntu/Robit_SlamNav/NavOA_ws/src/VINS-Fusion/camera_models/${idir}'.  ${_report}")
     endif()
     _list_append_unique(camera_models_INCLUDE_DIRS ${include})
   endforeach()
@@ -156,7 +156,7 @@ foreach(library ${libraries})
     set(lib_path "")
     set(lib "${library}-NOTFOUND")
     # since the path where the library is found is returned we have to iterate over the paths manually
-    foreach(path /home/ubuntu/NavOA_ws/devel_isolated/camera_models/lib;/home/ubuntu/NavOA_ws/devel_isolated/rf2o_laser_odometry/lib;/home/ubuntu/NavOA_ws/devel_isolated/lidar_ros/lib;/home/ubuntu/NavOA_ws/devel_isolated/fused_odom/lib;/home/ubuntu/NavOA_ws/devel_isolated/cartographer_rviz/lib;/home/ubuntu/NavOA_ws/devel_isolated/cartographer_ros/lib;/home/ubuntu/NavOA_ws/devel_isolated/cartographer_ros_msgs/lib;/home/ubuntu/NavOA_ws/devel_isolated/NavOA_ros/lib;/opt/ros/noetic/lib)
+    foreach(path /home/ubuntu/Robit_SlamNav/NavOA_ws/devel_isolated/camera_models/lib;/home/ubuntu/Robit_SlamNav/NavOA_ws/devel_isolated/NavOA_ros/lib;/home/ubuntu/NavOA_ws/devel_isolated/vins/lib;/home/ubuntu/NavOA_ws/devel_isolated/loop_fusion/lib;/home/ubuntu/NavOA_ws/devel_isolated/global_fusion/lib;/home/ubuntu/NavOA_ws/devel_isolated/camera_models/lib;/home/ubuntu/NavOA_ws/devel_isolated/rf2o_laser_odometry/lib;/home/ubuntu/NavOA_ws/devel_isolated/lidar_ros/lib;/home/ubuntu/NavOA_ws/devel_isolated/fused_odom/lib;/home/ubuntu/NavOA_ws/devel_isolated/cartographer_rviz/lib;/home/ubuntu/NavOA_ws/devel_isolated/cartographer_ros/lib;/home/ubuntu/NavOA_ws/devel_isolated/cartographer_ros_msgs/lib;/home/ubuntu/NavOA_ws/devel_isolated/NavOA_ros/lib;/opt/ros/noetic/lib)
       find_library(lib ${library}
         PATHS ${path}
         NO_DEFAULT_PATH NO_CMAKE_FIND_ROOT_PATH)

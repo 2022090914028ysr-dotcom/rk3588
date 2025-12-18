@@ -1,2 +1,2 @@
 - setup-file:
-    local-name: /home/ubuntu/NavOA_ws/devel_isolated/NavOA_ros/setup.sh
+    local-name: /home/ubuntu/Robit_SlamNav/NavOA_ws/devel_isolated/NavOA_ros/setup.sh

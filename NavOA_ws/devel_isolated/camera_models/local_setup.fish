@@ -5,7 +5,7 @@
 # or fall back to the destination set at configure time
 
 if test -z $_CATKIN_SETUP_DIR
-    set _CATKIN_SETUP_DIR /home/ubuntu/NavOA_ws/devel_isolated/camera_models
+    set _CATKIN_SETUP_DIR /home/ubuntu/Robit_SlamNav/NavOA_ws/devel_isolated/camera_models
 end
 
 set CATKIN_SETUP_UTIL_ARGS "--extend --local"

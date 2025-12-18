@@ -21,8 +21,8 @@ namespace cartographer {
 namespace common {
 
 constexpr char kConfigurationFilesDirectory[] =
-    "/home/ubuntu/NavOA_ws/devel_isolated/cartographer/share/cartographer/configuration_files";
-constexpr char kSourceDirectory[] = "/home/ubuntu/NavOA_ws/src/cartographer";
+    "/home/ubuntu/Robit_SlamNav/NavOA_ws/devel_isolated/cartographer/share/cartographer/configuration_files";
+constexpr char kSourceDirectory[] = "/home/ubuntu/Robit_SlamNav/NavOA_ws/src/cartographer";
 
 }  // namespace common
 }  // namespace cartographer

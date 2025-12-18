@@ -1,8 +1,0 @@
-prefix=/home/ubuntu/NavOA_ws/devel_isolated/lidar_ros
-
-Name: lidar_ros
-Description: Description of lidar_ros
-Version: 1.0.0
-Cflags: 
-Libs: -L${prefix}/lib 
-Requires: 
