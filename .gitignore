@@ -4,3 +4,4 @@
 /logs/
 /NavOA_ws/devel_isolated/*
 /NavOA_ws/build_isolated/*
+/NavOA_ws/logs/*
