@@ -1,2 +1,0 @@
-NavOA_ros:VINS-Fusion/camera_models:VINS-Fusion/global_fusion:VINS-Fusion/loop_fusion:VINS-Fusion/vins_estimator:cartographer:cartographer_ros/cartographer_ros:cartographer_ros/cartographer_ros_msgs:cartographer_ros/cartographer_rviz:fused_odom:lidar_ros:rf2o_laser_odometry
--G Ninja -DCATKIN_DEVEL_PREFIX=/home/ubuntu/Robit_SlamNav/NavOA_ws/devel_isolated -DCMAKE_INSTALL_PREFIX=/home/ubuntu/Robit_SlamNav/NavOA_ws/install_isolated

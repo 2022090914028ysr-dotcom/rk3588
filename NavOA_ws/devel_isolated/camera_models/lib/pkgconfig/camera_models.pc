@@ -1,8 +1,0 @@
-prefix=/home/ubuntu/Robit_SlamNav/NavOA_ws/devel_isolated/camera_models
-
-Name: camera_models
-Description: Description of camera_models
-Version: 0.0.0
-Cflags: -I/home/ubuntu/Robit_SlamNav/NavOA_ws/src/VINS-Fusion/camera_models/include
-Libs: -L${prefix}/lib -lcamera_models
-Requires: roscpp std_msgs
