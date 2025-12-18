@@ -1,0 +1,14 @@
+<launch>
+  <!-- Ultrasonic radar node -->
+  <node name="ultrasonic_scan" pkg="NavOA_ros" type="a21_ultrasonic_scan.py" output="screen">
+    <param name="port" type="string" value="/dev/ttyS6"/>
+    <param name="baud" type="int" value="115200"/>
+    <param name="period" type="double" value="0.01"/>
+    <param name="frame_id" type="string" value="ultrasonic_frame"/>
+  </node>
+  
+  <!-- Static TF transform: base_footprint -> ultrasonic_frame -->
+  <!-- args: x y z yaw pitch roll parent_frame child_frame period_ms -->
+  <node pkg="tf" type="static_transform_publisher" name="base_to_ultrasonic"
+    args="0.19 0.0 0.2 0.0 0.0 0.0 /base_footprint /ultrasonic_frame 40"/>
+</launch>

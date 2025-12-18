@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.0.2)
+cmake_minimum_required(VERSION 3.5)
 project(NavOA_ros)
 
 ## Compile as C++11, supported in ROS Kinetic and newer
@@ -14,6 +14,7 @@ find_package(catkin REQUIRED COMPONENTS
   geometry_msgs
   nav_msgs
   tf
+  dynamic_reconfigure
 )
 
 ## System dependencies are found with CMake's conventions
@@ -91,10 +92,9 @@ find_package(catkin REQUIRED COMPONENTS
 ##     and list every .cfg file to be processed
 
 ## Generate dynamic reconfigure parameters in the 'cfg' folder
-# generate_dynamic_reconfigure_options(
-#   cfg/DynReconf1.cfg
-#   cfg/DynReconf2.cfg
-# )
+generate_dynamic_reconfigure_options(
+  cfg/RefSpeed.cfg
+)
 
 ###################################
 ## catkin specific configuration ##
@@ -163,11 +163,11 @@ include_directories(
 ## Mark executable scripts (Python etc.) for installation
 ## in contrast to setup.py, you can choose the destination
 catkin_install_python(PROGRAMS
-  scripts/cmd_vel_odom_node.py
   scripts/teleop_bridge.py
   scripts/velocity_publisher.py
   scripts/velocity_subscriber.py
   scripts/data_logger.py
+  scripts/test_ref_speed.py
   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
 

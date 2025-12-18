@@ -1,18 +1,18 @@
 # mpc
 receding: 5
 step_time: 0.3
-ref_speed: 0.3
+ref_speed: 0.15
 device: 'cpu'
 time_print: False
-collision_threshold: 0.1
+collision_threshold: 0.0
 
 # robot
 robot:
   kinematics: 'diff'
-  max_speed: [0.1, 1]
+  max_speed: [0.4, 1]
   max_acce: [0.5, 1]
-  length: 0.2
-  width: 0.6
+  length: 0.3
+  width: 0.7
 
 # initial path
 ipath:

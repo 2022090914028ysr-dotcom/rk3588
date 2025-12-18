@@ -1,0 +1,2 @@
+- setup-file:
+    local-name: /home/ubuntu/NavOA_ws/devel_isolated/fused_odom/setup.sh

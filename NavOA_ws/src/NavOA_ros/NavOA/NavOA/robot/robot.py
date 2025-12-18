@@ -22,7 +22,8 @@ from math import inf
 import numpy as np
 from typing import Optional, Union
 import cvxpy as cp
-from math import sin, cos, tan
+# 注意：移除了 from math import sin, cos, tan，因为这会与 torch 函数混淆
+# 我们将在代码中直接使用 torch.sin, torch.cos 等
 import torch
 from ..configuration import to_device 
 from ..util import gen_inequal_from_vertex
@@ -260,14 +261,48 @@ class robot:
         phi = nom_st[2, 0]
         v, psi = nom_ut[0, 0], nom_ut[1, 0]
 
-        A = torch.Tensor([ [1, 0, -v * dt * sin(phi)], [0, 1, v * dt * cos(phi)], [0, 0, 1] ])
+        # --- Fixed Code Starts Here ---
+        # 1. Use torch math functions
+        s_phi = torch.sin(phi)
+        c_phi = torch.cos(phi)
+        t_psi = torch.tan(psi)
+        c_psi_sq = torch.cos(psi)**2
 
-        B = torch.Tensor([ [cos(phi)*dt, 0], [sin(phi)*dt, 0], 
-                        [ tan(psi)*dt / L, v*dt/(L * (cos(psi))**2 ) ] ])
+        # 2. Helper variables on correct device/dtype
+        device = nom_st.device
+        dtype = nom_st.dtype
+        one = torch.tensor(1.0, device=device, dtype=dtype)
+        zero = torch.tensor(0.0, device=device, dtype=dtype)
+        dt_t = torch.as_tensor(dt, device=device, dtype=dtype)
+        L_t = torch.as_tensor(L, device=device, dtype=dtype)
 
-        C = torch.Tensor([ [ phi*v*sin(phi)*dt ], [ -phi*v*cos(phi)*dt ], 
-                        [ -psi * v*dt / ( L * (cos(psi))**2) ]])
-        
+        # 3. Construct A Matrix (3x3) using torch.stack
+        # [1, 0, -v*dt*sin(phi)]
+        # [0, 1,  v*dt*cos(phi)]
+        # [0, 0,  1]
+        row_a1 = torch.stack([one, zero, -v * dt_t * s_phi])
+        row_a2 = torch.stack([zero, one, v * dt_t * c_phi])
+        row_a3 = torch.stack([zero, zero, one])
+        A = torch.stack([row_a1, row_a2, row_a3])
+
+        # 4. Construct B Matrix (3x2)
+        # [cos(phi)*dt, 0]
+        # [sin(phi)*dt, 0]
+        # [tan(psi)*dt / L, v*dt/(L * cos^2(psi))]
+        row_b1 = torch.stack([c_phi * dt_t, zero])
+        row_b2 = torch.stack([s_phi * dt_t, zero])
+        row_b3 = torch.stack([t_psi * dt_t / L_t, v * dt_t / (L_t * c_psi_sq)])
+        B = torch.stack([row_b1, row_b2, row_b3])
+
+        # 5. Construct C Matrix (3x1)
+        # [ phi*v*sin(phi)*dt ]
+        # [ -phi*v*cos(phi)*dt ]
+        # [ -psi * v*dt / ( L * cos^2(psi)) ]
+        row_c1 = torch.stack([phi * v * s_phi * dt_t])
+        row_c2 = torch.stack([-phi * v * c_phi * dt_t])
+        row_c3 = torch.stack([-psi * v * dt_t / (L_t * c_psi_sq)])
+        C = torch.stack([row_c1, row_c2, row_c3])
+        # --- Fixed Code Ends Here ---
 
         return to_device(A), to_device(B), to_device(C)   
     
@@ -277,13 +312,43 @@ class robot:
         phi = nom_state[2, 0]
         v = nom_u[0, 0]
 
-        A = torch.Tensor([ [1, 0, -v * dt * sin(phi)], [0, 1, v * dt * cos(phi)], [0, 0, 1] ])
+        # --- Fixed Code Starts Here ---
+        s_phi = torch.sin(phi)
+        c_phi = torch.cos(phi)
 
-        B = torch.Tensor([ [cos(phi)*dt, 0], [sin(phi)*dt, 0], 
-                        [ 0, dt ] ])
+        device = nom_state.device
+        dtype = nom_state.dtype
+        one = torch.tensor(1.0, device=device, dtype=dtype)
+        zero = torch.tensor(0.0, device=device, dtype=dtype)
+        dt_t = torch.as_tensor(dt, device=device, dtype=dtype)
 
-        C = torch.Tensor([ [ phi*v*sin(phi)*dt ], [ -phi*v*cos(phi)*dt ], 
-                        [ 0 ]])
+        # Construct A Matrix (3x3)
+        # [1, 0, -v*dt*sin(phi)]
+        # [0, 1,  v*dt*cos(phi)]
+        # [0, 0,  1]
+        row_a1 = torch.stack([one, zero, -v * dt_t * s_phi])
+        row_a2 = torch.stack([zero, one, v * dt_t * c_phi])
+        row_a3 = torch.stack([zero, zero, one])
+        A = torch.stack([row_a1, row_a2, row_a3])
+
+        # Construct B Matrix (3x2)
+        # [cos(phi)*dt, 0]
+        # [sin(phi)*dt, 0]
+        # [0,           dt]
+        row_b1 = torch.stack([c_phi * dt_t, zero])
+        row_b2 = torch.stack([s_phi * dt_t, zero])
+        row_b3 = torch.stack([zero, dt_t])
+        B = torch.stack([row_b1, row_b2, row_b3])
+
+        # Construct C Matrix (3x1)
+        # [ phi*v*sin(phi)*dt ]
+        # [ -phi*v*cos(phi)*dt ]
+        # [ 0 ]
+        row_c1 = torch.stack([phi * v * s_phi * dt_t])
+        row_c2 = torch.stack([-phi * v * c_phi * dt_t])
+        row_c3 = torch.stack([zero])
+        C = torch.stack([row_c1, row_c2, row_c3])
+        # --- Fixed Code Ends Here ---
                 
         return to_device(A), to_device(B), to_device(C) 
 
@@ -347,4 +412,3 @@ class robot:
         assert vertices_np.shape[1] >= 3, "vertices must be a numpy array of shape (2, N), N >= 3"
 
         return vertices_np
-

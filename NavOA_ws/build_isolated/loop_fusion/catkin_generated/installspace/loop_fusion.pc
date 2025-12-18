@@ -1,0 +1,8 @@
+prefix=/home/ubuntu/NavOA_ws/install_isolated
+
+Name: loop_fusion
+Description: Description of loop_fusion
+Version: 0.0.0
+Cflags: 
+Libs: -L${prefix}/lib 
+Requires: 

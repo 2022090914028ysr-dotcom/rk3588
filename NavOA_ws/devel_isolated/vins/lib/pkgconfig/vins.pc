@@ -1,0 +1,8 @@
+prefix=/home/ubuntu/NavOA_ws/devel_isolated/vins
+
+Name: vins
+Description: Description of vins
+Version: 0.0.0
+Cflags: 
+Libs: -L${prefix}/lib 
+Requires: 

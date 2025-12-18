@@ -1,2 +1,0 @@
-set(limo_base_MESSAGE_FILES "/home/ubuntu/Robit_SlamNav/NavOA_ws/src/limo_ros/limo_base/msg/LimoStatus.msg")
-set(limo_base_SERVICE_FILES "")

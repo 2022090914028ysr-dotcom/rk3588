@@ -1,2 +1,0 @@
-NavOA_ros:lidar_ros:limo_ros/limo_base:limo_ros/limo_bringup:limo_ros/limo_description:limo_ros/limo_gazebo_sim:rf2o_laser_odometry:rvo_ros
--DCATKIN_DEVEL_PREFIX=/home/ubuntu/Robit_SlamNav/NavOA_ws/devel -DCMAKE_INSTALL_PREFIX=/home/ubuntu/Robit_SlamNav/NavOA_ws/install -G Unix Makefiles

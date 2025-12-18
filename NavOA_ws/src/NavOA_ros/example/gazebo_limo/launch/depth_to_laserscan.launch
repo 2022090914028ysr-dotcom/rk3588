@@ -7,7 +7,7 @@
         <!-- 参数配置 -->
         <param name="output_frame_id" value="ascamera_hp60c_color_0"/>
         <param name="scan_height" value="100"/>  <!-- 使用多少行像素生成激光扫描 -->
-        <param name="range_min" value="0。01"/> <!-- 测算地面到相机的深度，修改这个 -->
+        <param name="range_min" value="0.05"/> <!-- 测算地面到相机的深度，修改这个 -->
         <param name="range_max" value="5.0"/>
         <param name="scan_time" value="0.033"/>
         <param name="convert_strategy" value="1"/>   <!-- 1=最小深度法 -->
@@ -15,11 +15,14 @@
     </node>
 
     <!-- 发布 camera 相对于 base_footprint 的静态变换，修改这个-->
-    <node pkg="tf2_ros" type="static_transform_publisher" name="camera_tf_pub"
-        args="0.25 0.0 0.1 0 0 0 base_footprint ascamera_hp60c_camera_link_0" />
 
+    <node pkg="tf" type="static_transform_publisher" name="camera_tf_pub"
+        args="0.25 0.0 0.1 0 0 0 base_footprint ascamera_hp60c_camera_link_0 100" />
 
-      <!-- 激光数据合并 -->
+    <!-- <node pkg="tf" type="static_transform_publisher" name="link_to_color_tf_static" 
+      args="0 0 0 -1.57079632679 0 -1.57079632679 ascamera_hp60c_camera_link_0 ascamera_hp60c_color_0 100" output="screen" /> -->
+    
+    <!-- 激光数据合并 -->
     <node pkg="ira_laser_tools" name="laserscan_multi_merger" type="laserscan_multi_merger">
         <param name="destination_frame" value="base_footprint"/>
         <param name="cloud_destination_topic" value="/merged_cloud"/>
