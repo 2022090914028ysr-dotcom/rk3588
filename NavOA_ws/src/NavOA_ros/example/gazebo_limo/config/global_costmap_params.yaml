@@ -1,11 +1,33 @@
 global_costmap:
   global_frame: map
-  robot_base_frame: base_link
+  robot_base_frame: base_footprint
   update_frequency: 1.0
   publish_frequency: 1.0
-  transform_tolerance: 0.5
-  static_map: false
-  rolling_window: false
-  width: 10.0
-  height: 10.0
-  resolution: 0.05
+  transform_tolerance: 1  
+  
+
+  plugins:
+    - {name: static_layer, type: "costmap_2d::StaticLayer"}
+    - {name: inflation_layer, type: "costmap_2d::InflationLayer"}
+    
+
+  static_map: true  
+  rolling_window: false  
+  
+
+  static_layer:
+    map_topic: "/map"
+    subscribe_to_updates: false
+    track_unknown_space: true
+    trinary_costmap: true
+    lethal_cost_threshold: 50
+    unknown_cost_value: -1
+    
+    
+  inflation_layer:
+    inflation_radius: 0.8
+    cost_scaling_factor: 2.5
+    inscribed_radius: 0.35
+    
+  # 可选：发布话题配置
+  always_send_full_costmap: true  

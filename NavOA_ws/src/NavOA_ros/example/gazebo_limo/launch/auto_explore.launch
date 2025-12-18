@@ -1,0 +1,15 @@
+<launch>
+  <arg name="frame_id" default="map" />
+  <arg name="goal_interval" default="5.0" />
+  <arg name="unknown_complete_threshold" default="0.05" />
+  <arg name="min_frontier_size" default="5" />
+  <arg name="max_goals" default="0" />
+
+  <node pkg="NavOA_ros" type="explorer.py" name="auto_explorer" output="screen">
+    <param name="frame_id" value="$(arg frame_id)" />
+    <param name="goal_interval" value="$(arg goal_interval)" />
+    <param name="unknown_complete_threshold" value="$(arg unknown_complete_threshold)" />
+    <param name="min_frontier_size" value="$(arg min_frontier_size)" />
+    <param name="max_goals" value="$(arg max_goals)" />
+  </node>
+</launch>

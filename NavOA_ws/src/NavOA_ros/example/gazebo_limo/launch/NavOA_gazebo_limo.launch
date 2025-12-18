@@ -3,32 +3,47 @@
     <env name="PYTHONPATH" value="$(find NavOA_ros)/NavOA:$(optenv PYTHONPATH)"/>
     
     <arg name="config_file" default='$(find NavOA_ros)/example/gazebo_limo/config/NavOA_planner_limo.yaml'/>
-    <arg name="map_frame" default='odom'/>
+    <arg name="map_frame" default='map'/>
     <arg name="base_frame" default='base_footprint'/>
     <arg name="lidar_frame" default='laser_frame'/>
     <arg name="scan_range" default='0.1 5.0'/>
+    <arg name="ref_speed" default="0.15"/>
     <arg name="scan_angle_range" default='-3.14 3.14'/>
     <arg name="marker_size" default='0.05'/>
     <arg name="marker_z" default='0.3'/>
     <arg name="scan_downsample" default='6'/>
     <arg name="dune_checkpoint" default='$(find NavOA_ros)/example/gazebo_limo/pretrain_limo/model_5000.pth'/>
-    <arg name="refresh_initial_path" default='false'/>
+    <arg name="use_rknn" default="true"/>
+    <arg name="dune_rknn" default='$(find NavOA_ros)/example/gazebo_limo/pretrain_limo/model_5000_quant.rknn'/>
+    <arg name="rknn_target" default="rk3588"/>
+    <arg name="rknn_core" default="auto"/>
+    <arg name="refresh_initial_path" default='true'/>
 
 
     <node name='NavOA_control' pkg="NavOA_ros" type="NavOA_node.py" output="screen">
+        <param name="slow_down_radius" value="5.0" />
+        <param name="max_speed_scale" value="2" />
+        <param name="min_speed_near_goal" value="0.08" />
         <param name="config_file" value="$(arg config_file)"/>
         <param name="map_frame" value="$(arg map_frame)"/>
         <param name="base_frame" value="$(arg base_frame)"/>
         <param name="lidar_frame" value="$(arg lidar_frame)"/>
+        <param name="ref_speed" value="$(arg ref_speed)"/>
         <param name="scan_range" value="$(arg scan_range)"/>
         <param name="scan_angle_range" value="$(arg scan_angle_range)"/>
         <param name="marker_size" value="$(arg marker_size)"/>
         <param name="scan_downsample" value="$(arg scan_downsample)"/>
         <param name="dune_checkpoint" value="$(arg dune_checkpoint)"/>
+        <param name="use_rknn" value="$(arg use_rknn)"/>
+        <param name="dune_rknn" value="$(arg dune_rknn)"/>
+        <param name="rknn_target" value="$(arg rknn_target)"/>
+        <param name="rknn_core" value="$(arg rknn_core)"/>
         <param name="refresh_initial_path" value="$(arg refresh_initial_path)"/>
-        <remap from="/scan" to="/merged_scan"/>
+        <!-- <remap from="/scan" to="/ultrasonic_scan"/> -->
+        <remap from="/scan" to="/scan"/>
         <remap from="/NavOA_cmd_vel" to="/cmd_vel"/> 
-        <remap from="/NavOA_goal" to="/move_base_simple/goal"/>
+        <!-- <remap from="/NavOA_goal" to="/move_base_simple/goal"/> -->
+        <remap from="/initial_path" to="/move_base/GlobalPlanner/plan"/>
     </node>
 
     <node name="rviz" pkg="rviz" type="rviz" args="-d $(find NavOA_ros)/example/gazebo_limo/rviz/limo_gazebo.rviz" />
