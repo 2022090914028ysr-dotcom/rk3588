@@ -1,94 +1,134 @@
-NavOA »úÆ÷ÈË½¨Í¼Óë¶¯Ì¬µ¼º½±ÜÕÏÊ¹ÓÃËµÃ÷
-Ò»¡¢ÏîÄ¿¼ò½é
-±¾ÏîÄ¿»ùÓÚ ROS ÊµÏÖ»úÆ÷ÈËµÄ SLAM ½¨Í¼¡¢¶¯Ì¬µ¼º½±ÜÕÏ¹¦ÄÜ£¬¼¯³É¼¤¹âÀ×´ï¡¢Àï³Ì¼Æ¡¢ÖØ¶¨Î»¼°µ×ÅÌ¿ØÖÆÄ£¿é£¬Ö§³ÖÔÚ Gazebo ·ÂÕæ»·¾³ÖĞÔËĞĞ£¬ÊÊÓÃÓÚ Limo »úÆ÷ÈËÆ½Ì¨¡£
-¶ş¡¢»·¾³ÅäÖÃ
-£¨Ò»£©ROS ÅäÖÃ
-Ö´ĞĞÒÔÏÂÃüÁî°²×° ROS ¼°Ïà¹Ø¹¤¾ß£¨ÍÆ¼öÊ¹ÓÃ¸ÃÃüÁî£¬È·±£ rosdepc ¿ÉÓÃ£©£º
-bash
-ÔËĞĞ
+
+
+# Mapping and Dynamic Navigation & Obstacle Avoidance
+
+## 1. Environment Configuration
+
+### ROS Configuration
+```
 wget http://fishros.com/install -O fishros && . fishros
-½øÈë¹¤×÷¿Õ¼ä£¬°²×°ÒÀÀµ°ü£º
-bash
-ÔËĞĞ
+```
+//You MUST use this to install ROS, so that you can use `rosdepc`. Otherwise, due to the instability of `rosdep`, you will have to install ROS packages one by one later, which is very painful!!!
+
+```
 cd NavOA_ws
 rosdepc install --from-paths src --ignore-src -r -y
-£¨¶ş£©Cartographer »·¾³ÅäÖÃ
-½øÈë Cartographer ÒÀÀµ°üÄ¿Â¼£º
-bash
-ÔËĞĞ
+```
+
+---
+
+## Cartographer Environment Configuration
+```
 cd NavOA_ws/src/cartographer/abseil-cpp
-cd ../scripts
-±à¼­ install_abseil.sh ÎÄ¼ş£¬×¢ÊÍµô git clone https://github.com/abseil/abseil-cpp.git ĞĞ£¨ÎÄ¼şÄÚÒÑÓĞÄ¬ÈÏ×¢ÊÍÊ¾Àı£©£º
-bash
-ÔËĞĞ
+cd ./scripts
+```
+Open the `install_abseil.sh` file and comment out the line `git clone https://github.com/abseil/abseil-cpp.git`.
+
+Contents of `install_abseil.sh`:
+```
 set -o errexit
 set -o verbose
-#git clone https://github.com/abseil/abseil-cpp.git
+
+*git clone https://github.com/abseil/abseil-cpp.git*
 cd abseil-cpp
-git checkout 215105818dfde3174fe799600bb0fcae233d0bf # 20211102.0
+git checkout 215105818dfde3174fe799600bb0f3cae233d0bf # 20211102.0
 mkdir build
-rm -rf ../abseil-cpp/build
-±àÒë abseil-cpp °ü£º
-bash
-ÔËĞĞ
-./install_abseil.sh
-£¨Èı£©×ÜÌå±àÒë
-ÇåÀí¾É±àÒëÎÄ¼ş£¨¿ÉÑ¡£¬½¨ÒéÖ´ĞĞ£©£º
-bash
-ÔËĞĞ
+```
+
+```
+rm -rf ./abseil-cpp/build
+./install_abseil.sh # Compile the abseil-cpp package
+```
+
+===== Page 2 =====
+
+**Overall Compilation**
+
+```
 cd NavOA_ws
 rm -rf build_isolated/ devel_isolated/
-±àÒë¹¤×÷¿Õ¼ä£º
-bash
-ÔËĞĞ
+
 catkin_make_isolated --use-ninja
-×¢Òâ£ºÈô±àÒë±¨´í£¬Í¨³£ÊÇÈ±ÉÙ ROS ¹¦ÄÜ°ü£¬¸ù¾İ±¨´íĞÅÏ¢²¹³ä°²×°¶ÔÓ¦°ü¼´¿É¡£
-Èı¡¢¹¦ÄÜÊ¹ÓÃ
-£¨Ò»£©ÈÚºÏ¹¦ÄÜÆô¶¯£¨»ù´¡ÒÀÀµ£©
-Æô¶¯°üº¬¼¤¹âÀ×´ï¡¢¼¤¹âÀï³Ì¼Æ¡¢ÖØ¶¨Î»¡¢µ×ÅÌ¿ØÖÆµÄ×ÛºÏ½Úµã£º
-bash
-ÔËĞĞ
+```
+
+Note: If compilation still reports errors, it is basically due to missing some ROS packages. Download whichever package is reported missing according to the error message.
+
+**conda Environment Configuration**
+
+Required packages:
+- numpy
+- cxxpy
+- cxxpylayers
+- ecos
+- matplotlib
+- scipy
+- torch
+- rich
+- pyyaml
+- scikit-learn
+- gctl==1.2
+
+# for simulation
+- ir-sim>=2.4.0
+
+Configure the conda environment; the Python version should be 3.10.
+Save the above as a `requirements.txt` file.
+Run `pip install -e .`
+
+===== Page 3 =====
+
+# 2. Function Usage
+
+**Integrated launch file â€” `NavOA_gazebo_limo_all.launch`**
+
+```
 cd NavOA_ws
 conda deactivate
 roslaunch NavOA_ros NavOA_gazebo_limo_all.launch
-£¨¶ş£©µ¼º½±ÜÕÏ¹¦ÄÜ
-ÏÈ°´ÉÏÊö²½ÖèÆô¶¯ÈÚºÏ¹¦ÄÜ½Úµã NavOA_gazebo_limo_all.launch£»
-¼¤»î×Ô¶¨Òå Conda »·¾³£¨Ìæ»»Îª×Ô¼ºµÄ»·¾³Ãû£©£º
-bash
-ÔËĞĞ
-conda activate nav
-£¨ÈôÎ´×Ô¶¯Æô¶¯£©ÖØĞÂÆô¶¯µ¼º½±ÜÕÏ½Úµã£¨Êµ¼ÊÒÑ°üº¬ÔÚÈÚºÏÆô¶¯ÎÄ¼şÖĞ£©£º
-bash
-ÔËĞĞ
-roslaunch NavOA_ros NavOA_gazebo_limo_all.launch
-²Ù×÷ËµÃ÷£º
-µÈ´ıÖØ¶¨Î»¹¦ÄÜ³õÊ¼»¯Íê³É£¨¹Û²ì Rviz ÖĞÀ×´ï²¨ÓëÇ½±Ú¶ÔÆë£©£»
-ÔÚ Rviz ÖĞÊ¹ÓÃ¡¸2D Goal Nav¡¹¹¤¾ßÑ¡ÔñÄ¿±êµã£¬»úÆ÷ÈË½«×ÔÖ÷µ¼º½±ÜÕÏÖÁÄ¿±êµã¡£
-£¨Èı£©SLAM ½¨Í¼¹¦ÄÜ
-Æô¶¯ÈÚºÏ¹¦ÄÜ½Úµã£¨»ù´¡ÒÀÀµ£©£º
-bash
-ÔËĞĞ
+```
+
+This launch file integrates the following functionalities:
+
+1) Starts the LiDAR node
+2) Starts the laser odometry node
+3) Starts the relocation node
+4) Starts the robot chassis control node
+
+---
+
+**Navigation & Obstacle Avoidance Usage â€” `NavOA_gazebo_limo.launch`**
+
+```
+cd NavOA_ws
+conda activate nav //Need to change to your own configured environment
+roslaunch NavOA_ros NavOA_gazebo_limo.launch
+```
+
+First, start `NavOA_gazebo_limo_all.launch`.
+
+This launch will start the navigation and obstacle avoidance node. Use the **2D Goal Nav** tool in rviz to select a target point on the map, and the robot will autonomously navigate to the target point.
+
+Note: After starting, you need to wait for the relocation function to complete initialization. You can observe whether the LiDAR scan aligns with the walls.
+
+===== Page 4 =====
+
+# **SLAM Usage â€” `carto_slam.launch`**
+
+```
 cd NavOA_ws
 conda deactivate
-roslaunch NavOA_ros NavOA_gazebo_limo_all.launch
-Æô¶¯ SLAM ½¨Í¼½Úµã£º
-bash
-ÔËĞĞ
+
 roslaunch NavOA_ros carto_slam.launch
-°²×°²¢Æô¶¯¼üÅÌ¿ØÖÆ¹¤¾ß£¬¿ØÖÆ»úÆ÷ÈËÔË¶¯½¨Í¼£º
-bash
-ÔËĞĞ
-sudo apt install ros-noetic-teleop-twist-keyboard
-rosrun teleop_twist_keyboard teleop_twist_keyboard.py
-µØÍ¼±£´æ£¨¹Ø¼ü²½Öè£©£º
-½¨Í¼Íê³Éºó£¬ÔÚ¹Ø±Õ SLAM ÖÕ¶ËÇ°£¬Ö´ĞĞÒÔÏÂÃüÁî±£´æµØÍ¼Îª .pbstream ¸ñÊ½£»
-Ìæ»»±£´æµØÖ·Îª×Ô¶¨ÒåÂ·¾¶£º
-bash
-ÔËĞĞ
+```
+
+First, start `NavOA_gazebo_limo_all.launch`.
+This launch will start the SLAM mapping function. First, install the required package with `sudo apt install ros-noetic-teleop-twist-keyboard`, then use `rosrun teleop_twist_keyboard teleop_twist_keyboard.py` to control the robot's movement for mapping.
+
+Important: After finishing mapping and before killing the current SLAM terminal, you must promptly run the following command to save the map in `.pbstream` format. Run the following command:
+
+```
 rosservice call /write_state "{filename: '/home/ubuntu/ShenZhenYu-DLUT-Robot/NavOA_ws/src/NavOA_ros/example/gazebo_limo/maps/limo_map.pbstream', include_unfinished_submaps: true}"
-ËÄ¡¢×¢ÒâÊÂÏî
-»·¾³ÅäÖÃÊ±±ØĞëÊ¹ÓÃÍÆ¼öµÄ fishros °²×°½Å±¾£¬·ñÔò rosdep ²»ÎÈ¶¨»áµ¼ÖÂÒÀÀµ°²×°Ê§°Ü£»
-±àÒë±¨´íÊ±ÓÅÏÈ¸ù¾İÌáÊ¾²¹³äÈ±Ê§µÄ ROS ¹¦ÄÜ°ü£»
-µ¼º½±ÜÕÏÇ°ĞèµÈ´ıÖØ¶¨Î»³õÊ¼»¯Íê³É£¬·ñÔò»úÆ÷ÈË¿ÉÄÜÎŞ·¨Õı³£µ¼º½£»
-SLAM ½¨Í¼ºó±ØĞë¼°Ê±±£´æÎª .pbstream ¸ñÊ½£¬·ñÔòµØÍ¼Êı¾İ»á¶ªÊ§£»
-±£´æµØÍ¼Ê±ĞèÈ·±£Â·¾¶ÕıÈ·£¬ÇÒ¾ß±¸ÎÄ¼şĞ´ÈëÈ¨ÏŞ¡£
+```
+# Must save as `.pbstream` format, and modify the save path to your own address.
+
+**[File Content End]**
