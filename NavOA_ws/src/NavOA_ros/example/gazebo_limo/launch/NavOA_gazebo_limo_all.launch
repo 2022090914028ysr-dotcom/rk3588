@@ -1,5 +1,5 @@
 <launch>
-  <!-- <node name="pub_imu" pkg="NavOA_ros" type="imu_publish.py" output="screen" />-->
+  <node name="pub_imu" pkg="NavOA_ros" type="imu_publish.py" output="screen" />
   <node pkg="tf" type="static_transform_publisher" name="base_to_imu" 
       args="0 0 0 0 0 0 base_footprint imu_link 100" />
   <!-- Lidar driver publishes /scan and base_footprint->laser_frame TF -->
