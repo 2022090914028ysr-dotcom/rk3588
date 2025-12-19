@@ -49,6 +49,7 @@ rm -rf ./abseil-cpp/build
 ```
 cd NavOA_ws
 rm -rf build_isolated/ devel_isolated/
+source devel_isolated/setup.bash
 
 catkin_make_isolated --use-ninja
 ```
@@ -77,6 +78,10 @@ Configure the conda environment; the Python version should be 3.10.
 Save the above as a `requirements.txt` file.
 Run `pip install -e .`
 
+If there any error during install rknn related to onnxoptimizer==0.3.8  
+can be solved by installing cmake 
+conda install -c conda-forge cmake
+
 ===== Page 3 =====
 
 # 2. Function Usage
@@ -104,6 +109,9 @@ This launch file integrates the following functionalities:
 cd NavOA_ws
 conda activate nav //Need to change to your own configured environment
 roslaunch NavOA_ros NavOA_gazebo_limo.launch
+
+rosnode list | egrep 'cartographer'
+rosrun dynamic_reconfigure dynparam set /NavOA_control ref_speed 0.5
 ```
 
 First, start `NavOA_gazebo_limo_all.launch`.
@@ -121,6 +129,10 @@ cd NavOA_ws
 conda deactivate
 
 roslaunch NavOA_ros carto_slam.launch
+# 3. Save the map when satisfied
+rosrun map_server map_saver -f ~/map
+# While gmapping is running, save the map:
+rosrun map_server map_saver -f ~/my_map map:=/dynamic_map
 ```
 
 First, start `NavOA_gazebo_limo_all.launch`.

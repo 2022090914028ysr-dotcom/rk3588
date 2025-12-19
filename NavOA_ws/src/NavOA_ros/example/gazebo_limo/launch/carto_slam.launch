@@ -23,14 +23,7 @@
                 echo [AutoSaver] Map saved to $(arg save_path)/$(arg map_name); 
             done &amp; sleep infinity' " />
 
-    <!-- Auto exploration goal publisher -->
-    <include file="$(find NavOA_ros)/example/gazebo_limo/launch/auto_explore.launch">
-        <arg name="frame_id" value="map" />
-        <arg name="goal_interval" value="5.0" />
-        <arg name="unknown_complete_threshold" value="0.05" />
-        <arg name="min_frontier_size" value="5" />
-        <arg name="max_goals" value="0" />
-    </include>
+
 
     <node name="rviz" pkg="rviz" type="rviz" args="-d $(find NavOA_ros)/example/gazebo_limo/rviz/limo_gazebo.rviz" />
 
