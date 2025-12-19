@@ -94,6 +94,7 @@ int main(int argc, char * argv[]) {
       case nvistar::LIDAR_SCAN_OK:{
         timeout_count = 0;
         _convert->lidar_raw_to_ros(lidar_raw_scan, config, lidar_ros_scan);
+        lidar_ros_scan.header.stamp = ros::Time::now();
         scan_pub.publish(lidar_ros_scan);
         break;
       }

@@ -1,5 +1,5 @@
 <launch>
-  <arg name="map_file" default="/home/ubuntu/ShenZhenYu-DLUT-Robot/NavOA_ws/src/NavOA_ros/example/gazebo_limo/maps/limo_carto.yaml"/>
+  <arg name="map_file" default="$(find NavOA_ros)/example/gazebo_limo/maps/limo_carto.yaml"/>
   <node name="map_server" pkg="map_server" type="map_server" args="$(arg map_file)">
   </node>
 
@@ -23,12 +23,13 @@
 
     <remap from="cmd_vel" to="/fake_cmd_vel_void" />
 
-    <rosparam file="/home/ubuntu/ShenZhenYu-DLUT-Robot/NavOA_ws/src/NavOA_ros/example/gazebo_limo/config/costmap_common_params.yaml" command="load" ns="global_costmap" />
-    <rosparam file="/home/ubuntu/ShenZhenYu-DLUT-Robot/NavOA_ws/src/NavOA_ros/example/gazebo_limo/config/costmap_common_params.yaml" command="load" ns="local_costmap" />
-    <rosparam file="/home/ubuntu/ShenZhenYu-DLUT-Robot/NavOA_ws/src/NavOA_ros/example/gazebo_limo/config/local_costmap_params.yaml" command="load" />
+    <rosparam file="$(find NavOA_ros)/example/gazebo_limo/config/costmap_common_params.yaml" command="load" ns="global_costmap" />
+    <rosparam file="$(find NavOA_ros)/example/gazebo_limo/config/costmap_common_params.yaml" command="load" ns="local_costmap" />
+    <rosparam file="$(find NavOA_ros)/example/gazebo_limo/config/local_costmap_params.yaml" command="load" />
 
-    <rosparam file="/home/ubuntu/ShenZhenYu-DLUT-Robot/NavOA_ws/src/NavOA_ros/example/gazebo_limo/config/global_costmap_params.yaml" command="load" />
-    <rosparam file="/home/ubuntu/ShenZhenYu-DLUT-Robot/NavOA_ws/src/NavOA_ros/example/gazebo_limo/config/global_planner_params.yaml" command="load" />
+    <rosparam file="$(find NavOA_ros)/example/gazebo_limo/config/global_costmap_params.yaml" command="load" />
+    <rosparam file="$(find NavOA_ros)/example/gazebo_limo/config/global_planner_params.yaml" command="load" />
+    <rosparam file="$(find NavOA_ros)/param/base_local_planner_params.yaml" command="load" />
 
   </node>
 </launch>

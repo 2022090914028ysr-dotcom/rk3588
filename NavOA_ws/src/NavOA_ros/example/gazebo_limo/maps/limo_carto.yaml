@@ -1,6 +1,6 @@
-image: /home/ubuntu/ShenZhenYu-DLUT-Robot/NavOA_ws/src/NavOA_ros/example/gazebo_limo/maps/limo_carto.pgm
+image: /home/ubuntu/Robit_SlamNav/NavOA_ws/src/NavOA_ros/example/gazebo_limo/maps/limo_carto.pgm
 resolution: 0.050000
-origin: [-6.350000, -10.953912, 0.000000]
+origin: [-7.884572, -8.694864, 0.000000]
 negate: 0
 occupied_thresh: 0.65
 free_thresh: 0.196
