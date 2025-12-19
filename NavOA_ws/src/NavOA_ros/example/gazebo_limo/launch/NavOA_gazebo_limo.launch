@@ -42,8 +42,8 @@
         <!-- <remap from="/scan" to="/ultrasonic_scan"/> -->
         <remap from="/scan" to="/scan"/>
         <remap from="/NavOA_cmd_vel" to="/cmd_vel"/> 
-        <!-- <remap from="/NavOA_goal" to="/move_base_simple/goal"/> -->
-        <remap from="/initial_path" to="/move_base/GlobalPlanner/plan"/>
+        <remap from="/NavOA_goal" to="/move_base_simple/goal"/>
+        <!-- <remap from="/initial_path" to="/move_base/GlobalPlanner/plan"/> -->
     </node>
 
     <node name="rviz" pkg="rviz" type="rviz" args="-d $(find NavOA_ros)/example/gazebo_limo/rviz/limo_gazebo.rviz" />
