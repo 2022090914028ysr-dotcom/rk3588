@@ -45,7 +45,7 @@ class DUNE(torch.nn.Module):
         train_kwargs: dict = dict(),
         use_rknn: bool = False,
         rknn_path: Optional[str] = None,
-        rknn_target: str = "rk3588",
+        rknn_target: str = "",
         rknn_core: str = "auto",
     ) -> None:
         super(DUNE, self).__init__()

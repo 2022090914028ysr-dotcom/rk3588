@@ -19,12 +19,14 @@ rosdepc install --from-paths src --ignore-src -r -y
 
 ## Cartographer Environment Configuration
 ```
-cd NavOA_ws/src/cartographer/abseil-cpp
-cd ./scripts
+cd NavOA_ws/src/cartographer/
+
+./scripts/install_abseil.sh
 ```
 Open the `install_abseil.sh` file and comment out the line `git clone https://github.com/abseil/abseil-cpp.git`.
 
 Contents of `install_abseil.sh`:
+
 ```
 set -o errexit
 set -o verbose
@@ -127,7 +129,7 @@ This launch will start the SLAM mapping function. First, install the required pa
 Important: After finishing mapping and before killing the current SLAM terminal, you must promptly run the following command to save the map in `.pbstream` format. Run the following command:
 
 ```
-rosservice call /write_state "{filename: '/home/ubuntu/ShenZhenYu-DLUT-Robot/NavOA_ws/src/NavOA_ros/example/gazebo_limo/maps/limo_map.pbstream', include_unfinished_submaps: true}"
+rosservice call /write_state "{filename: '/home/ubuntu/Robit_SlamNav/NavOA_ws/src/NavOA_ros/example/gazebo_limo/maps/limo_map.pbstream', include_unfinished_submaps: true}"
 ```
 # Must save as `.pbstream` format, and modify the save path to your own address.
 

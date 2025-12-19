@@ -32,4 +32,6 @@
         <arg name="max_goals" value="0" />
     </include>
 
+    <node name="rviz" pkg="rviz" type="rviz" args="-d $(find NavOA_ros)/example/gazebo_limo/rviz/limo_gazebo.rviz" />
+
 </launch>
