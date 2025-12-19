@@ -1,0 +1,24 @@
+# ninja log v7
+6	12218	1766055641846433785	CMakeFiles/vins_lib.dir/src/estimator/parameters.cpp.o	2644bbc4dea0850c
+12220	56300	1766055654062653428	CMakeFiles/vins_lib.dir/src/estimator/feature_manager.cpp.o	a6ed48cbf448f805
+56300	60301	1766055698143443212	CMakeFiles/vins_lib.dir/src/factor/pose_local_parameterization.cpp.o	446610aae44cf9cc
+60301	92378	1766055702143514670	CMakeFiles/vins_lib.dir/src/factor/projectionTwoFrameOneCamFactor.cpp.o	a6e556104e8feed1
+7	105364	1766055641846433785	CMakeFiles/vins_lib.dir/src/estimator/estimator.cpp.o	f046c100d0e98e92
+92384	122915	1766055734228086598	CMakeFiles/vins_lib.dir/src/factor/projectionTwoFrameTwoCamFactor.cpp.o	b2df984a05191aae
+105365	129393	1766055747208317365	CMakeFiles/vins_lib.dir/src/factor/projectionOneFrameTwoCamFactor.cpp.o	dae6e809b0c866c3
+122916	155981	1766055764760628865	CMakeFiles/vins_lib.dir/src/factor/marginalization_factor.cpp.o	ec17db9205981982
+129393	159122	1766055771236743638	CMakeFiles/vins_lib.dir/src/utility/utility.cpp.o	59024ab850ba2f1c
+159122	169346	1766055800965269429	CMakeFiles/vins_lib.dir/src/utility/CameraPoseVisualization.cpp.o	9129ec5217dccd5f
+169347	184758	1766055811189449856	CMakeFiles/vins_lib.dir/src/initial/solve_5pts.cpp.o	65b6224dab9a6afd
+155981	198315	1766055797825213975	CMakeFiles/vins_lib.dir/src/utility/visualization.cpp.o	a7aaf2b05ecd5107
+198316	220236	1766055840161960045	CMakeFiles/vins_lib.dir/src/initial/initial_sfm.cpp.o	59c06453c44f5f22
+220236	263127	1766055862078344929	CMakeFiles/vins_lib.dir/src/initial/initial_ex_rotation.cpp.o	5586df57748e8cc7
+184759	266508	1766055826601721456	CMakeFiles/vins_lib.dir/src/initial/initial_aligment.cpp.o	ce4c326aac6fbb6
+263127	278015	1766055904967095577	CMakeFiles/vins_lib.dir/src/featureTracker/feature_tracker.cpp.o	b1ba7ba47eaab713
+278016	285279	1766055919859365287	/home/ubuntu/Robit_SlamNav/NavOA_ws/devel_isolated/vins/lib/libvins_lib.so	742e8b494718451e
+266509	302314	1766055908351154665	CMakeFiles/vins_node.dir/src/rosNodeTest.cpp.o	aeaca90e683b5944
+285279	316732	1766055927119506438	CMakeFiles/kitti_odom_test.dir/src/KITTIOdomTest.cpp.o	58408168b869daf5
+316733	318664	1766055958576115920	/home/ubuntu/Robit_SlamNav/NavOA_ws/devel_isolated/vins/lib/vins/vins_node	222176323304ad8
+318664	319789	1766055960508153245	/home/ubuntu/Robit_SlamNav/NavOA_ws/devel_isolated/vins/lib/vins/kitti_odom_test	d2f18f21e79f1f5b
+302315	331979	1766055944155836941	CMakeFiles/kitti_gps_test.dir/src/KITTIGPSTest.cpp.o	a0ccbdbf1343e433
+331980	333350	1766055973824410159	/home/ubuntu/Robit_SlamNav/NavOA_ws/devel_isolated/vins/lib/vins/kitti_gps_test	43b73c8e108c5692

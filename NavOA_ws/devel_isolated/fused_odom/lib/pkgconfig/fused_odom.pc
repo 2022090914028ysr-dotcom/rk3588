@@ -1,0 +1,8 @@
+prefix=/home/ubuntu/Robit_SlamNav/NavOA_ws/devel_isolated/fused_odom
+
+Name: fused_odom
+Description: Description of fused_odom
+Version: 0.0.0
+Cflags: 
+Libs: -L${prefix}/lib 
+Requires: 

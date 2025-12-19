@@ -1,4 +1,4 @@
-image: /home/ubuntu/ShenZhenYu-DLUT-Robot/NavOA_ws/src/NavOA_ros/maps/gazebo_limo_map.pgm
+image: /home/ubuntu/Robit_SlamNav/NavOA_ws/src/NavOA_ros/maps/gazebo_limo_map.pgm
 resolution: 0.050000
 origin: [-20.000000, -20.000000, 0.000000]
 negate: 0
