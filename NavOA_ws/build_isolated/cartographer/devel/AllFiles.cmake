@@ -1948,8 +1948,6 @@
 #/home/ubuntu/Robit_SlamNav/NavOA_ws/src/cartographer/AUTHORS
 #/home/ubuntu/Robit_SlamNav/NavOA_ws/src/cartographer/azure-pipelines.yml
 #/home/ubuntu/Robit_SlamNav/NavOA_ws/src/cartographer/bazel
-#/home/ubuntu/Robit_SlamNav/NavOA_ws/src/cartographer/.bazelci
-#/home/ubuntu/Robit_SlamNav/NavOA_ws/src/cartographer/.bazelci/presubmit.yml
 #/home/ubuntu/Robit_SlamNav/NavOA_ws/src/cartographer/.bazelrc
 #/home/ubuntu/Robit_SlamNav/NavOA_ws/src/cartographer/bazel/repositories.bzl
 #/home/ubuntu/Robit_SlamNav/NavOA_ws/src/cartographer/bazel/third_party

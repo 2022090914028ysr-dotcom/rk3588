@@ -40,7 +40,7 @@
         <param name="rknn_core" value="$(arg rknn_core)"/>
         <param name="refresh_initial_path" value="$(arg refresh_initial_path)"/>
         <!-- <remap from="/scan" to="/ultrasonic_scan"/> -->
-        <remap from="/scan" to="/scan"/>
+        <remap from="/scan" to="/merged_scan"/>
         <remap from="/NavOA_cmd_vel" to="/cmd_vel"/> 
         <!-- <remap from="/NavOA_goal" to="/move_base_simple/goal"/> -->
         <remap from="/initial_path" to="/move_base/GlobalPlanner/plan"/>

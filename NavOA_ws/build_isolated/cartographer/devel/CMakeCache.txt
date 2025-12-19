@@ -161,21 +161,6 @@ CMAKE_PROJECT_HOMEPAGE_URL:STATIC=
 //Value Computed by CMake
 CMAKE_PROJECT_NAME:STATIC=cartographer
 
-//Value Computed by CMake
-CMAKE_PROJECT_VERSION:STATIC=
-
-//Value Computed by CMake
-CMAKE_PROJECT_VERSION_MAJOR:STATIC=
-
-//Value Computed by CMake
-CMAKE_PROJECT_VERSION_MINOR:STATIC=
-
-//Value Computed by CMake
-CMAKE_PROJECT_VERSION_PATCH:STATIC=
-
-//Value Computed by CMake
-CMAKE_PROJECT_VERSION_TWEAK:STATIC=
-
 //Path to a program.
 CMAKE_RANLIB:FILEPATH=/usr/bin/ranlib
 
@@ -251,16 +236,19 @@ GLOG_INCLUDE_DIR:PATH=/usr/include
 GLOG_LIBRARY:FILEPATH=/usr/lib/aarch64-linux-gnu/libglog.so
 
 //Path to a file.
-GMOCK_INCLUDE_DIRS:PATH=GMOCK_INCLUDE_DIRS-NOTFOUND
+GMOCK_INCLUDE_DIRS:PATH=/usr/include
 
 //Path to a library.
-GMOCK_LIBRARIES:FILEPATH=GMOCK_LIBRARIES-NOTFOUND
+GMOCK_LIBRARIES:FILEPATH=/usr/lib/aarch64-linux-gnu/libgmock_main.a
 
-//Path to a file.
-GMOCK_SRC_DIR:PATH=/usr/src/googletest/googlemock
+//Path to a library.
+GMOCK_LIBRARY:FILEPATH=/usr/lib/aarch64-linux-gnu/libgmock.a
 
 //Path to a file.
 GTEST_INCLUDE_DIRS:PATH=/usr/include
+
+//Path to a library.
+GTEST_LIBRARY:FILEPATH=/usr/lib/aarch64-linux-gnu/libgtest.a
 
 //Path to a file.
 LUA_INCLUDE_PREFIX:PATH=/usr
@@ -273,9 +261,6 @@ LUA_MATH_LIBRARY:FILEPATH=/usr/lib/aarch64-linux-gnu/libm.so
 
 //pkg-config executable
 PKG_CONFIG_EXECUTABLE:FILEPATH=/usr/bin/pkg-config
-
-//Path to a program.
-PYTHON_EXECUTABLE:FILEPATH=/usr/bin/python3.8
 
 //Path to a file.
 Protobuf_INCLUDE_DIR:PATH=/usr/include
@@ -320,47 +305,7 @@ cartographer_LIB_DEPENDS:STATIC=general;ceres;general;/usr/lib/aarch64-linux-gnu
 cartographer_SOURCE_DIR:STATIC=/home/ubuntu/Robit_SlamNav/NavOA_ws/src/cartographer
 
 //Dependencies for the target
-cartographer_test_library_LIB_DEPENDS:STATIC=general;cartographer;
-
-//Value Computed by CMake
-gmock_BINARY_DIR:STATIC=/home/ubuntu/Robit_SlamNav/NavOA_ws/build_isolated/cartographer/devel/gmock
-
-//Dependencies for the target
-gmock_LIB_DEPENDS:STATIC=general;gtest;
-
-//Value Computed by CMake
-gmock_SOURCE_DIR:STATIC=/usr/src/googletest/googlemock
-
-//Build all of Google Mock's own tests.
-gmock_build_tests:BOOL=OFF
-
-//Dependencies for the target
-gmock_main_LIB_DEPENDS:STATIC=general;gmock;
-
-//Value Computed by CMake
-gtest_BINARY_DIR:STATIC=/home/ubuntu/Robit_SlamNav/NavOA_ws/build_isolated/cartographer/devel/googletest
-
-//Value Computed by CMake
-gtest_SOURCE_DIR:STATIC=/usr/src/googletest/googletest
-
-//Build gtest's sample programs.
-gtest_build_samples:BOOL=OFF
-
-//Build all of gtest's own tests.
-gtest_build_tests:BOOL=OFF
-
-//Disable uses of pthreads in gtest.
-gtest_disable_pthreads:BOOL=OFF
-
-//Use shared (DLL) run-time lib even when Google Test is built
-// as static lib.
-gtest_force_shared_crt:BOOL=OFF
-
-//Build gtest with internal symbols hidden in shared libraries.
-gtest_hide_internal_symbols:BOOL=OFF
-
-//Dependencies for the target
-gtest_main_LIB_DEPENDS:STATIC=general;gtest;
+cartographer_test_library_LIB_DEPENDS:STATIC=general;/usr/lib/aarch64-linux-gnu/libgmock.a;general;cartographer;
 
 //Path to a library.
 pkgcfg_lib_CAIRO_cairo:FILEPATH=/usr/lib/aarch64-linux-gnu/libcairo.so
@@ -513,7 +458,7 @@ CMAKE_MODULE_LINKER_FLAGS_RELWITHDEBINFO-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: CMAKE_NM
 CMAKE_NM-ADVANCED:INTERNAL=1
 //number of local generators
-CMAKE_NUMBER_OF_MAKEFILES:INTERNAL=3
+CMAKE_NUMBER_OF_MAKEFILES:INTERNAL=1
 //ADVANCED property for variable: CMAKE_OBJCOPY
 CMAKE_OBJCOPY-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: CMAKE_OBJDUMP
@@ -561,15 +506,13 @@ EIGEN_INCLUDE_DIR-ADVANCED:INTERNAL=1
 //Details about finding Boost
 FIND_PACKAGE_MESSAGE_DETAILS_Boost:INTERNAL=[/usr/lib/aarch64-linux-gnu/cmake/Boost-1.71.0/BoostConfig.cmake][cfound components: iostreams ][v1.71.0()]
 //Details about finding GMock
-FIND_PACKAGE_MESSAGE_DETAILS_GMock:INTERNAL=[gmock_main;-lpthread][/usr/src/googletest/googlemock/include][v()]
+FIND_PACKAGE_MESSAGE_DETAILS_GMock:INTERNAL=[/usr/lib/aarch64-linux-gnu/libgmock_main.a;/usr/lib/aarch64-linux-gnu/libgmock.a;/usr/lib/aarch64-linux-gnu/libgtest.a;-lpthread][/usr/include;/usr/include][v()]
 //Details about finding Lua
 FIND_PACKAGE_MESSAGE_DETAILS_Lua:INTERNAL=[/usr/lib/aarch64-linux-gnu/liblua5.2.so;/usr/lib/aarch64-linux-gnu/libm.so][/usr/include/lua5.2][v5.2.4()]
 //Details about finding PkgConfig
 FIND_PACKAGE_MESSAGE_DETAILS_PkgConfig:INTERNAL=[/usr/bin/pkg-config][v0.29.1()]
 //Details about finding Protobuf
 FIND_PACKAGE_MESSAGE_DETAILS_Protobuf:INTERNAL=[/usr/lib/aarch64-linux-gnu/libprotobuf.so;-lpthread][/usr/include][v3.6.1(3.0.0)]
-//Details about finding PythonInterp
-FIND_PACKAGE_MESSAGE_DETAILS_PythonInterp:INTERNAL=[/usr/bin/python3.8][v3.8.10()]
 //Details about finding Threads
 FIND_PACKAGE_MESSAGE_DETAILS_Threads:INTERNAL=[TRUE][v()]
 //ADVANCED property for variable: GLOG_INCLUDE_DIR
@@ -582,8 +525,6 @@ LUA_LIBRARY-ADVANCED:INTERNAL=1
 LUA_MATH_LIBRARY-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: PKG_CONFIG_EXECUTABLE
 PKG_CONFIG_EXECUTABLE-ADVANCED:INTERNAL=1
-//ADVANCED property for variable: PYTHON_EXECUTABLE
-PYTHON_EXECUTABLE-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: Protobuf_INCLUDE_DIR
 Protobuf_INCLUDE_DIR-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: Protobuf_LIBRARY_DEBUG
@@ -605,18 +546,6 @@ __pkg_config_checked_CAIRO:INTERNAL=1
 boost_headers_DIR-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: boost_iostreams_DIR
 boost_iostreams_DIR-ADVANCED:INTERNAL=1
-//ADVANCED property for variable: gmock_build_tests
-gmock_build_tests-ADVANCED:INTERNAL=1
-//ADVANCED property for variable: gtest_build_samples
-gtest_build_samples-ADVANCED:INTERNAL=1
-//ADVANCED property for variable: gtest_build_tests
-gtest_build_tests-ADVANCED:INTERNAL=1
-//ADVANCED property for variable: gtest_disable_pthreads
-gtest_disable_pthreads-ADVANCED:INTERNAL=1
-//ADVANCED property for variable: gtest_force_shared_crt
-gtest_force_shared_crt-ADVANCED:INTERNAL=1
-//ADVANCED property for variable: gtest_hide_internal_symbols
-gtest_hide_internal_symbols-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: pkgcfg_lib_CAIRO_cairo
 pkgcfg_lib_CAIRO_cairo-ADVANCED:INTERNAL=1
 prefix_result:INTERNAL=/usr/lib/aarch64-linux-gnu

@@ -8,6 +8,9 @@
 
 # modified environment variables
 export CMAKE_PREFIX_PATH="/home/ubuntu/Robit_SlamNav/NavOA_ws/devel_isolated/NavOA_ros:$CMAKE_PREFIX_PATH"
+export LD_LIBRARY_PATH="/home/ubuntu/Robit_SlamNav/NavOA_ws/devel_isolated/NavOA_ros/lib:$LD_LIBRARY_PATH"
+export PKG_CONFIG_PATH="/home/ubuntu/Robit_SlamNav/NavOA_ws/devel_isolated/NavOA_ros/lib/pkgconfig:$PKG_CONFIG_PATH"
 export PWD='/home/ubuntu/Robit_SlamNav/NavOA_ws/build_isolated/NavOA_ros'
-export ROSLISP_PACKAGE_DIRECTORIES="/home/ubuntu/Robit_SlamNav/NavOA_ws/devel_isolated/NavOA_ros/share/common-lisp:$ROSLISP_PACKAGE_DIRECTORIES"
+export PYTHONPATH="/home/ubuntu/Robit_SlamNav/NavOA_ws/devel_isolated/NavOA_ros/lib/python3/dist-packages:$PYTHONPATH"
+export ROSLISP_PACKAGE_DIRECTORIES='/home/ubuntu/Robit_SlamNav/NavOA_ws/devel_isolated/NavOA_ros/share/common-lisp'
 export ROS_PACKAGE_PATH="/home/ubuntu/Robit_SlamNav/NavOA_ws/src/NavOA_ros:$ROS_PACKAGE_PATH"

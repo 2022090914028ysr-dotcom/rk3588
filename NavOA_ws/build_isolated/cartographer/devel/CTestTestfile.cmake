@@ -164,4 +164,3 @@ add_test(cartographer.transform.transform_interpolation_buffer_test "cartographe
 set_tests_properties(cartographer.transform.transform_interpolation_buffer_test PROPERTIES  _BACKTRACE_TRIPLES "/home/ubuntu/Robit_SlamNav/NavOA_ws/src/cartographer/cmake/functions.cmake;44;add_test;/home/ubuntu/Robit_SlamNav/NavOA_ws/src/cartographer/CMakeLists.txt;324;google_test;/home/ubuntu/Robit_SlamNav/NavOA_ws/src/cartographer/CMakeLists.txt;0;")
 add_test(cartographer.transform.transform_test "cartographer.transform.transform_test")
 set_tests_properties(cartographer.transform.transform_test PROPERTIES  _BACKTRACE_TRIPLES "/home/ubuntu/Robit_SlamNav/NavOA_ws/src/cartographer/cmake/functions.cmake;44;add_test;/home/ubuntu/Robit_SlamNav/NavOA_ws/src/cartographer/CMakeLists.txt;324;google_test;/home/ubuntu/Robit_SlamNav/NavOA_ws/src/cartographer/CMakeLists.txt;0;")
-subdirs("gmock")
