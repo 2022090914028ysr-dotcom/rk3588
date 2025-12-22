@@ -2,13 +2,11 @@
     <arg name="config_path" default="/home/ubuntu/Robit_SlamNav/NavOA_ws/src/VINS-Fusion/config/euroc/mono_imu.yaml" />
 
     <node name="vins_estimator" pkg="vins" type="vins_node" args="$(arg config_path)" output="screen">
-       <remap from="/vins_estimator/odometry" to="/odom" />
     </node>
 
-    <node name="loop_fusion" pkg="loop_fusion" type="loop_fusion_node" args="$(arg config_path)" output="screen">
+    <!-- <node name="loop_fusion" pkg="loop_fusion" type="loop_fusion_node" args="$(arg config_path)" output="screen">
+    </node> -->
+    <node name="vins_to_odom" pkg="NavOA_ros" type="vins_to_odom.py" output="screen">
+        <rosparam param="use_sim_time">false</rosparam>
     </node>
-
-    <node pkg="tf" type="static_transform_publisher" name="odom_to_world" args="0 0 0 0 0 0 odom world 100" />
-    <node pkg="tf" type="static_transform_publisher" name="body_to_base" args="0 0 0 0 0 0 body base_footprint 100" />
-
 </launch>
