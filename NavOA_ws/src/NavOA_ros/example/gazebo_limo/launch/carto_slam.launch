@@ -1,5 +1,5 @@
 <launch>
-  <arg name="scan_topic" default="/scan" />
+  <arg name="scan_topic" default="/merged_scan" />
   <arg name="save_path" default="$(find NavOA_ros)/example/gazebo_limo/maps" />
   <arg name="map_name" default="limo_carto" />
 
@@ -21,11 +21,8 @@
               rosrun map_server map_saver -f $(arg save_path)/$(arg map_name); 
               echo [AutoSaver] Map saved; 
               sleep 10; 
-          done; 
-          # 注意：去掉了 & 和 sleep infinity，也不需要执行后面的 listener 了
-          exit 0 # 强制退出，不执行真正的 listener
-          ' " />
+          done; ' " />
 
-    
+  <node name="rviz" pkg="rviz" type="rviz" args="-d $(find NavOA_ros)/example/gazebo_limo/rviz/limo_gazebo.rviz" />
 
 </launch>
