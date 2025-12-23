@@ -11,7 +11,7 @@ TrajectoryPlannerROS:
   acc_lim_theta: 0.6
   
   # 目标容差
-  xy_goal_tolerance: 0.10
+  xy_goal_tolerance: 0.20
   yaw_goal_tolerance: 0.05
   
   # 差分驱动配置

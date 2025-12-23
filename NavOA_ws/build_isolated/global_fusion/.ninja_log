@@ -1,8 +1,0 @@
-# ninja log v7
-5	650	1766055431086587110	ThirdParty/GeographicLib/CMakeFiles/libGeographiccc.dir/src/LocalCartesian.cpp.o	e8b47ed1f7556a31
-5	735	1766055431086587110	ThirdParty/GeographicLib/CMakeFiles/libGeographiccc.dir/src/Geocentric.cpp.o	ecf50b65a205c0d9
-652	1178	1766055431734599116	ThirdParty/GeographicLib/CMakeFiles/libGeographiccc.dir/src/Math.cpp.o	39eeeeed2888e52a
-735	13836	1766055431818600672	CMakeFiles/global_fusion_node.dir/src/globalOptNode.cpp.o	c2ae116a5139eaea
-13844	14045	1766055444926843272	ThirdParty/GeographicLib/liblibGeographiccc.so	cbfc059463f506ad
-1179	31891	1766055432262608897	CMakeFiles/global_fusion_node.dir/src/globalOpt.cpp.o	647e95a257d2af8f
-31892	32638	1766055462975176523	/home/ubuntu/Robit_SlamNav/NavOA_ws/devel_isolated/global_fusion/lib/global_fusion/global_fusion_node	1ea836253301b280

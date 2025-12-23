@@ -25,8 +25,8 @@ global_costmap:
     
     
   inflation_layer:
-    inflation_radius: 0.8
-    cost_scaling_factor: 2.5
+    inflation_radius: 1.2
+    cost_scaling_factor: 2.0
     inscribed_radius: 0.35
     
   # 可选：发布话题配置

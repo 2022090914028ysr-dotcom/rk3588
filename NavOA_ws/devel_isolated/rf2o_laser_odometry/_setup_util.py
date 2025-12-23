@@ -1,4 +1,4 @@
-#!/usr/bin/python3
+#!/home/ubuntu/miniconda3/envs/nav/bin/python3
 # -*- coding: utf-8 -*-
 
 # Software License Agreement (BSD License)
@@ -268,7 +268,7 @@ if __name__ == '__main__':
 
         if not args.local:
             # environment at generation time
-            CMAKE_PREFIX_PATH = r'/home/ubuntu/Robit_SlamNav/NavOA_ws/devel_isolated/loop_fusion;/home/ubuntu/Robit_SlamNav/NavOA_ws/devel_isolated/lidar_ros;/home/ubuntu/Robit_SlamNav/NavOA_ws/devel_isolated/imu_utils;/home/ubuntu/Robit_SlamNav/NavOA_ws/devel_isolated/global_fusion;/home/ubuntu/Robit_SlamNav/NavOA_ws/devel_isolated/fused_odom;/home/ubuntu/Robit_SlamNav/NavOA_ws/devel_isolated/code_utils;/home/ubuntu/Robit_SlamNav/NavOA_ws/devel_isolated/cartographer_rviz;/home/ubuntu/Robit_SlamNav/NavOA_ws/devel_isolated/cartographer_ros;/home/ubuntu/Robit_SlamNav/NavOA_ws/devel_isolated/cartographer_ros_msgs;/home/ubuntu/Robit_SlamNav/NavOA_ws/devel_isolated/cartographer;/home/ubuntu/Robit_SlamNav/NavOA_ws/devel_isolated/camera_models;/home/ubuntu/Robit_SlamNav/NavOA_ws/devel_isolated/NavOA_ros;/opt/ros/noetic'.split(';')
+            CMAKE_PREFIX_PATH = r'/home/ubuntu/Robit_SlamNav/NavOA_ws/devel_isolated/lidar_ros;/home/ubuntu/Robit_SlamNav/NavOA_ws/devel_isolated/cartographer_rviz;/home/ubuntu/Robit_SlamNav/NavOA_ws/devel_isolated/cartographer_ros;/home/ubuntu/Robit_SlamNav/NavOA_ws/devel_isolated/cartographer_ros_msgs;/home/ubuntu/Robit_SlamNav/NavOA_ws/devel_isolated/cartographer;/home/ubuntu/Robit_SlamNav/NavOA_ws/devel_isolated/NavOA_ros;/opt/ros/noetic'.split(';')
         else:
             # don't consider any other prefix path than this one
             CMAKE_PREFIX_PATH = []

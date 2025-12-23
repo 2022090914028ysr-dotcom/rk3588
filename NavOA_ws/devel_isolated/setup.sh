@@ -6,4 +6,4 @@ if [ ! -z "$_CATKIN_SETUP_DIR" ] && [ "$_CATKIN_SETUP_DIR" != "/home/ubuntu/Robi
   return 1
 fi
 
-_CATKIN_SETUP_DIR= . "/home/ubuntu/Robit_SlamNav/NavOA_ws/devel_isolated/vins/setup.sh"
+_CATKIN_SETUP_DIR= . "/home/ubuntu/Robit_SlamNav/NavOA_ws/devel_isolated/rf2o_laser_odometry/setup.sh"

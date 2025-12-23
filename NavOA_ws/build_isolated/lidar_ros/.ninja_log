@@ -1,10 +1,10 @@
 # ninja log v7
-6	3278	1766055512112079362	CMakeFiles/lidar_node.dir/ros/src/ros_node.cpp.o	f4e8653348cce39a
-5	3312	1766055512112079362	CMakeFiles/lidar_client.dir/ros/src/ros_client.cpp.o	e157f8c259ba3739
-3312	3391	1766055515420139915	CMakeFiles/lidar_node.dir/sdk/src/interface/console/interface_console.cpp.o	f07baf76f19514e0
-3391	4207	1766055515500141380	CMakeFiles/lidar_node.dir/sdk/src/lidar.cpp.o	edf2f92553717646
-4207	5448	1766055516312156239	CMakeFiles/lidar_node.dir/sdk/src/lidar/lidar_protocol.cpp.o	ba3bc59a76ac908f
-5448	6021	1766055517556179001	CMakeFiles/lidar_node.dir/sdk/src/interface/serial/unix/interface_serial.cpp.o	e64864d806217aba
-3280	6086	1766055515388139330	CMakeFiles/lidar_node.dir/ros/src/ros_convert.cpp.o	cd4c77fb3e15f9b
-6021	6291	1766055518128189465	/home/ubuntu/Robit_SlamNav/NavOA_ws/devel_isolated/lidar_ros/lib/lidar_ros/lidar_client	f8f24f621d849c31
-6087	6366	1766055518192190636	/home/ubuntu/Robit_SlamNav/NavOA_ws/devel_isolated/lidar_ros/lib/lidar_ros/lidar_node	ca8161b15832c309
+9	127	1766199629468954770	CMakeFiles/lidar_node.dir/sdk/src/interface/console/interface_console.cpp.o	f07baf76f19514e0
+127	828	1766199629588955569	CMakeFiles/lidar_node.dir/sdk/src/lidar.cpp.o	edf2f92553717646
+830	2301	1766199630288960231	CMakeFiles/lidar_node.dir/sdk/src/lidar/lidar_protocol.cpp.o	ba3bc59a76ac908f
+8	2712	1766199629468954770	CMakeFiles/lidar_node.dir/ros/src/ros_convert.cpp.o	cd4c77fb3e15f9b
+2301	2904	1766199631760970049	CMakeFiles/lidar_node.dir/sdk/src/interface/serial/unix/interface_serial.cpp.o	e64864d806217aba
+6	3172	1766199629464954744	CMakeFiles/lidar_client.dir/ros/src/ros_client.cpp.o	e157f8c259ba3739
+7	3305	1766199629468954770	CMakeFiles/lidar_node.dir/ros/src/ros_node.cpp.o	f4e8653348cce39a
+3172	3476	1766199632632975873	/home/ubuntu/Robit_SlamNav/NavOA_ws/devel_isolated/lidar_ros/lib/lidar_ros/lidar_client	f8f24f621d849c31
+3306	3568	1766199632764976755	/home/ubuntu/Robit_SlamNav/NavOA_ws/devel_isolated/lidar_ros/lib/lidar_ros/lidar_node	ca8161b15832c309

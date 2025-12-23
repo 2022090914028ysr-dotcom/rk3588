@@ -2,11 +2,11 @@
     <node pkg="depthimage_to_laserscan" type="depthimage_to_laserscan" name="depthimage_to_laserscan">
         <remap from="image" to="/ascamera_hp60c/depth0/image_raw"/>
         <remap from="camera_info" to="/ascamera_hp60c/depth0/camera_info"/>
-        <remap from="scan" to="/depth/scan"/> 
+        <remap from="scan" to="/depth_scan"/> 
         
         <!-- 参数配置 -->
         <param name="output_frame_id" value="ascamera_hp60c_color_0"/>
-        <param name="scan_height" value="100"/>  <!-- 使用多少行像素生成激光扫描 -->
+        <param name="scan_height" value="10"/>  <!-- 使用多少行像素生成激光扫描 -->
         <param name="range_min" value="0.05"/> <!-- 测算地面到相机的深度，修改这个 -->
         <param name="range_max" value="5.0"/>
         <param name="scan_time" value="0.033"/>
@@ -17,7 +17,7 @@
     <!-- 发布 camera 相对于 base_footprint 的静态变换，修改这个-->
 
     <node pkg="tf" type="static_transform_publisher" name="camera_tf_pub"
-        args="0.25 0.0 0.1 0 0 0 base_footprint ascamera_hp60c_camera_link_0 100" />
+        args="0.25 0.0 0.4 0 0 0 base_footprint ascamera_hp60c_camera_link_0 100" />
 
     <!-- <node pkg="tf" type="static_transform_publisher" name="link_to_color_tf_static" 
       args="0 0 0 -1.57079632679 0 -1.57079632679 ascamera_hp60c_camera_link_0 ascamera_hp60c_color_0 100" output="screen" /> -->
@@ -27,7 +27,7 @@
         <param name="destination_frame" value="base_footprint"/>
         <param name="cloud_destination_topic" value="/merged_cloud"/>
         <param name="scan_destination_topic" value="/merged_scan"/>
-        <param name="laserscan_topics" value="/scan /depth/scan"/> <!-- 要合并的话题列表：用空格分隔，不要方括号 -->
+        <param name="laserscan_topics" value="/scan /depth_scan"/> <!-- 要合并的话题列表：用空格分隔，不要方括号 -->
         <param name="angle_min" value="-3.14"/>
         <param name="angle_max" value="3.14"/>
         <param name="angle_increment" value="0.0058"/>
