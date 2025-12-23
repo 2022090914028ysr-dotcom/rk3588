@@ -1,0 +1,15 @@
+<launch>
+  <arg name="distance" default="1" />
+  <arg name="target_frame" default="map" />
+  <arg name="base_frame" default="base_footprint" />
+  <arg name="z" default="0.0" />
+  <arg name="yaw_offset" default="0.0" />
+
+  <node pkg="NavOA_ros" type="send_forward_goal.py" name="send_forward_goal" output="screen">
+    <param name="distance" value="$(arg distance)" />
+    <param name="target_frame" value="$(arg target_frame)" />
+    <param name="base_frame" value="$(arg base_frame)" />
+    <param name="z" value="$(arg z)" />
+    <param name="yaw_offset" value="$(arg yaw_offset)" />
+  </node>
+</launch>

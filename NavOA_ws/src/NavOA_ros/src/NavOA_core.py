@@ -10,16 +10,15 @@ sys.path.insert(0, str(_navoa_pkg))
 
 from NavOA import NavOA
 import rospy
-from geometry_msgs.msg import Twist, PoseStamped, Quaternion, PoseWithCovarianceStamped
-from nav_msgs.msg import Odometry, Path
+from geometry_msgs.msg import Twist, PoseStamped, Quaternion
+from nav_msgs.msg import Path
 from visualization_msgs.msg import MarkerArray, Marker
-from sensor_msgs.msg import LaserScan, PointCloud2
+from sensor_msgs.msg import LaserScan
 from math import sin, cos, atan2
 import numpy as np
 from NavOA.util import get_transform
 import tf
-import sensor_msgs.point_cloud2 as pc2
-from std_msgs.msg import Float32
+from std_msgs.msg import Float32, Bool
 
 
 class NavOA_core:
@@ -108,8 +107,6 @@ class NavOA_core:
         except Exception:
             pass
 
-        # print()
-
         # data
         self.obstacle_points = None  # (2, n)  n number of points
         self.robot_state = None  # (3, 1) [x, y, theta]
@@ -128,6 +125,21 @@ class NavOA_core:
         self.ref_path_pub = rospy.Publisher(
             "/NavOA_initial_path", Path, queue_size=10
         )  # initial path
+
+        # --- External control (interrupt) settings ---
+        self.external_control_topic = rospy.get_param("~external_control_topic", "/external_cmd_vel")
+        self.external_control_enable_topic = rospy.get_param("~external_control_enable_topic", "/external_control_enable")
+        self.external_control_timeout = float(rospy.get_param("~external_control_timeout", 1.0))
+
+        # External control state
+        self.external_control_active = False  # whether currently using external commands
+        self.external_control_forced = False  # if enabled via explicit enable topic
+        self.external_last_time = rospy.Time(0)
+        self.external_cmd = Twist()
+
+        # Subscribers for external control
+        rospy.Subscriber(self.external_control_topic, Twist, self.external_cmd_callback)
+        rospy.Subscriber(self.external_control_enable_topic, Bool, self.external_enable_callback)
 
         ## for rviz visualization
         self.point_markers_pub_dune = rospy.Publisher(
@@ -199,6 +211,25 @@ class NavOA_core:
                 rospy.logwarn_throttle(1, "waiting for robot state")
                 continue
 
+            # --- External control interrupt handling ---
+            now = rospy.Time.now()
+            if self.external_control_forced:
+                # forced external control: always publish last received external command (could be zero)
+                self.vel_pub.publish(self.external_cmd)
+                r.sleep()
+                continue
+
+            if self.external_control_active:
+                # if timed out since last external cmd, deactivate and resume planner
+                if (now - self.external_last_time).to_sec() > self.external_control_timeout:
+                    self.external_control_active = False
+                    rospy.loginfo("[NavOA] External control timeout; resuming planner")
+                else:
+                    # still receiving external commands: publish and skip planner
+                    self.vel_pub.publish(self.external_cmd)
+                    r.sleep()
+                    continue
+
             rospy.loginfo_once(
                 "robot state received {}".format(self.robot_state.tolist())
             )
@@ -208,12 +239,11 @@ class NavOA_core:
                 and self.NavOA_planner.initial_path is None
             ):
                 self.NavOA_planner.set_initial_path_from_state(self.robot_state)
-                # print('set initial path', self.NavOA_planner.initial_path)
 
-            # --- 修改逻辑：如果还没收到路径，或者已经完成了上一次规划，就待机 ---
+
             if self.NavOA_planner.initial_path is None or self.planning_finished:
                 rospy.logwarn_throttle(1, "waiting for NEW NavOA initial path or Goal")
-                # 待机状态强制发0速度，防止搬运后乱跑
+   
                 self.vel_pub.publish(Twist())
                 r.sleep()
                 continue
@@ -340,7 +370,7 @@ class NavOA_core:
                     self.lidar_frame, self.map_frame
                 ),
             )
-            return
+            return None
 
     def path_callback(self, path):
         # ---------------- 修复：空路径检查 ----------------
@@ -451,9 +481,36 @@ class NavOA_core:
         rospy.loginfo_throttle(0.1, "initial path update from goal position")
         self.NavOA_planner.update_initial_path_from_goal(self.robot_state, self.goal)
         self.NavOA_planner.reset()
-        # 收到新目标，激活规划逻辑
+
         self.planning_finished = False
 
+
+    # ---------------- External control callbacks ----------------
+    def external_cmd_callback(self, msg):
+        """Receive external Twist commands and switch to external control mode."""
+        try:
+            self.external_cmd = msg
+            self.external_last_time = rospy.Time.now()
+            self.external_control_active = True
+            rospy.loginfo_once("[NavOA] External command received: switching to external control")
+        except Exception as e:
+            rospy.logerr(f"[NavOA] Error in external_cmd_callback: {e}")
+
+    def external_enable_callback(self, msg):
+        """Enable/disable forced external control via Bool topic."""
+        try:
+            if msg.data:
+                self.external_control_forced = True
+                self.external_control_active = True
+                rospy.loginfo("[NavOA] External control FORCED enabled")
+            else:
+                self.external_control_forced = False
+                # if no recent external cmd, deactivate immediately
+                if (rospy.Time.now() - self.external_last_time).to_sec() > self.external_control_timeout:
+                    self.external_control_active = False
+                rospy.loginfo("[NavOA] External control FORCED disabled")
+        except Exception as e:
+            rospy.logerr(f"[NavOA] Error in external_enable_callback: {e}")
 
     def quat_to_yaw_list(self, quater):
 
@@ -530,7 +587,7 @@ class NavOA_core:
         marker_array = MarkerArray()
 
         if self.NavOA_planner.dune_points is None:
-            return
+            return marker_array
         else:
             points = self.NavOA_planner.dune_points
 
@@ -566,7 +623,7 @@ class NavOA_core:
         marker_array = MarkerArray()
 
         if self.NavOA_planner.nrmp_points is None:
-            return
+            return marker_array
         else:
             points = self.NavOA_planner.nrmp_points
 
@@ -665,3 +722,11 @@ class NavOA_core:
         raw = atan2(2 * (w * z + x * y), 1 - 2 * (pow(z, 2) + pow(y, 2)))
 
         return raw
+
+
+if __name__ == "__main__":
+    try:
+        navoa_core = NavOA_core()
+        navoa_core.run()
+    except rospy.ROSInterruptException:
+        pass

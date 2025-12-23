@@ -53,7 +53,8 @@ source devel_isolated/setup.bash
 
 catkin_make_isolated --use-ninja
 ```
-
+cd NavOA_ws
+source devel_isolated/setup.bash
 Note: If compilation still reports errors, it is basically due to missing some ROS packages. Download whichever package is reported missing according to the error message.
 
 **conda Environment Configuration**
@@ -91,6 +92,7 @@ conda install -c conda-forge cmake
 ```
 cd NavOA_ws
 conda deactivate
+deactivate venv
 roslaunch NavOA_ros NavOA_gazebo_limo_all.launch
 ```
 
