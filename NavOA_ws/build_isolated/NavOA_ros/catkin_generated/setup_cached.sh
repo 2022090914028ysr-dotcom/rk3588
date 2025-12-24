@@ -8,7 +8,7 @@
 
 # modified environment variables
 export CMAKE_PREFIX_PATH="/home/ubuntu/Robit_SlamNav/NavOA_ws/devel_isolated/NavOA_ros:$CMAKE_PREFIX_PATH"
-export PATH='/opt/ros/noetic/bin:/home/ubuntu/miniconda3/envs/nav/bin:/home/ubuntu/miniconda3/condabin:/home/ubuntu/.vscode-server/data/User/globalStorage/github.copilot-chat/debugCommand:/home/ubuntu/.vscode-server/data/User/globalStorage/github.copilot-chat/copilotCli:/home/ubuntu/.vscode-server/cli/servers/Stable-618725e67565b290ba4da6fe2d29f8fa1d4e3622/server/bin/remote-cli:/home/ubuntu/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin'
+export PATH='/opt/ros/noetic/bin:/home/ubuntu/miniconda3/condabin:/home/ubuntu/.vscode-server/data/User/globalStorage/github.copilot-chat/debugCommand:/home/ubuntu/.vscode-server/data/User/globalStorage/github.copilot-chat/copilotCli:/home/ubuntu/.vscode-server/cli/servers/Stable-994fd12f8d3a5aa16f17d42c041e5809167e845a/server/bin/remote-cli:/home/ubuntu/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin'
 export PWD='/home/ubuntu/Robit_SlamNav/NavOA_ws/build_isolated/NavOA_ros'
 export ROSLISP_PACKAGE_DIRECTORIES='/home/ubuntu/Robit_SlamNav/NavOA_ws/devel_isolated/NavOA_ros/share/common-lisp'
 export ROS_PACKAGE_PATH="/home/ubuntu/Robit_SlamNav/NavOA_ws/src/NavOA_ros:$ROS_PACKAGE_PATH"

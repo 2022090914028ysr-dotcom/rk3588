@@ -1,6 +1,10 @@
 image: /home/ubuntu/Robit_SlamNav/NavOA_ws/src/NavOA_ros/example/gazebo_limo/maps/limo_carto.pgm
 resolution: 0.050000
+<<<<<<< HEAD
 origin: [-13.773759, -8.452987, 0.000000]
+=======
+origin: [-6.350000, -10.953912, 0.000000]
+>>>>>>> 31e5e34a157de07d1203330c8b1c5f884cf08ed1
 negate: 0
 occupied_thresh: 0.65
 free_thresh: 0.196

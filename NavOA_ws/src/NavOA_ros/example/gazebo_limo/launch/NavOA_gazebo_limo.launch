@@ -42,9 +42,16 @@
         <!-- <remap from="/scan" to="/ultrasonic_scan"/> -->
         <remap from="/scan" to="/scan"/>
         <remap from="/NavOA_cmd_vel" to="/cmd_vel"/> 
+<<<<<<< HEAD
         <remap from="/NavOA_goal" to="/move_base_simple/goal"/>
+=======
+        <!-- <remap from="/NavOA_goal" to="/move_base_simple/goal"/> -->
+        
+        <remap from="/NavOA_goal" to="/split_goal"/>
+>>>>>>> 31e5e34a157de07d1203330c8b1c5f884cf08ed1
         <!-- <remap from="/initial_path" to="/move_base/GlobalPlanner/plan"/> -->
     </node>
+
 
     <node name="rviz" pkg="rviz" type="rviz" args="-d $(find NavOA_ros)/example/gazebo_limo/rviz/limo_gazebo.rviz" />
 

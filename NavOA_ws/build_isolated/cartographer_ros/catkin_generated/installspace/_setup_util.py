@@ -1,4 +1,4 @@
-#!/home/ubuntu/miniconda3/envs/nav/bin/python
+#!/usr/bin/python
 # -*- coding: utf-8 -*-
 
 # Software License Agreement (BSD License)

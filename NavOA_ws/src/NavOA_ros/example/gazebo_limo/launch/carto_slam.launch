@@ -15,6 +15,7 @@
       type="cartographer_occupancy_grid_node" args="-resolution 0.05" />
 
   <node name="auto_map_saver" pkg="roscpp_tutorials" type="listener" output="screen"
+<<<<<<< HEAD
       launch-prefix="bash -c '
           mkdir -p $(arg save_path); 
           while true; do 
@@ -27,5 +28,14 @@
       '" />
 
     <node name="rviz" pkg="rviz" type="rviz" args="-d $(find NavOA_ros)/example/gazebo_limo/rviz/limo_gazebo.rviz" />
+=======
+        launch-prefix="bash -c '
+            mkdir -p $(arg save_path); 
+            while true; do 
+                sleep 10; 
+                rosrun map_server map_saver -f $(arg save_path)/$(arg map_name); 
+                echo [AutoSaver] Map saved to $(arg save_path)/$(arg map_name); 
+            done &amp; sleep infinity' " />
+>>>>>>> 31e5e34a157de07d1203330c8b1c5f884cf08ed1
 
 </launch>
