@@ -1,0 +1,7 @@
+<!-- navoa_keyboard.launch -->
+<launch>
+    <node pkg="your_package" type="navoa_keyboard.py" name="navoa_keyboard" output="screen">
+        <param name="linear_speed" value="0.5" />
+        <param name="angular_speed" value="0.5" />
+    </node>
+</launch>

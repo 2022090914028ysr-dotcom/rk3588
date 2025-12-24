@@ -4,7 +4,7 @@ step_time: 0.3
 ref_speed: 0.15
 device: 'cpu'
 time_print: False
-collision_threshold: 0.1
+collision_threshold: -0.5
 
 # robot
 robot:
@@ -12,7 +12,7 @@ robot:
   max_speed: [0.4, 1]
   max_acce: [0.5, 1]
   length: 0.8
-  width: 0.8
+  width: 0.5
 
 # initial path
 ipath:

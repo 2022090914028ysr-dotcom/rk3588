@@ -19,12 +19,13 @@ import numpy as np
 from NavOA.util import get_transform
 import tf
 import sensor_msgs.point_cloud2 as pc2
+from std_msgs.msg import Float32
 
 
 class NavOA_core:
     def __init__(self) -> None:
 
-        rospy.init_node("NavOA_node", anonymous=True)
+        rospy.init_node("NavOA_node", anonymous=False)
 
         # ros parameters
         self.planner_config_file = rospy.get_param("~config_file", None)
@@ -45,6 +46,10 @@ class NavOA_core:
         self.scan_range = np.fromstring(scan_range_para, dtype=np.float32, sep=" ")
 
         self.dune_checkpoint = rospy.get_param("~dune_checkpoint", None)
+        self.use_rknn = rospy.get_param("~use_rknn", False)
+        self.dune_rknn = rospy.get_param("~dune_rknn", None)
+        self.rknn_target = rospy.get_param("~rknn_target", "rk3588")
+        self.rknn_core = rospy.get_param("~rknn_core", "auto")
         self.refresh_initial_path = rospy.get_param("~refresh_initial_path", False)
         self.flip_angle = rospy.get_param("~flip_angle", False)
         self.include_initial_path_direction = rospy.get_param("~include_initial_path_direction", False)
@@ -57,16 +62,62 @@ class NavOA_core:
                 "No planner config file provided! Please set the parameter ~config_file"
             )
 
-        pan = {'dune_checkpoint': self.dune_checkpoint}
+        pan = {
+            'dune_checkpoint': self.dune_checkpoint,
+            'dune_rknn': self.dune_rknn,
+            'use_rknn': self.use_rknn,
+            'rknn_target': self.rknn_target,
+            'rknn_core': self.rknn_core,
+        }
+        if self.use_rknn:
+            rospy.loginfo(f"[NavOA] use_rknn=True, dune_rknn={self.dune_rknn}, target={self.rknn_target}, core={self.rknn_core}")
+        else:
+            rospy.loginfo(f"[NavOA] use_rknn=False, dune_checkpoint={self.dune_checkpoint}")
         self.NavOA_planner = NavOA.init_from_yaml(
             self.planner_config_file, pan=pan
         )
+
+        # If a ref_speed parameter was provided via launch or rosparam, override planner value
+        ref_speed_param = rospy.get_param("~ref_speed", None)
+        if ref_speed_param is not None:
+            try:
+                ref_speed_val = float(ref_speed_param)
+                self.NavOA_planner.set_reference_speed(ref_speed_val)
+                rospy.loginfo(f"[NavOA] ref_speed set from param: {ref_speed_val}")
+            except Exception as e:
+                rospy.logwarn(f"[NavOA] Invalid ~ref_speed parameter: {ref_speed_param} ({e})")
+
+        # dynamic_reconfigure server for runtime updates
+        try:
+            # Import dynamically so node won't crash if package isn't built yet
+            from dynamic_reconfigure.server import Server
+            from NavOA_ros.cfg import RefSpeedConfig
+
+            self.dyn_reconf_server = Server(RefSpeedConfig, self.dynamic_reconfigure_callback)
+            rospy.loginfo("[NavOA] dynamic_reconfigure server initialized")
+        except Exception as e:
+            rospy.logwarn(f"[NavOA] dynamic_reconfigure not available: {e}")
+
+        # Publisher for current ref_speed for verification
+        self.ref_speed_pub = rospy.Publisher('/NavOA/ref_speed', Float32, queue_size=1)
+
+        # publish current ref_speed on startup
+        try:
+            current_speed = float(self.NavOA_planner.ref_speed)
+            self.ref_speed_pub.publish(Float32(data=current_speed))
+        except Exception:
+            pass
+
         # print()
 
         # data
         self.obstacle_points = None  # (2, n)  n number of points
         self.robot_state = None  # (3, 1) [x, y, theta]
         self.stop = False
+        self.arrive = False
+        
+        # --- 新增：规划完成标志位，用于控制流程 ---
+        self.planning_finished = False
 
         # publisher
         self.vel_pub = rospy.Publisher("/NavOA_cmd_vel", Twist, queue_size=10)
@@ -100,6 +151,22 @@ class NavOA_core:
         rospy.Subscriber("/NavOA_waypoints", Path, self.waypoints_callback)
         rospy.Subscriber("/NavOA_goal", PoseStamped, self.goal_callback)
         
+
+    def dynamic_reconfigure_callback(self, config, level):
+        """dynamic_reconfigure callback to update ref_speed at runtime"""
+        try:
+            speed = float(config.get('ref_speed', 0.0))
+            self.NavOA_planner.set_reference_speed(speed)
+            rospy.loginfo(f"[NavOA] ref_speed updated dynamically: {speed}")
+            # publish new value for verification
+            try:
+                self.ref_speed_pub.publish(Float32(data=speed))
+            except Exception:
+                pass
+        except Exception as e:
+            rospy.logerr(f"[NavOA] Failed to update ref_speed dynamically: {e}")
+        return config
+
     def run(self):
 
         r = rospy.Rate(50)
@@ -143,8 +210,12 @@ class NavOA_core:
                 self.NavOA_planner.set_initial_path_from_state(self.robot_state)
                 # print('set initial path', self.NavOA_planner.initial_path)
 
-            if self.NavOA_planner.initial_path is None:
-                rospy.logwarn_throttle(1, "waiting for NavOA initial path")
+            # --- 修改逻辑：如果还没收到路径，或者已经完成了上一次规划，就待机 ---
+            if self.NavOA_planner.initial_path is None or self.planning_finished:
+                rospy.logwarn_throttle(1, "waiting for NEW NavOA initial path or Goal")
+                # 待机状态强制发0速度，防止搬运后乱跑
+                self.vel_pub.publish(Twist())
+                r.sleep()
                 continue
 
             rospy.loginfo_once("initial Path Received")
@@ -157,17 +228,32 @@ class NavOA_core:
                     1, "No obstacle points, only path tracking task will be performed"
                 )
 
-            # --- 安全防护：捕获主循环中的潜在崩溃 ---
+            # --- 增加异常捕获，防止规划器崩溃 ---
             try:
                 action, info = self.NavOA_planner(self.robot_state, self.obstacle_points)
-                action = self.apply_goal_speed_limit(action)
-
+                
                 self.stop = info["stop"]
                 self.arrive = info["arrive"]
 
+                # --- 核心修改：到达终点后设置完成标志位 ---
                 if info["arrive"]:
-                    # print(action)
-                    rospy.loginfo_throttle(0.1, "arrive at the target")
+                    rospy.loginfo_throttle(1.0, "[NavOA] Target Reached! Stopping.")
+                    
+                    # 1. 强制发送停车指令
+                    self.vel_pub.publish(Twist())
+                    
+                    # 2. 清除目标变量
+                    self.goal = None
+                    
+                    # 3. 设置标志位为 True。这将导致下一次循环进入 "waiting for NEW path" 状态
+                    #    直到 path_callback 或 goal_callback 将其重置为 False
+                    self.planning_finished = True
+                    
+                    r.sleep()
+                    continue
+                # --------------------------------
+
+                action = self.apply_goal_speed_limit(action)
 
                 # publish the path and velocity
                 self.plan_pub.publish(self.generate_path_msg(info["opt_state_list"]))
@@ -186,9 +272,9 @@ class NavOA_core:
                         + " threshold "
                         + str(self.NavOA_planner.collision_threshold),
                     )
+            
             except Exception as e:
-                rospy.logerr_throttle(1.0, f"[NavOA] Error in main planning loop: {e}")
-                # 发送零速度以防失控
+                rospy.logerr_throttle(1.0, f"[NavOA] Error in main loop: {e}")
                 self.vel_pub.publish(Twist())
 
             r.sleep()
@@ -257,7 +343,7 @@ class NavOA_core:
             return
 
     def path_callback(self, path):
-        # ---------------- FIX START: Empty Path Protection ----------------
+        # ---------------- 修复：空路径检查 ----------------
         if not path.poses:
             rospy.logwarn_throttle(1.0, "[NavOA] Received an empty path from Global Planner. Ignoring.")
             return
@@ -280,16 +366,16 @@ class NavOA_core:
                     y2 = p2.pose.position.y
                     theta = atan2(y2 - y, x2 - x)
                 else:
-                    # Protection: ensure list is not empty before accessing [-1]
+                    # 保护：防止列表为空时访问索引
                     if len(initial_point_list) > 0:
                         theta = initial_point_list[-1][2, 0]
                     else:
-                        theta = 0.0 # Fallback if path only has 1 point and orientation calc fails
+                        theta = 0.0
             
             points = np.array([x, y, theta, 1]).reshape(4, 1)
             initial_point_list.append(points)
 
-        # Protection: check if parsed list is empty
+        # 保护：再次检查解析结果
         if len(initial_point_list) == 0:
             rospy.logwarn_throttle(1.0, "[NavOA] Parsed initial path list is empty. Ignoring.")
             return
@@ -297,15 +383,19 @@ class NavOA_core:
         if self.NavOA_planner.initial_path is None or self.refresh_initial_path:
             rospy.loginfo_throttle(0.1, "initial path update from given path")
             
-            # Protection: Catch IndexError/Exception during planner setup to prevent node death
+            # ---------------- 修复：捕获规划器崩溃 & 重置完成标志 ----------------
             try:
                 self.NavOA_planner.set_initial_path(initial_point_list)
                 self.NavOA_planner.reset()
+                
+                # 收到新路径，激活规划逻辑
+                self.planning_finished = False
+                
+                rospy.loginfo("[NavOA] Initial path updated successfully.")
             except IndexError as e:
                 rospy.logerr(f"[NavOA] CRITICAL: Failed to set path (IndexError): {e}. Path size: {len(initial_point_list)}")
             except Exception as e:
                 rospy.logerr(f"[NavOA] CRITICAL: Unexpected error in set_initial_path: {e}")
-        # ---------------- FIX END ----------------
     
     def waypoints_callback(self, path):
         
@@ -340,6 +430,8 @@ class NavOA_core:
             rospy.loginfo_throttle(0.1, "initial path update from waypoints")
             self.NavOA_planner.update_initial_path_from_waypoints(waypoints_list)
             self.NavOA_planner.reset()
+            # 收到新航点，激活规划逻辑
+            self.planning_finished = False
 
     def goal_callback(self, goal):
 
@@ -359,6 +451,8 @@ class NavOA_core:
         rospy.loginfo_throttle(0.1, "initial path update from goal position")
         self.NavOA_planner.update_initial_path_from_goal(self.robot_state, self.goal)
         self.NavOA_planner.reset()
+        # 收到新目标，激活规划逻辑
+        self.planning_finished = False
 
 
     def quat_to_yaw_list(self, quater):
