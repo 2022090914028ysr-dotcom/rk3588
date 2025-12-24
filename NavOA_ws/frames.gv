@@ -1,19 +1,18 @@
 digraph G {
-"ascamera_hp60c_camera_link_0" -> "ascamera_hp60c_color_0"[label="Broadcaster: /ascamera_hp60c\nAverage rate: 10000.000 Hz\nMost recent transform: 0.000 ( 1766384841.286 sec old)\nBuffer length: 0.000 sec\n"];
-"base_footprint" -> "ascamera_hp60c_camera_link_0"[label="Broadcaster: /camera_tf_pub\nAverage rate: 10.190 Hz\nMost recent transform: 1766384841.314 ( -0.028 sec old)\nBuffer length: 4.907 sec\n"];
-"ascamera_hp60c_camera_link_0" -> "ascamera_hp60c_depth_0"[label="Broadcaster: /ascamera_hp60c\nAverage rate: 10000.000 Hz\nMost recent transform: 0.000 ( 1766384841.286 sec old)\nBuffer length: 0.000 sec\n"];
-"odom" -> "base_footprint"[label="Broadcaster: /vins_to_odom\nAverage rate: 19.865 Hz\nMost recent transform: 1766384841.252 ( 0.034 sec old)\nBuffer length: 4.933 sec\n"];
-"world" -> "body"[label="Broadcaster: /vins_estimator\nAverage rate: 30.125 Hz\nMost recent transform: 1766384781.142 ( 60.145 sec old)\nBuffer length: 3.253 sec\n"];
-"body" -> "camera"[label="Broadcaster: /vins_estimator\nAverage rate: 30.125 Hz\nMost recent transform: 1766384781.142 ( 60.145 sec old)\nBuffer length: 3.253 sec\n"];
-"map" -> "odom"[label="Broadcaster: /cartographer_node\nAverage rate: 22.343 Hz\nMost recent transform: 1766384841.207 ( 0.079 sec old)\nBuffer length: 4.834 sec\n"];
-"base_footprint" -> "laser_frame"[label="Broadcaster: /base_link_to_laser\nAverage rate: 25.129 Hz\nMost recent transform: 1766384841.306 ( -0.019 sec old)\nBuffer length: 4.935 sec\n"];
-"base_footprint" -> "imu_link"[label="Broadcaster: /base_to_imu\nAverage rate: 10.197 Hz\nMost recent transform: 1766384841.290 ( -0.004 sec old)\nBuffer length: 4.805 sec\n"];
+"ascamera_hp60c_camera_link_0" -> "ascamera_hp60c_color_0"[label="Broadcaster: /ascamera_hp60c\nAverage rate: 10000.000 Hz\nMost recent transform: 0.000 ( 1766395182.316 sec old)\nBuffer length: 0.000 sec\n"];
+"base_footprint" -> "ascamera_hp60c_camera_link_0"[label="Broadcaster: /camera_tf_pub\nAverage rate: 10.189 Hz\nMost recent transform: 1766395182.412 ( -0.096 sec old)\nBuffer length: 4.907 sec\n"];
+"ascamera_hp60c_camera_link_0" -> "ascamera_hp60c_depth_0"[label="Broadcaster: /ascamera_hp60c\nAverage rate: 10000.000 Hz\nMost recent transform: 0.000 ( 1766395182.316 sec old)\nBuffer length: 0.000 sec\n"];
+"world" -> "body"[label="Broadcaster: /vins_estimator\nAverage rate: 12.599 Hz\nMost recent transform: 1766395182.175 ( 0.141 sec old)\nBuffer length: 4.921 sec\n"];
+"body" -> "camera"[label="Broadcaster: /vins_estimator\nAverage rate: 12.599 Hz\nMost recent transform: 1766395182.175 ( 0.141 sec old)\nBuffer length: 4.921 sec\n"];
+"base_footprint" -> "laser_frame"[label="Broadcaster: /base_link_to_laser\nAverage rate: 25.091 Hz\nMost recent transform: 1766395182.326 ( -0.010 sec old)\nBuffer length: 4.942 sec\n"];
+"odom" -> "base_footprint"[label="Broadcaster: /vins_to_odom\nAverage rate: 12.660 Hz\nMost recent transform: 1766395182.240 ( 0.076 sec old)\nBuffer length: 4.897 sec\n"];
+"base_footprint" -> "imu_link"[label="Broadcaster: /base_to_imu\nAverage rate: 10.186 Hz\nMost recent transform: 1766395182.380 ( -0.064 sec old)\nBuffer length: 4.909 sec\n"];
 edge [style=invis];
  subgraph cluster_legend { style=bold; color=black; label ="view_frames Result";
-"Recorded at time: 1766384841.286"[ shape=plaintext ] ;
+"Recorded at time: 1766395182.316"[ shape=plaintext ] ;
  }->"world";
 edge [style=invis];
  subgraph cluster_legend { style=bold; color=black; label ="view_frames Result";
-"Recorded at time: 1766384841.286"[ shape=plaintext ] ;
- }->"map";
+"Recorded at time: 1766395182.316"[ shape=plaintext ] ;
+ }->"odom";
 }
