@@ -1,8 +1,0 @@
-prefix=/home/ubuntu/Robit_SlamNav/NavOA_ws/install
-
-Name: NavOA_ros
-Description: Description of NavOA_ros
-Version: 0.0.0
-Cflags: 
-Libs: -L${prefix}/lib 
-Requires: 

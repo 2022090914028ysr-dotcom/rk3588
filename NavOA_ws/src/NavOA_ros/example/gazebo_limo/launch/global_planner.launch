@@ -1,0 +1,35 @@
+<launch>
+  <arg name="map_file" default="$(find NavOA_ros)/example/gazebo_limo/maps/limo_carto.yaml"/>
+  <node name="map_server" pkg="map_server" type="map_server" args="$(arg map_file)">
+  </node>
+
+  <node pkg="move_base" type="move_base" respawn="false" name="move_base" output="screen">
+    
+    <param name="oscillation_timeout" value="0.0" />
+    <param name="oscillation_distance" value="0.0" />
+
+    <param name="max_planning_retries" value="-1" />
+    
+    <param name="transform_tolerance" value="1.0" />
+
+    <param name="controller_patience" value="15.0" />
+    <param name="planner_patience" value="5.0" />
+
+    <param name="base_global_planner" value="global_planner/GlobalPlanner" />
+    <param name="planner_frequency" value="0.0" />
+    
+    <param name="recovery_behavior_enabled" value="false" />
+    <param name="clearing_rotation_allowed" value="false" />
+
+    <remap from="cmd_vel" to="/fake_cmd_vel_void" />
+
+    <rosparam file="$(find NavOA_ros)/example/gazebo_limo/config/costmap_common_params.yaml" command="load" ns="global_costmap" />
+    <rosparam file="$(find NavOA_ros)/example/gazebo_limo/config/costmap_common_params.yaml" command="load" ns="local_costmap" />
+    <rosparam file="$(find NavOA_ros)/example/gazebo_limo/config/local_costmap_params.yaml" command="load" />
+
+    <rosparam file="$(find NavOA_ros)/example/gazebo_limo/config/global_costmap_params.yaml" command="load" />
+    <rosparam file="$(find NavOA_ros)/example/gazebo_limo/config/global_planner_params.yaml" command="load" />
+    <rosparam file="$(find NavOA_ros)/param/base_local_planner_params.yaml" command="load" />
+
+  </node>
+</launch>

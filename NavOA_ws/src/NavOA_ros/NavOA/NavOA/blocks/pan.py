@@ -19,13 +19,13 @@ along with NavOA planner. If not, see <https://www.gnu.org/licenses/>.
 """
 
 import torch
-from . import NRMP, DUNE
+from NavOA.blocks import NRMP, DUNE
 import numpy as np
 from math import inf
 from typing import Optional
 import numpy as np
-from ..configuration import to_device, tensor_to_np
-from ..util import downsample_decimation
+from NavOA.configuration import to_device, tensor_to_np
+from NavOA.util import downsample_decimation
 
 class PAN(torch.nn.Module):
     """
@@ -51,6 +51,10 @@ class PAN(torch.nn.Module):
         dune_max_num=100,
         nrmp_max_num=10,
         dune_checkpoint=None,
+        dune_rknn=None,
+        use_rknn: bool = False,
+        rknn_target: str = "rk3588",
+        rknn_core: str = "auto",
         iter_threshold=0.1,
         adjust_kwargs=dict(),
         train_kwargs=dict(),
@@ -90,6 +94,10 @@ class PAN(torch.nn.Module):
                 robot,
                 dune_max_num,
                 train_kwargs,
+                use_rknn=use_rknn,
+                rknn_path=dune_rknn,
+                rknn_target=rknn_target,
+                rknn_core=rknn_core,
             )
         else:
             self.dune_layer = None
@@ -187,9 +195,7 @@ class PAN(torch.nn.Module):
 
         return point_flow_list, R_list, obs_points_list
 
-
     def point_state_transform(self, state: torch.Tensor, obs_points: torch.Tensor):
-
         '''
         transform the position of obstacle points to the robot coordinate system in each receding step
         
@@ -201,15 +207,28 @@ class PAN(torch.nn.Module):
             p0: (2, n) point cloud in the robot coordinate system
             R: (2, 2) rotation matrix
         '''
-
         state = state.reshape((3, 1))
         trans = state[0:2]
         theta = state[2, 0]
-        R = to_device(torch.tensor([[torch.cos(theta), -torch.sin(theta)], [torch.sin(theta), torch.cos(theta)]]))
+
+        # --- 修复开始 ---
+        # 使用 torch.stack 来构建矩阵，而不是 torch.tensor
+        # 这样可以保留计算图（梯度），消除警告并确保反向传播正常工作
+        c = torch.cos(theta)
+        s = torch.sin(theta)
+        
+        row1 = torch.stack([c, -s])
+        row2 = torch.stack([s, c])
+        R = torch.stack([row1, row2])
+        
+        R = to_device(R)
+        # --- 修复结束 ---
 
         p0 = R.T @ (obs_points - trans)
 
         return p0, R
+
+    
     
 
     def stop_criteria(self, nom_s, nom_u, mu_list, lam_list):

@@ -1,0 +1,22 @@
+<launch>
+  <!-- Goal publisher: publish a list of 2D nav goals -->
+  <arg name="target_topic" default="/move_base_simple/goal" />
+  <arg name="frame_id" default="map" />
+  <arg name="interval_sec" default="5.0" />
+  <arg name="repeat" default="false" />
+  <arg name="once" default="false" />
+
+  <!-- Example inline goals; override or load YAML below -->
+  <rosparam param="goals">[[0.5, 0.0, 0.0], [1.0, 0.0, 0.0], [1.0, 0.5, 1.57]]</rosparam>
+  <!-- Or provide a YAML file with key 'goals': [[x,y,yaw], ...] -->
+  <!-- <param name="goal_list_yaml" value="$(find NavOA_ros)/example/gazebo_limo/config/goal_list.yaml" /> -->
+
+  <node name="goal_publisher" pkg="NavOA_ros" type="goal_publisher_node.py" output="screen">
+    <param name="target_topic" value="$(arg target_topic)" />
+    <param name="frame_id" value="$(arg frame_id)" />
+    <param name="interval_sec" value="$(arg interval_sec)" />
+    <param name="repeat" value="$(arg repeat)" />
+    <param name="once" value="$(arg once)" />
+    <!-- goals is provided via rosparam above; alternatively use goal_list_yaml -->
+  </node>
+</launch>

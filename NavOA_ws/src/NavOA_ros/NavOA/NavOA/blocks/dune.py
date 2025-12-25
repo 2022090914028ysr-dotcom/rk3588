@@ -20,15 +20,34 @@ along with NavOA planner. If not, see <https://www.gnu.org/licenses/>.
 
 
 import torch
+import numpy as np
 from math import inf
 from . import ObsPointNet, DUNETrain
 from ..configuration import np_to_tensor, to_device
 from ..util import time_it, file_check, repeat_mk_dirs
 from typing import Optional
 import sys
+
+
+try:
+    # Optional import; only required when use_rknn=True
+    from rknn.api import RKNN
+except Exception:  # noqa: BLE001
+    RKNN = None
 class DUNE(torch.nn.Module):
 
-    def __init__(self, receding: int=10, checkpoint =None, robot=None, dune_max_num: int=100, train_kwargs: dict=dict()) -> None:
+    def __init__(
+        self,
+        receding: int = 10,
+        checkpoint=None,
+        robot=None,
+        dune_max_num: int = 100,
+        train_kwargs: dict = dict(),
+        use_rknn: bool = False,
+        rknn_path: Optional[str] = None,
+        rknn_target: str = "",
+        rknn_core: str = "auto",
+    ) -> None:
         super(DUNE, self).__init__()
   
         self.T = receding
@@ -41,8 +60,20 @@ class DUNE(torch.nn.Module):
         self.edge_dim = self.G.shape[0]
         self.state_dim = self.G.shape[1]
 
-        self.model = to_device(ObsPointNet(2, self.edge_dim))
-        self.load_model(checkpoint, train_kwargs)
+        self.use_rknn = use_rknn
+        self.rknn_path = rknn_path if rknn_path is not None else checkpoint
+        self.rknn = None
+        self._rknn_ready = False
+        self._dbg_counter = 0  # light-weight debug ticker
+        self.rknn_target = rknn_target
+        self.rknn_core = rknn_core
+
+        if self.use_rknn:
+            self.model = None
+            self._init_rknn_runtime()
+        else:
+            self.model = to_device(ObsPointNet(2, self.edge_dim))
+            self.load_model(checkpoint, train_kwargs)
 
         self.obstacle_points = None
         self.min_distance = inf
@@ -70,10 +101,19 @@ class DUNE(torch.nn.Module):
         self.obstacle_points = obs_points_list[0] # current obstacle points considered in the dune at time 0
 
         total_points = torch.hstack(point_flow)
+
+        # light debug: every 50 calls, report whether RKNN is used and tensor sizes
+        self._dbg_counter += 1
+        if self._dbg_counter % 50 == 1:
+            path = self.rknn_path if self.use_rknn else getattr(self, 'abs_checkpoint_path', None)
+            print(f"[DUNE][dbg] use_rknn={self.use_rknn} ready={self._rknn_ready} path={path} total_points={total_points.shape}")
         
         # map the point flow to the latent distance features mu
-        with torch.no_grad():
-            total_mu = self.model(total_points.T).T
+        if self.use_rknn:
+            total_mu = self._rknn_infer(total_points)
+        else:
+            with torch.no_grad():
+                total_mu = self.model(total_points.T).T
         
         for index in range(self.T+1):
             num_points = point_flow[index].shape[1]
@@ -162,6 +202,111 @@ class DUNE(torch.nn.Module):
             else:
                 print('Can not find checkpoint. Please check the path or train first.')
                 raise FileNotFoundError
+
+
+    def _init_rknn_runtime(self):
+        if not self.use_rknn:
+            return
+
+        if RKNN is None:
+            raise ImportError('rknn-toolkit2 is not installed; cannot run RKNN inference')
+
+        if self.rknn_path is None:
+            raise FileNotFoundError('No RKNN model path provided')
+
+        # allow absolute path to bypass pkg-relative resolution
+        from pathlib import Path
+        rp = Path(self.rknn_path)
+        if rp.is_absolute():
+            if not rp.exists():
+                raise FileNotFoundError(f"RKNN path does not exist: {rp}")
+            self.abs_checkpoint_path = str(rp)
+        else:
+            self.abs_checkpoint_path = file_check(self.rknn_path)
+
+        print(f"[DUNE][RKNN] loading model: {self.abs_checkpoint_path}")
+        self.rknn = RKNN()
+        ret = self.rknn.load_rknn(self.abs_checkpoint_path)
+        if ret != 0:
+            raise RuntimeError(f'load_rknn failed with code {ret}')
+
+        # map core string to RKNN mask
+        core_map = {}
+        try:
+            core_map = {
+                'auto': RKNN.NPU_CORE_AUTO,
+                '0': RKNN.NPU_CORE_0,
+                '1': RKNN.NPU_CORE_1,
+                '2': RKNN.NPU_CORE_2,
+                '0_1': RKNN.NPU_CORE_0_1,
+                '0_1_2': RKNN.NPU_CORE_0_1_2,
+                'all': RKNN.NPU_CORE_ALL,
+            }
+        except Exception:
+            pass
+
+        core_mask = core_map.get(str(self.rknn_core).lower(), 0)
+        print(f"[DUNE][RKNN] init_runtime target={self.rknn_target} core={self.rknn_core} mask={hex(core_mask) if isinstance(core_mask,int) else core_mask}")
+        try:
+            if core_mask:
+                ret = self.rknn.init_runtime(target=self.rknn_target, core_mask=core_mask)
+            else:
+                ret = self.rknn.init_runtime(target=self.rknn_target)
+        except TypeError:
+            # older toolkit without core_mask param
+            ret = self.rknn.init_runtime(target=self.rknn_target)
+        if ret != 0:
+            raise RuntimeError(f'init_runtime failed with code {ret}')
+
+        self._rknn_ready = True
+        try:
+            # not all toolkits expose get_sdk_version; ignore failures
+            ver = self.rknn.get_sdk_version()
+            print(f"[DUNE][RKNN] runtime ready, sdk_version={ver}")
+        except Exception:
+            print("[DUNE][RKNN] runtime ready")
+
+    def _rknn_infer(self, total_points: torch.Tensor) -> torch.Tensor:
+        """Infer mu using RKNN runtime.
+
+        Args:
+            total_points: (2, total_num)
+        Returns:
+            torch.Tensor of shape (edge_dim, total_num)
+        """
+        if self.rknn is None or not self._rknn_ready:
+            raise RuntimeError('RKNN runtime is not initialized')
+
+        pts_all = total_points.T.detach().cpu().numpy().astype(np.float32)  # (N,2)
+
+        # RKNN model was exported with fixed point count (e.g., 100). Chunk and pad to fixed size.
+        chunk_size = 100
+        mu_list = []
+        for start in range(0, pts_all.shape[0], chunk_size):
+            end = min(start + chunk_size, pts_all.shape[0])
+            this_len = end - start
+            buf = np.zeros((1, chunk_size, 2), dtype=np.float32)
+            buf[0, :this_len, :] = pts_all[start:end, :]
+
+            outputs = self.rknn.inference(inputs=[buf])
+            if outputs is None or len(outputs) == 0:
+                raise RuntimeError('RKNN inference returned no outputs')
+
+            mu_np = outputs[0]
+            if mu_np.ndim == 3 and mu_np.shape[0] == 1:
+                mu_np = mu_np[0]
+
+            if mu_np.ndim != 2:
+                raise RuntimeError(f'Unexpected RKNN output shape: {mu_np.shape}')
+
+            mu_list.append(mu_np[:this_len, :])
+
+            if self._dbg_counter % 50 == 1:
+                print(f"[DUNE][dbg] rknn chunk start={start} len={this_len} input={buf.shape} output={mu_np.shape}")
+
+        mu_concat = np.concatenate(mu_list, axis=0)  # (N, edge_dim)
+        mu_tensor = torch.from_numpy(mu_concat.T)  # (edge_dim, N)
+        return mu_tensor
 
 
     def train_dune(self, train_kwargs):

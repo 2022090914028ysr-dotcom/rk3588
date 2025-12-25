@@ -1,8 +1,0 @@
-prefix=/home/ubuntu/Robit_SlamNav/NavOA_ws/devel
-
-Name: lidar_ros
-Description: Description of lidar_ros
-Version: 1.0.0
-Cflags: 
-Libs: -L${prefix}/lib 
-Requires: 

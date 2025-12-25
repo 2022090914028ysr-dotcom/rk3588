@@ -1,467 +1,437 @@
 #!/usr/bin/python3
 # -*- coding: UTF-8 -*-
 """
-IMU控制器模块（JY901 修复版）
-提供IMU数据读取、解析和里程计融合功能
+IMU控制器模块
+提供IMU数据读取和处理功能
 """
 
 import serial
 import math
 import time
 import threading
-from typing import Optional, Tuple, Callable
+import platform
+import atexit
+from typing import List, Optional, Tuple
 from dataclasses import dataclass
-
-try:
-    import rospy
-    USE_ROS_LOG = True
-except ImportError:
-    USE_ROS_LOG = False
-
-def _log_info(msg):
-    if USE_ROS_LOG:
-        rospy.loginfo(msg)
-    else:
-        print(f"[INFO] {msg}")
-
-def _log_warn(msg):
-    if USE_ROS_LOG:
-        rospy.logwarn(msg)
-    else:
-        print(f"[WARN] {msg}")
-
-def _log_err(msg):
-    if USE_ROS_LOG:
-        rospy.logerr(msg)
-    else:
-        print(f"[ERROR] {msg}")
-
-def _log_debug(msg):
-    if USE_ROS_LOG:
-        rospy.logdebug(msg)
-    else:
-        print(f"[DEBUG] {msg}")
-
-
-@dataclass
-class OdometryData:
-    x: float = 0.0
-    y: float = 0.0
-    z: float = 0.0
-    qx: float = 0.0
-    qy: float = 0.0
-    qz: float = 0.0
-    qw: float = 1.0
-    vx: float = 0.0
-    vy: float = 0.0
-    vz: float = 0.0
-    wx: float = 0.0
-    wy: float = 0.0
-    wz: float = 0.0
-    timestamp: float = 0.0
-
 
 @dataclass
 class IMUData:
+    """IMU数据结构"""
     accel_x: float = 0.0
     accel_y: float = 0.0
     accel_z: float = 0.0
+    
     gyro_x: float = 0.0
     gyro_y: float = 0.0
     gyro_z: float = 0.0
+    
     roll: float = 0.0
     pitch: float = 0.0
     yaw: float = 0.0
+    
     timestamp: float = 0.0
     valid: bool = False
 
 
 class IMUController:
-    def __init__(self, robot_controller: Optional[object] = None, serial_port: str = "/dev/ttyS4"):
-        self.serial_port_path = serial_port
+    """IMU控制器类"""
+    
+    def __init__(self):
+<<<<<<< HEAD
+        # --- 替换 robot_config 中的 IMU/安全配置 ---
+        # 1. IMU 串口配置 (硬编码)
+        # if platform.system() == 'Windows':
+        #     self.imu_port = "COM13"         # Windows系统默认串口
+        # else:
+        #     self.imu_port = "/dev/ttyS1"  # Linux系统默认串口
+        # self.imu_baudrate = 230400
+        # self.read_timeout = 0.01  # 10ms 超时
+=======
+        if platform.system() == 'Windows':
+            self.imu_port = "COM13"
+        else:
+            self.imu_port = "/dev/ttyS4"
+            
+        self.imu_baudrate = 230400
+        self.read_timeout = 0.01
+>>>>>>> 31e5e34a157de07d1203330c8b1c5f884cf08ed1
+
+        self.angle_effective_deg = 45.0
+        self.angle_effective_rad = math.radians(self.angle_effective_deg)
+        self.imu_angle_exceed = 0
+        self.center_pitch = math.radians(4.0)
+        
         self.serial_port = None
         self.running = False
-        self.read_thread = None 
+        self.read_thread = None
+        self.current_data = IMUData()
         self.data_lock = threading.Lock()
         self.error_count = 0
         self.max_error_count = 10
-        self.baudrate = 9600
-        self.timeout = 0.001
+        self.simulation_mode = False  
+        self.roll_bias = 0.0
+        self.pitch_bias = 0.0
+
+        self.pitch = 0.0
+        self.is_calibrated_flag = False
+        self.last_read_time = 0
+        self.read_count = 0
+        self.frequency = 0.0
+        self.last_frequency_update = 0
         self.read_command = [0xff, 0xaa, 0x03, 0x0c, 0x0]
+        self.debug_counter = 0
 
-        self.position_x = 0.0
-        self.position_y = 0.0
-        self.yaw_rad = 0.0
-        self.yaw_initialized = False  # 新增：标记 yaw 是否已初始化
-        self.gyro_bias_z = 0.0  # 新增：陀螺仪 z 轴偏置
-
-        self.odometry_data = OdometryData()
-        self.current_data = IMUData()
-        self.angle_exceed = 0
-        self.angle_effective = 45  # degree
-
-        self.robot_controller = robot_controller
-        self.linear_velocity_provider: Optional[Callable[[], float]] = None
-        self.last_update_time = None
-
+        atexit.register(self.close)
+        
+    def get_frequency(self) -> float:
+        with self.data_lock:
+            return self.frequency
+            
     def initialize(self) -> bool:
         try:
             self.serial_port = serial.Serial(
-                port=self.serial_port_path,
-                baudrate=self.baudrate,
-                timeout=self.timeout
+                port=self.imu_port,
+                baudrate=self.imu_baudrate,
+                timeout=self.read_timeout
             )
-            _log_info(f"IMU初始化成功 - 端口: {self.serial_port_path}, 波特率: {self.baudrate}")
-            _log_info(f"IMU调试: 读取命令: {[hex(b) for b in self.read_command]}")
+            self.serial_port.reset_input_buffer()
+            print(f"IMU初始化成功 - 端口: {self.imu_port}, 波特率: {self.imu_baudrate}")
             return True
         except Exception as e:
-            _log_err(f"IMU初始化失败: {e}")
-            return False
-
-    def deg_to_rad(self, deg):
-        return deg * math.pi / 180.0
-
-    def create_quaternion_from_yaw(self, yaw):
-        cy = math.cos(yaw * 0.5)
-        sy = math.sin(yaw * 0.5)
-        return (0.0, 0.0, sy, cy)
-
-    def update_odometry(self, linear_velocity, angular_velocity, dt):
-        if not self.yaw_initialized:
-            _log_debug("IMU调试: yaw 未初始化，跳过里程计更新")
-            return self.odometry_data
-
-        vx = linear_velocity
-        vy = 0.0
-        wz = angular_velocity
-
-        theta = self.yaw_rad
-
-        self.position_x += math.cos(theta) * vx * dt
-        self.position_y += math.sin(theta) * vx * dt
-
-        # 积分角速度更新 yaw
-        self.yaw_rad += wz * dt
-
-        qx, qy, qz, qw = self.create_quaternion_from_yaw(self.yaw_rad)
-
-        self.odometry_data.x = self.position_x
-        self.odometry_data.y = self.position_y
-        self.odometry_data.qx = qx
-        self.odometry_data.qy = qy
-        self.odometry_data.qz = qz
-        self.odometry_data.qw = qw
-        self.odometry_data.vx = vx
-        self.odometry_data.vy = vy
-        self.odometry_data.wz = wz
-        self.odometry_data.timestamp = time.time()
-        return self.odometry_data
+            print(f"IMU初始化失败: {e}")
+            print("尝试使用IMU模拟模式")
+            self.simulation_mode = True
+            self.current_data = IMUData(
+                roll=0.0, pitch=0.0, yaw=0.0,
+                gyro_x=0.0, gyro_y=0.0, gyro_z=0.0,
+                timestamp=time.time(), valid=True
+            )
+            return True
 
     def start_reading(self):
-        if not self.serial_port:
-            _log_err("IMU未初始化，无法开始读取")
+        if not self.simulation_mode and not self.serial_port:
+            print("IMU未初始化，无法开始读取")
             return False
+        
         self.running = True
         self.read_thread = threading.Thread(target=self._read_loop, daemon=True)
         self.read_thread.start()
-        _log_info("IMU数据读取线程已启动")
+        print("IMU数据读取线程已启动")
         return True
-
+    
     def stop_reading(self):
         self.running = False
         if self.read_thread and self.read_thread.is_alive():
             self.read_thread.join(timeout=1.0)
-        _log_info("IMU数据读取已停止")
-
+        print("IMU数据读取已停止")
+    
     def _read_loop(self):
         while self.running:
             try:
+                current_time = time.time()
+                
                 if self._read_imu_data():
+                    with self.data_lock:
+                        if self.last_read_time > 0:
+                            self.read_count += 1
+                            if self.read_count % 10 == 0:
+                                elapsed = current_time - self.last_frequency_update
+                                if elapsed > 0:
+                                    self.frequency = 10 / elapsed
+                                    self.last_frequency_update = current_time
+                        else:
+                            self.last_frequency_update = current_time
+                            
+                        self.last_read_time = current_time
+
+                        if self.read_count > 0 and self.read_count % 10 == 0:
+                            print(f"[IMU] 读取频率≈ {self.frequency:.1f} Hz, 总样本数: {self.read_count}")
+                    
                     self.error_count = 0
                 else:
                     self.error_count += 1
                     if self.error_count >= self.max_error_count:
-                        _log_err(f"IMU连续读取失败 {self.max_error_count} 次，可能存在硬件问题")
-                        self.error_count = 0
-                time.sleep(0.01)
+                        print(f"IMU连续读取失败 {self.max_error_count} 次，可能存在硬件问题")
+                        self.error_count = 0 
+                
+                if self.simulation_mode:
+                    time.sleep(0.002) 
+                
             except Exception as e:
-                _log_err(f"IMU读取循环异常: {e}")
+                print(f"IMU读取循环异常: {e}")
                 time.sleep(0.1)
-
+    
     def _read_imu_data(self) -> bool:
-        """稳健地读取并解析一帧IMU数据（累积缓冲 + 帧头搜索）。
-        累积数据直到找到完整 0x55 0x52 帧，避免半包问题。
-        """
         try:
-            # 发送读取命令
-            self.serial_port.write(bytes(self.read_command))
-
-            # 累积缓冲区（类级变量，避免每次重置）
-            if not hasattr(self, '_buffer'):
-                self._buffer = bytearray()
-
-            # 读取新数据到缓冲
-            deadline = time.time() + 0.05  # 最多等待 50ms
-            while time.time() < deadline:
-                avail = getattr(self.serial_port, "in_waiting", None)
-                if avail is None:
-                    avail = self.serial_port.inWaiting()
-                if avail:
-                    chunk = self.serial_port.read(avail)
-                    if chunk:
-                        self._buffer.extend(chunk)
-                        # 检查是否能找到完整帧
-                        if self._try_parse_frame():
-                            return True
+            if self.simulation_mode:
+                current_time = time.time()
+                roll_offset = math.sin(current_time * 0.5) * 0.02
+                pitch_offset = math.cos(current_time * 0.3) * 0.01
+                yaw_offset = math.sin(current_time * 0.1) * 0.005
+                
+                imu_data = IMUData(
+                    roll=roll_offset,
+                    pitch=pitch_offset,
+                    yaw=yaw_offset,
+                    gyro_x=roll_offset * 0.1,
+                    gyro_y=pitch_offset * 0.1,
+                    gyro_z=yaw_offset * 0.1,
+                    timestamp=current_time,
+                    valid=True
+                )
+                
+                with self.data_lock:
+                    self.current_data = imu_data
+                
+                self._check_angle_safety(imu_data)
+                return True
+            
+            if self.serial_port:
+                self.serial_port.flushInput()
+                self.serial_port.write(self.read_command)
+            
+            start_time = time.time()
+            while time.time() - start_time < 0.05:
+                if self.serial_port:
+                    count = self.serial_port.inWaiting()
+                    if count >= 33:
+                        break
                 time.sleep(0.0005)
-
-            # 超时未找到帧，清空缓冲避免累积过多
-            if len(self._buffer) > 100:
-                _log_warn(f"IMU调试: 缓冲区过大 ({len(self._buffer)} 字节)，清空")
-                self._buffer.clear()
-            return False
-
-        except Exception as e:
-            _log_err(f"IMU数据读取异常: {e}")
-            return False
-
-    def _try_parse_frame(self) -> bool:
-        """尝试从缓冲中解析一帧IMU数据（欧拉角或角速度）"""
-        buf = self._buffer
-        i = 0
-        while i < len(buf) - 1:
-            if buf[i] == 0x55 and (buf[i + 1] == 0x52 or buf[i + 1] == 0x51):
-                # 检查是否有完整 11 字节
-                if i + 11 <= len(buf):
-                    frame = bytes(buf[i:i + 11])
-                    # 移除已解析的数据
-                    del self._buffer[:i + 11]
-                    # 解析帧
-                    imu_data = self._parse_imu_data(frame)
-                    if imu_data and imu_data.valid:
-                        # 更新里程计
-                        current_time = time.time()
-                        dt = current_time - self.last_update_time if self.last_update_time is not None else 0.01
-                        self.last_update_time = current_time
-
-                        # 根据帧类型更新相应数据
-                        with self.data_lock:
-                            if frame[1] == 0x52:  # 欧拉角帧
-                                if not self.yaw_initialized:
-                                    self.yaw_rad = imu_data.yaw
-                                    self.yaw_initialized = True
-                                    _log_info(f"IMU调试: yaw 初始化为 {math.degrees(imu_data.yaw):.2f}°")
-                                self.current_data.roll = imu_data.roll
-                                self.current_data.pitch = imu_data.pitch
-                                self.current_data.yaw = imu_data.yaw
-                                self.current_data.gyro_z = 0.0  # 欧拉角帧不包含角速度
-                            elif frame[1] == 0x51:  # 角速度帧
-                                _log_info(f"IMU调试: 角速度更新 - gyro_z={math.degrees(imu_data.gyro_z):.2f}°/s")
-                                self.current_data.gyro_x = imu_data.gyro_x
-                                self.current_data.gyro_y = imu_data.gyro_y
-                                self.current_data.gyro_z = imu_data.gyro_z
-                            self.current_data.timestamp = current_time
-                            self.current_data.valid = True
-
-                        linear_velocity = self._get_linear_velocity()
-                        angular_velocity = self.current_data.gyro_z
-                        _log_info(f"IMU调试: 速度 - linear={linear_velocity:.3f} m/s, angular={angular_velocity:.3f} rad/s")
-
-                        self.update_odometry(linear_velocity, angular_velocity, dt)
-                        _log_info(f"IMU调试: 位置更新 - x={self.position_x:.3f}, y={self.position_y:.3f}")
-
-                        self._check_angle_safety(self.current_data)
-                        return True
-                    else:
-                        frame_type = "欧拉角" if frame[1] == 0x52 else "角速度"
-                        _log_warn(f"IMU调试: 解析{frame_type}帧失败，帧数据: {[hex(b) for b in frame]}")
+            
+            if self.serial_port:
+                count = self.serial_port.inWaiting()
+            else:
+                return False
+            
+            if count < 33:
+                return False
+            
+            if self.serial_port:
+                com_input = self.serial_port.read(count)
+                com = com_input
+                idx = com.find(b'\x55\x51')
+                if idx == -1:
+                    return False
+                
+                if len(com) - idx < 33:
+                    need = 33 - (len(com) - idx)
+                    more = bytearray()
+                    end_time = time.time() + 0.01
+                    while len(more) < need and time.time() < end_time:
+                        more.extend(self.serial_port.read(need - len(more)))
+                    if len(more) < need:
+                        return False
+                    com = com[idx:] + bytes(more)
                 else:
-                    # 帧不完整，等待更多数据
-                    break
-            i += 1
-        return False
+                    com = com[idx:idx+33]
 
-    def _parse_imu_data(self, data: bytes) -> Optional[IMUData]:
-        """解析 JY901 的 11 字节帧 (0x55 0x52 欧拉角 或 0x55 0x51 角速度)"""
-        try:
-            if len(data) < 11:
-                _log_warn(f"IMU调试: 帧长度不足 11 字节: {len(data)}")
-                return None
+                com_input = com
+            else:
+                return False
+            
+            if (len(com_input) < 33 or 
+                com_input[0] != 0x55 or com_input[1] != 0x51 or
+                com_input[11] != 0x55 or com_input[12] != 0x52 or
+                com_input[22] != 0x55 or com_input[23] != 0x53):
+                return False
+            
+            imu_data = self._parse_imu_data(com_input)
+            if imu_data:
+                with self.data_lock:
+                    self.current_data = imu_data
+                
+                self._check_angle_safety(imu_data)
 
-            if data[0] != 0x55 or data[1] not in (0x52, 0x51):
-                _log_warn(f"IMU调试: 非IMU帧: {hex(data[0])} {hex(data[1])}")
-                return None
+                self.debug_counter += 1
+                if self.debug_counter % 10 == 0:
+                    roll_deg = math.degrees(imu_data.roll)
+                    pitch_deg = math.degrees(imu_data.pitch)
+                    yaw_deg = math.degrees(imu_data.yaw)
 
-            # 解析数据 (单位: 0.01° 或 0.01°/s)
-            val1_raw = (data[3] << 8) | data[2]
-            val2_raw = (data[5] << 8) | data[4]
-            val3_raw = (data[7] << 8) | data[6]
-
-            # 转为有符号 short (-32768 ~ 32767)
-            def to_signed_short(val):
-                if val >= 32768:
-                    return val - 65536
-                return val
-
-            val1 = to_signed_short(val1_raw) / 100.0
-            val2 = to_signed_short(val2_raw) / 100.0
-            val3 = to_signed_short(val3_raw) / 100.0
-
-            if data[1] == 0x52:  # 欧拉角帧
-                roll_deg, pitch_deg, yaw_deg = val1, val2, val3
-                roll = math.radians(roll_deg)
-                pitch = math.radians(pitch_deg)
-                yaw = math.radians(yaw_deg)
-                _log_info(f"IMU调试: 欧拉角解析成功 - roll={roll_deg:.2f}°, pitch={pitch_deg:.2f}°, yaw={yaw_deg:.2f}°")
-
-                return IMUData(
-                    accel_x=0.0,
-                    accel_y=0.0,
-                    accel_z=9.8,
-                    gyro_x=0.0,
-                    gyro_y=0.0,
-                    gyro_z=0.0,  # 欧拉角帧不包含角速度
-                    roll=roll,
-                    pitch=pitch,
-                    yaw=yaw,
-                    timestamp=time.time(),
-                    valid=True
-                )
-            elif data[1] == 0x51:  # 角速度帧
-                gyro_x_deg, gyro_y_deg, gyro_z_deg = val1, val2, val3
-                gyro_x = math.radians(gyro_x_deg)
-                gyro_y = math.radians(gyro_y_deg)
-                gyro_z = -math.radians(gyro_z_deg) - self.gyro_bias_z  # IMU z 轴方向调整并减去偏置
-                _log_info(f"IMU调试: 角速度解析成功 - gyro_x={gyro_x_deg:.2f}°/s, gyro_y={gyro_y_deg:.2f}°/s, gyro_z={gyro_z_deg:.2f}°/s (偏置后: {math.degrees(gyro_z):.2f}°/s)")
-
-                return IMUData(
-                    accel_x=0.0,
-                    accel_y=0.0,
-                    accel_z=9.8,
-                    gyro_x=gyro_x,
-                    gyro_y=gyro_y,
-                    gyro_z=gyro_z,
-                    roll=0.0,  # 角速度帧不包含欧拉角
-                    pitch=0.0,
-                    yaw=0.0,
-                    timestamp=time.time(),
-                    valid=True
-                )
-
+                    print(f"[IMU] Raw angles: roll={imu_data.roll:.3f} rad ({roll_deg:.2f}°), "
+                          f"pitch={imu_data.pitch:.3f} rad ({pitch_deg:.2f}°), "
+                          f"yaw={imu_data.yaw:.3f} rad ({yaw_deg:.1f}°)")
+                return True
+            
+            return False
+            
         except Exception as e:
-            _log_err(f"IMU帧解析失败: {e}")
+            print(f"IMU数据读取异常: {e}")
+            return False
+    
+    def _parse_imu_data(self, data: bytes) -> Optional[IMUData]:
+        try:
+            ax_raw = (data[3] << 8 | data[2])
+            ay_raw = (data[5] << 8 | data[4])
+            az_raw = (data[7] << 8 | data[6])
+            
+            if ax_raw >= 32768: ax_raw -= 65536
+            if ay_raw >= 32768: ay_raw -= 65536  
+            if az_raw >= 32768: az_raw -= 65536
+            
+            accel_x = ax_raw / 32768.0 * 16 * 9.8
+            accel_y = ay_raw / 32768.0 * 16 * 9.8
+            accel_z = az_raw / 32768.0 * 16 * 9.8
+          
+            wx_raw = (data[14] << 8 | data[13])
+            wy_raw = (data[16] << 8 | data[15])
+            wz_raw = (data[18] << 8 | data[17])
+            
+            if wx_raw >= 32768: wx_raw -= 65536
+            if wy_raw >= 32768: wy_raw -= 65536
+            if wz_raw >= 32768: wz_raw -= 65536
+            
+            wx = wx_raw / 32768.0 * 2000
+            wy = wy_raw / 32768.0 * 2000
+            wz = wz_raw / 32768.0 * 2000
+            
+            gyro_x = math.radians(wx)
+            gyro_y = math.radians(wy)
+            gyro_z = math.radians(wz)
+            
+            rx_raw = (data[25] << 8 | data[24])
+            ry_raw = (data[27] << 8 | data[26])
+            rz_raw = (data[29] << 8 | data[28])
+            
+            if rx_raw >= 32768: rx_raw -= 65536
+            if ry_raw >= 32768: ry_raw -= 65536
+            if rz_raw >= 32768: rz_raw -= 65536
+            
+            rx = rx_raw / 32768.0 * 180
+            ry = ry_raw / 32768.0 * 180
+            rz = rz_raw / 32768.0 * 180
+            
+            roll = math.radians(rx)
+            pitch = math.radians(ry)
+            yaw = math.radians(rz)
+            
+            return IMUData(
+                accel_x=accel_x,
+                accel_y=accel_y,
+                accel_z=accel_z,
+                gyro_x=gyro_x,
+                gyro_y=gyro_y,
+                gyro_z=gyro_z,
+                roll=roll,
+                pitch=pitch,
+                yaw=yaw,
+                timestamp=time.time(),
+                valid=True
+            )
+            
+        except Exception as e:
+            print(f"IMU数据解析失败: {e}")
             return None
-
+    
     def _check_angle_safety(self, imu_data: IMUData):
-        angle_limit = math.radians(self.angle_effective)
-        if abs(imu_data.roll) > angle_limit or abs(imu_data.pitch) > angle_limit:
-            self.angle_exceed = 1
+        if abs(imu_data.roll) > self.angle_effective_rad or abs(imu_data.pitch) > self.angle_effective_rad:
+            self.imu_angle_exceed = 1
         else:
-            self.angle_exceed = 0
-
+            self.imu_angle_exceed = 0
+    
     def get_current_data(self) -> IMUData:
         with self.data_lock:
             data = self.current_data
-            return data
 
-    def get_odometry_data(self) -> OdometryData:
-        """线程安全地获取当前里程计数据副本"""
-        with self.data_lock:
-            odom = OdometryData(
-                x=self.odometry_data.x,
-                y=self.odometry_data.y,
-                z=self.odometry_data.z,
-                qx=self.odometry_data.qx,
-                qy=self.odometry_data.qy,
-                qz=self.odometry_data.qz,
-                qw=self.odometry_data.qw,
-                vx=self.odometry_data.vx,
-                vy=self.odometry_data.vy,
-                vz=self.odometry_data.vz,
-                wx=self.odometry_data.wx,
-                wy=self.odometry_data.wy,
-                wz=self.odometry_data.wz,
-                timestamp=self.odometry_data.timestamp
+            return IMUData(
+                accel_x=data.accel_x,
+                accel_y=data.accel_y,
+                accel_z=data.accel_z,
+                gyro_x=data.gyro_x,
+                gyro_y=data.gyro_y,
+                gyro_z=data.gyro_z,
+                roll=data.roll - self.roll_bias,
+                pitch=data.pitch - self.pitch_bias,
+                yaw=data.yaw,
+                timestamp=data.timestamp,
+                valid=data.valid
             )
-            _log_info(f"IMU调试: 获取里程计 - x={odom.x:.3f}, y={odom.y:.3f}, yaw={math.degrees(math.atan2(2*(odom.qw*odom.qz + odom.qx*odom.qy), 1-2*(odom.qy**2 + odom.qz**2))):.2f}°")
-            return odom
 
     def get_euler_angles(self) -> Tuple[float, float, float]:
         data = self.get_current_data()
         return data.roll, data.pitch, data.yaw
 
+    def get_pitch(self) -> float:
+        try:
+            _, pitch, _ = self.get_euler_angles()
+            return pitch
+        except Exception as e:
+            print(f"[IMU] Failed to get pitch: {e}")
+            return 0.0
+
+    def get_pitch_rate(self) -> float:
+        try:
+            _, wy, _ = self.get_angular_velocity()
+            return wy
+        except Exception as e:
+            print(f"[IMU] Failed to get pitch_rate: {e}")
+            return 0.0
+
     def get_angular_velocity(self) -> Tuple[float, float, float]:
         data = self.get_current_data()
         return data.gyro_x, data.gyro_y, data.gyro_z
-
+    
     def is_data_valid(self) -> bool:
         data = self.get_current_data()
-        if not data.valid:
-            return False
-        if time.time() - data.timestamp > 0.1:
-            return False
-        return True
-
+        current_time = time.time()
+        return data.valid and (current_time - data.timestamp < 0.1)
+    
     def is_angle_safe(self) -> bool:
-        return self.angle_exceed == 0
-
+        return self.imu_angle_exceed == 0
+    
+    def get_compensated_pitch(self) -> float:
+        data = self.get_current_data()
+        return data.pitch + self.center_pitch
+    
     def reset_yaw(self):
-        _log_info("偏航角重置功能需根据具体IMU型号实现")
+        print("偏航角重置功能需要根据具体IMU型号实现")
 
+    def is_calibrated(self) -> bool:
+        return self.is_calibrated_flag
+    
     def calibrate(self) -> bool:
-        _log_info("开始IMU校准，请保持机器人静止...")
+        print("Starting IMU calibration. Please keep the robot stationary and level...")
+
         calibration_samples = []
+        calibration_time = 3.0
         start_time = time.time()
-        while time.time() - start_time < 3.0:
+
+        while time.time() - start_time < calibration_time:
             data = self.get_current_data()
             if data.valid:
-                calibration_samples.append(data)
+                calibration_samples.append((data.roll, data.pitch))
             time.sleep(0.01)
+
         if len(calibration_samples) < 100:
-            _log_err("校准失败：数据样本不足")
+            print("Calibration failed: Not enough valid data samples were collected.")
             return False
-        avg_roll = sum(s.roll for s in calibration_samples) / len(calibration_samples)
-        avg_pitch = sum(s.pitch for s in calibration_samples) / len(calibration_samples)
-        avg_gyro_z = sum(s.gyro_z for s in calibration_samples) / len(calibration_samples)
-        self.gyro_bias_z = avg_gyro_z
-        _log_info(f"IMU校准完成 - Roll偏移: {math.degrees(avg_roll):.2f}°, Pitch偏移: {math.degrees(avg_pitch):.2f}°, Gyro Z偏置: {math.degrees(avg_gyro_z):.2f}°/s")
+
+        avg_roll = sum(sample[0] for sample in calibration_samples) / len(calibration_samples)
+        avg_pitch = sum(sample[1] for sample in calibration_samples) / len(calibration_samples)
+
+        self.roll_bias = avg_roll
+        self.pitch_bias = avg_pitch
+        self.is_calibrated_flag = True 
+
+        print(f"✅ IMU calibration complete.")
+        print(f"   - Roll bias: {math.degrees(self.roll_bias):.2f}°")
+        print(f"   - Pitch bias: {math.degrees(self.pitch_bias):.2f}°")
+        
         return True
-
+    
     def close(self):
+        print("正在关闭IMU连接...")
         self.stop_reading()
+        
         if self.serial_port and self.serial_port.is_open:
-            self.serial_port.close()
-            _log_info("IMU串口连接已关闭")
+            try:
+                self.serial_port.close()
+                print("IMU串口连接已关闭")
+            except Exception as e:
+                print(f"关闭IMU串口时出错: {e}")
+        elif self.serial_port:
+            print("IMU串口已关闭或未打开")
+        else:
+            print("没有IMU串口需要关闭")
 
-    def attach_robot_controller(self, controller: object):
-        self.robot_controller = controller
-
-    def set_linear_velocity_provider(self, provider: Callable[[], float]):
-        self.linear_velocity_provider = provider
-
-
-    def _get_linear_velocity(self) -> float:
-        """优先从自定义 provider 或 RobotController 获取实时线速度（带调试信息）"""
-        try:
-            # 方式1: 自定义回调
-            if self.linear_velocity_provider is not None:
-                value = self.linear_velocity_provider()
-                if isinstance(value, (int, float)):
-                    return float(value)
-                else:
-                    _log_warn(f"[速度来源] 自定义 provider 返回非数值: {type(value)}")
-
-            # 方式2: 从 RobotController 获取实际线速度（从电机转速计算）
-            if self.robot_controller is not None:
-                if hasattr(self.robot_controller, "get_actual_linear_velocity"):
-                    actual_lin = self.robot_controller.get_actual_linear_velocity()
-                    return float(actual_lin)
-                else:
-                    _log_warn("[速度来源] RobotController 无 'get_actual_linear_velocity' 属性")
-            else:
-                _log_debug("[速度来源] robot_controller 未绑定")
-
-        except Exception as exc:
-            _log_warn(f"[速度来源] 读取线速度失败，使用默认值0: {exc}")
-
-        return 0.0
+imu_controller = IMUController()

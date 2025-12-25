@@ -1,0 +1,7 @@
+# Ignore build and runtime artifacts
+/build/
+/devel/
+/logs/
+/devel_isolated/*
+/build_isolated/*
+/logs/*
