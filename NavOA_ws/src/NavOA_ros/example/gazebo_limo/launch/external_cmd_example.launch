@@ -4,15 +4,15 @@
   <!-- Use the package launch file below instead: -->
   <!--
   ǰ����w����
-  roslaunch NavOA_ros external_cmd.launch forward:=true linear_speed:=0.6 duration:=1.5
+  roslaunch NavOA_ros external_cmd.launch forward:=true linear_speed:=0.5 duration:=5.5
 
   ��ת��a����
-  roslaunch NavOA_ros external_cmd.launch left:=true angular_speed:=0.8 duration:=1.0
+  roslaunch NavOA_ros external_cmd.launch left:=true angular_speed:=0.8 duration:=5.0
 
   ��ת��d����
-  roslaunch NavOA_ros external_cmd.launch right:=true angular_speed:=0.8 duration:=1.0
+  roslaunch NavOA_ros external_cmd.launch right:=true angular_speed:=0.8 duration:=5.0
 
   ���ˣ�x����
-  roslaunch NavOA_ros external_cmd.launch backward:=true linear_speed:=0.4 duration:=1.2
+  roslaunch NavOA_ros external_cmd.launch backward:=true linear_speed:=0.4 duration:=5.2
   -->
 </launch>
