@@ -19,6 +19,8 @@
     <arg name="rknn_core" default="auto"/>
     <arg name="refresh_initial_path" default='true'/>
 
+    <node name="path_segment_publisher" pkg="NavOA_ros" type="path_segment_publisher.py" output="screen"/>
+    
 
     <node name='NavOA_control' pkg="NavOA_ros" type="NavOA_node.py" output="screen">
         <param name="slow_down_radius" value="5.0" />
