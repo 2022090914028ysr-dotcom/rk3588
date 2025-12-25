@@ -20,7 +20,8 @@
     
     <!-- 可选：显式指定 frame（确保与你的 TF 树一致） -->
     <param name="odom_frame" value="odom" />
-    <param name="published_frame" value="odom" />
+    <param name="published_frame" value="base_footprint" />
+    <param name="map_frame" value="map" />
   </node>
 
   <node name="cartographer_occupancy_grid_node" pkg="cartographer_ros"

@@ -18,7 +18,7 @@
     <arg name="rknn_target" default="rk3588"/>
     <arg name="rknn_core" default="auto"/>
     <arg name="refresh_initial_path" default='true'/>
-
+    <node name="path_segment_publisher" pkg="NavOA_ros" type="path_segment_publisher.py" output="screen"/>
 
     <node name='NavOA_control' pkg="NavOA_ros" type="NavOA_node.py" output="screen">
         <param name="slow_down_radius" value="5.0" />
@@ -42,14 +42,13 @@
         <!-- <remap from="/scan" to="/ultrasonic_scan"/> -->
         <remap from="/scan" to="/scan"/>
         <remap from="/NavOA_cmd_vel" to="/cmd_vel"/> 
-<<<<<<< HEAD
-        <remap from="/NavOA_goal" to="/move_base_simple/goal"/>
-=======
+
         <!-- <remap from="/NavOA_goal" to="/move_base_simple/goal"/> -->
         
         <remap from="/NavOA_goal" to="/split_goal"/>
->>>>>>> 31e5e34a157de07d1203330c8b1c5f884cf08ed1
+        
         <!-- <remap from="/initial_path" to="/move_base/GlobalPlanner/plan"/> -->
+
     </node>
 
 
