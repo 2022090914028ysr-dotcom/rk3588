@@ -7,7 +7,7 @@
     <arg name="base_frame" default='base_footprint'/>
     <arg name="lidar_frame" default='laser_frame'/>
     <arg name="scan_range" default='0.1 5.0'/>
-    <arg name="ref_speed" default="0.15"/>
+    <arg name="ref_speed" default="0.3"/>
     <arg name="scan_angle_range" default='-3.14 3.14'/>
     <arg name="marker_size" default='0.05'/>
     <arg name="marker_z" default='0.3'/>
@@ -18,7 +18,9 @@
     <arg name="rknn_target" default="rk3588"/>
     <arg name="rknn_core" default="auto"/>
     <arg name="refresh_initial_path" default='true'/>
+
     <node name="path_segment_publisher" pkg="NavOA_ros" type="path_segment_publisher.py" output="screen"/>
+    <node name="vel_filter" pkg="NavOA_ros" type="vel_filter.py" output="screen"/> 
 
     <node name='NavOA_control' pkg="NavOA_ros" type="NavOA_node.py" output="screen">
         <param name="slow_down_radius" value="5.0" />
@@ -41,7 +43,7 @@
         <param name="refresh_initial_path" value="$(arg refresh_initial_path)"/>
         <!-- <remap from="/scan" to="/ultrasonic_scan"/> -->
         <remap from="/scan" to="/scan"/>
-        <remap from="/NavOA_cmd_vel" to="/cmd_vel"/> 
+        <remap from="/NavOA_cmd_vel" to="/cmd_vel_tem"/> 
 
         <!-- <remap from="/NavOA_goal" to="/move_base_simple/goal"/> -->
         
