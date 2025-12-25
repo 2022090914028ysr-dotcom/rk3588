@@ -1,0 +1,18 @@
+<!-- Example: NavOA external command usage -->
+<launch>
+  <!-- This file is intentionally empty; it's only for documentation. -->
+  <!-- Use the package launch file below instead: -->
+  <!--
+  前进（w）：
+  roslaunch NavOA_ros external_cmd.launch forward:=true linear_speed:=0.6 duration:=1.5
+
+  左转（a）：
+  roslaunch NavOA_ros external_cmd.launch left:=true angular_speed:=0.8 duration:=1.0
+
+  右转（d）：
+  roslaunch NavOA_ros external_cmd.launch right:=true angular_speed:=0.8 duration:=1.0
+
+  后退（x）：
+  roslaunch NavOA_ros external_cmd.launch backward:=true linear_speed:=0.4 duration:=1.2
+  -->
+</launch>

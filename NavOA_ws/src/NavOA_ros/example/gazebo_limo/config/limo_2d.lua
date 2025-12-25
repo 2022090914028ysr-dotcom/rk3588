@@ -26,7 +26,7 @@ options = {
   submap_publish_period_sec = 0.3,
   pose_publish_period_sec = 0.01,        -- 100Hz，匹配 vins_to_odom 的 publish 频率
   trajectory_publish_period_sec = 0.03,
-  
+
   -- 采样率：全部设为 1.0 以保留所有数据
   rangefinder_sampling_ratio = 1.0,
   odometry_sampling_ratio = 1.0,         -- ✅ 不丢弃任何 odom 数据
