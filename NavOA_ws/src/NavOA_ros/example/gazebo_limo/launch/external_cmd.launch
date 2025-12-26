@@ -1,28 +1,29 @@
 <launch>
-    <!-- Direction args: set exactly one to true -->
+    <!-- Define arguments -->
     <arg name="forward" default="false" />
     <arg name="left" default="false" />
     <arg name="right" default="false" />
     <arg name="backward" default="false" />
-
-    <!-- Motion parameters -->
+    <arg name="stand" default="false" />  <!-- Add this line -->
+    <arg name="stop" default="false" />
     <arg name="linear_speed" default="0.5" />
     <arg name="angular_speed" default="0.5" />
-    <arg name="duration" default="1.0" />
+    <arg name="duration" default="3.0" />
     <arg name="enable_external_control" default="true" />
 
-    <!-- Launch the command node from NavOA_ros -->
+
     <node pkg="NavOA_ros" type="launch_control_cmd.py" name="navoa_launch_control" output="screen">
         <param name="forward" value="$(arg forward)" />
         <param name="left" value="$(arg left)" />
         <param name="right" value="$(arg right)" />
         <param name="backward" value="$(arg backward)" />
-
+        <param name="stand" value="$(arg stand)" />  <!-- Add this line -->
         <param name="linear_speed" value="$(arg linear_speed)" />
         <param name="angular_speed" value="$(arg angular_speed)" />
         <param name="duration" value="$(arg duration)" />
         <param name="enable_external_control" value="$(arg enable_external_control)" />
     </node>
+
 </launch>
 
 
