@@ -3,6 +3,7 @@
   <!-- This file is intentionally empty; it's only for documentation. -->
   <!-- Use the package launch file below instead: -->
   <!--
+<<<<<<< HEAD
   Ç°ï¿½ï¿½ï¿½ï¿½wï¿½ï¿½ï¿½ï¿½
   roslaunch NavOA_ros external_cmd.launch forward:=true linear_speed:=0.6 duration:=1.5
 
@@ -13,6 +14,18 @@
   roslaunch NavOA_ros external_cmd.launch right:=true angular_speed:=0.8 duration:=1.0
 
   ï¿½ï¿½ï¿½Ë£ï¿½xï¿½ï¿½ï¿½ï¿½
+=======
+  Ç°½ø£¨w£©£º
+  roslaunch NavOA_ros external_cmd.launch forward:=true linear_speed:=0.6 duration:=1.5
+
+  ×ó×ª£¨a£©£º
+  roslaunch NavOA_ros external_cmd.launch left:=true angular_speed:=0.8 duration:=1.0
+
+  ÓÒ×ª£¨d£©£º
+  roslaunch NavOA_ros external_cmd.launch right:=true angular_speed:=0.8 duration:=1.0
+
+  ºóÍË£¨x£©£º
+>>>>>>> eaf5b020de3d6eb1a76b633df906d9e660c0de31
   roslaunch NavOA_ros external_cmd.launch backward:=true linear_speed:=0.4 duration:=1.2
   -->
 </launch>

@@ -1,8 +1,16 @@
 <launch>
   <!-- <node name="pub_imu" pkg="NavOA_ros" type="imu_publish.py" output="screen" /> -->
+<<<<<<< HEAD
   
   <node pkg="tf" type="static_transform_publisher" name="base_to_imu" 
       args="0 0 0 0 0 0 base_footprint imu_link 100" />
+=======
+  <!-- <node pkg="tf" type="static_transform_publisher" name="base_to_imu" 
+      args="0 0 0 0 0 0 base_footprint imu_link 100" /> -->
+
+  <node pkg="tf2_ros" type="static_transform_publisher" name="base_to_imu"
+      args="0 0 0 0 0 0 base_footprint imu_link" />
+>>>>>>> eaf5b020de3d6eb1a76b633df906d9e660c0de31
 
   <!-- Convert depth image to synthetic laser and merge with lidar -->
   <!-- <include file="$(find NavOA_ros)/example/gazebo_limo/launch/depth_to_laserscan.launch" /> -->
@@ -11,6 +19,8 @@
   <include file="$(find lidar_ros)/launch/lidar.launch" />
   <!-- RF2O consumes /scan and publishes /odom plus odom->base_footprint TF -->
   <include file="$(find rf2o_laser_odometry)/launch/rf2o_laser_odometry.launch" />
+
+  <include file="$(find rf2o_laser_odometry)/launch/ekf_fusion.launch" />
 
   <!-- Add move_base global planning based on a map (map_file arg forwarded) -->
 
