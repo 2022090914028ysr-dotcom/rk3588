@@ -5,6 +5,7 @@
     <arg name="right" default="false" />
     <arg name="backward" default="false" />
     <arg name="stand" default="false" />  <!-- Add this line -->
+    <arg name="walk" default="false" />  <!-- Add this line -->
     <arg name="stop" default="false" />
     <arg name="linear_speed" default="0.5" />
     <arg name="angular_speed" default="0.5" />
@@ -18,6 +19,7 @@
         <param name="right" value="$(arg right)" />
         <param name="backward" value="$(arg backward)" />
         <param name="stand" value="$(arg stand)" />  <!-- Add this line -->
+        <param name="walk" value="$(arg walk)" />  <!-- Add this line -->
         <param name="linear_speed" value="$(arg linear_speed)" />
         <param name="angular_speed" value="$(arg angular_speed)" />
         <param name="duration" value="$(arg duration)" />

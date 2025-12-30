@@ -18,21 +18,23 @@ def main():
     right = rospy.get_param('~right', False)
     backward = rospy.get_param('~backward', False)
     stand = rospy.get_param('~stand', False)
+    walk = rospy.get_param('~walk', False)  # New parameter for walking
 
     linear_speed = rospy.get_param('~linear_speed', 0.5)
     angular_speed = rospy.get_param('~angular_speed', 0.5)
     duration = rospy.get_param('~duration', 1.0)
     enable_external = rospy.get_param('~enable_external_control', True)
 
-    # Check which command is active (including stand)
+    # Check which command is active (including stand and walk)
     true_count = sum([1 if forward else 0,
                       1 if left else 0,
                       1 if right else 0,
                       1 if backward else 0,
-                      1 if stand else 0])
+                      1 if stand else 0,
+                      1 if walk else 0])
     
     if true_count != 1:
-        rospy.logerr('Exactly one of forward/left/right/backward/stand must be true; got %d', true_count)
+        rospy.logerr('Exactly one of forward/left/right/backward/stand/walk must be true; got %d', true_count)
         return
 
     # Handle STAND command separately
@@ -54,7 +56,26 @@ def main():
         
         rospy.loginfo('Stand command completed after %.2f seconds', duration)
         return  # Exit after sending stand command
-
+    
+    # if walk:
+    #     action = 'walk'
+    #     # Create a twist message with linear.z = 0.0 to trigger walking
+    #     walk_twist = Twist()
+    #     walk_twist.linear.z = 0.0  # This should trigger walking mode
+        
+    #     # Publish the walk signal for the specified duration
+    #     rospy.loginfo('Sending walk command (linear.z = 0.0) for %.2f seconds', duration)
+        
+    #     rate = rospy.Rate(10)  # 10 Hz
+    #     end_time = rospy.Time.now() + rospy.Duration(duration)
+        
+    #     while not rospy.is_shutdown() and rospy.Time.now() < end_time:
+    #         cmd_vel_pub.publish(walk_twist)
+    #         rate.sleep()
+        
+    #     rospy.loginfo('Walk command completed after %.2f seconds', duration)
+    #     return
+    
     # Handle movement commands (forward/backward/left/right)
     if enable_external:
         enable_pub.publish(Bool(data=True))

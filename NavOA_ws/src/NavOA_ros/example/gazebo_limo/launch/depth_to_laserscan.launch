@@ -17,7 +17,7 @@
     <!-- 发布 camera 相对于 base_footprint 的静态变换，修改这个-->
 
     <node pkg="tf" type="static_transform_publisher" name="camera_tf_pub"
-        args="0.25 0.0 0.4 0 0 0 base_footprint ascamera_hp60c_camera_link_0 100" />
+        args="0.1 0.0 0.45 0 0 0 base_footprint ascamera_hp60c_camera_link_0 100" />
 
     <!-- <node pkg="tf" type="static_transform_publisher" name="link_to_color_tf_static" 
       args="0 0 0 -1.57079632679 0 -1.57079632679 ascamera_hp60c_camera_link_0 ascamera_hp60c_color_0 100" output="screen" /> -->

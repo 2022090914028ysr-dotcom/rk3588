@@ -37,7 +37,7 @@ class IMUController:
     """IMU控制器类"""
     
     def __init__(self):
-<<<<<<< HEAD
+        
         # --- 替换 robot_config 中的 IMU/安全配置 ---
         # 1. IMU 串口配置 (硬编码)
         # if platform.system() == 'Windows':
@@ -46,15 +46,7 @@ class IMUController:
         #     self.imu_port = "/dev/ttyS1"  # Linux系统默认串口
         # self.imu_baudrate = 230400
         # self.read_timeout = 0.01  # 10ms 超时
-=======
-        if platform.system() == 'Windows':
-            self.imu_port = "COM13"
-        else:
-            self.imu_port = "/dev/ttyS4"
-            
-        self.imu_baudrate = 230400
-        self.read_timeout = 0.01
->>>>>>> 31e5e34a157de07d1203330c8b1c5f884cf08ed1
+        
 
         self.angle_effective_deg = 45.0
         self.angle_effective_rad = math.radians(self.angle_effective_deg)

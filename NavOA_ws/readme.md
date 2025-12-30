@@ -129,8 +129,12 @@ Note: After starting, you need to wait for the relocation function to complete i
 ```
 cd NavOA_ws
 conda deactivate
+export DISPLAY=:0
 
 roslaunch NavOA_ros carto_slam.launch
+
+roslaunch NavOA_ros NavOA_slam.launch
+
 # 3. Save the map when satisfied
 rosrun map_server map_saver -f ~/map
 # While gmapping is running, save the map:
@@ -142,9 +146,42 @@ This launch will start the SLAM mapping function. First, install the required pa
 
 Important: After finishing mapping and before killing the current SLAM terminal, you must promptly run the following command to save the map in `.pbstream` format. Run the following command:
 
+#Save MAP-----------------------------
 ```
-rosservice call /write_state "{filename: '/home/ubuntu/Robit_SlamNav/NavOA_ws/src/NavOA_ros/example/gazebo_limo/maps/limo_map.pbstream', include_unfinished_submaps: true}"
+rosservice call /write_state \
+"filename: '/home/ubuntu/Robit_SlamNav/NavOA_ws/src/NavOA_ros/example/gazebo_limo/maps/limo_map.pbstream'
+include_unfinished_submaps: true"
 ```
+rosrun map_server map_saver -f /home/ubuntu/Robit_SlamNav/NavOA_ws/src/NavOA_ros/example/gazebo_limo/maps/limo_carto
+
 # Must save as `.pbstream` format, and modify the save path to your own address.
+
+
+
+#####################################################easy navigation launch file#####################################################
+cd NavOA_ws
+rm -rf build_isolated/ devel_isolated/
+source devel_isolated/setup.bash
+
+catkin_make_isolated --use-ninja
+
+conda activate nav 
+
+export DISPLAY=:0
+
+tmux attach -t robot_start
+
+taskset -c 1,2 python3  /home/ubuntu/Robit_SlamNav/NavOA_ws/src/NavOA_ros/scripts/pub.py
+
+taskset -c 1,2 python3 /home/ubuntu/Robit_SlamNav/NavOA_ws/src/NavOA_ros/scripts/maplocation.py
+
+taskset -c 5,6 roslaunch NavOA_ros NavOA_gazebo_limo_all.launch
+
+taskset -c 6,7 roslaunch NavOA_ros NavOA_gazebo_limo.launch
+
+roslaunch ascamera hp60c.launch
+
+taskset -c 3,4 
+
 
 **[File Content End]**

@@ -23,5 +23,5 @@
 
 
   <!-- Real robot command bridge listening on /cmd_vel -->
-  <node name="send_commands" pkg="NavOA_ros" type="SendCommands.py" output="screen" />
+  <!-- <node name="send_commands" pkg="NavOA_ros" type="SendCommands.py" output="screen" /> -->
 </launch>
