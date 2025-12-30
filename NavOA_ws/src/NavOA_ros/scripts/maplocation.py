@@ -14,11 +14,9 @@ import time
 
 
 class AutoNavGoalPublisher:
-    def __init__(self, root):
-        self.root = root
-        self.root.title("Auto Nav Goal Publisher")
-        self.root.geometry("900x500")
-        
+    DEFAULT_MAP_PATH = "/home/ubuntu/Robit_SlamNav/NavOA_ws/src/NavOA_ros/example/gazebo_limo/maps/quan/limo_carto.yaml"
+
+    def __init__(self):
         # Map data
         self.map_image = None
         self.map_data = None
@@ -26,37 +24,39 @@ class AutoNavGoalPublisher:
         self.mouse_pressed = False
         self.drag_start_pos = None
         self.drag_current_pos = None
-        
+
         # Points history
         self.points = []
         self.publish_count = 0
-        
+
         # ROS environment (modify if needed)
         self.ros_env = os.environ.copy()
         self.ros_env['ROS_MASTER_URI'] = 'http://localhost:11311'
         self.ros_env['ROS_HOSTNAME'] = 'localhost'
-        
-        # Create interface
-        self.create_widgets()
 
-    def create_widgets(self):
-        # Main container
-        main_paned = tk.PanedWindow(self.root, orient=tk.HORIZONTAL, sashrelief=tk.RAISED, sashwidth=4)
-        main_paned.pack(fill=tk.BOTH, expand=True)
-        
-        # Left panel - Map display
-        left_frame = tk.Frame(main_paned, bg="#1e1e1e")
-        main_paned.add(left_frame, minsize=500)
-        
-        # Right panel - Controls and terminal
-        right_frame = tk.Frame(main_paned, bg="#2b2b2b")
-        main_paned.add(right_frame, minsize=400)
-        
-        # Setup left panel
-        self.setup_map_panel(left_frame)
-        
-        # Setup right panel
-        self.setup_control_panel(right_frame)
+        # Create main window and secondary window
+        self.map_win = tk.Tk()
+        self.map_win.title("Map Display")
+        self.map_win.geometry("360x360")
+        self.map_win.attributes("-fullscreen", False)
+        self.map_win.resizable(True, True)
+
+        self.ctrl_win = tk.Toplevel(self.map_win)
+        self.ctrl_win.title("Control & Terminal")
+        self.ctrl_win.geometry("360x360")
+        self.ctrl_win.attributes("-fullscreen", False)
+        self.ctrl_win.resizable(True, True)
+
+        # Setup map panel in map_win
+        self.setup_map_panel(self.map_win)
+        # Setup control panel in ctrl_win
+        self.setup_control_panel(self.ctrl_win)
+
+        # Try to auto-load default map
+        if os.path.exists(self.DEFAULT_MAP_PATH):
+            self.load_map_from_path(self.DEFAULT_MAP_PATH)
+        else:
+            self.log_terminal(f"Default map not found: {self.DEFAULT_MAP_PATH}")
 
     def setup_map_panel(self, parent):
         """Setup map display panel"""
@@ -83,8 +83,8 @@ class AutoNavGoalPublisher:
                                      bg="#333333", fg="white", font=("Arial", 10))
         self.status_label.pack(side=tk.RIGHT, padx=10)
         
-        # Map canvas
-        self.canvas = tk.Canvas(parent, bg="#1e1e1e", cursor="crosshair")
+        # Map canvas (360x360)
+        self.canvas = tk.Canvas(parent, bg="#1e1e1e", cursor="crosshair", width=360, height=360)
         self.canvas.pack(fill=tk.BOTH, expand=True)
         
         # Coordinate display
@@ -154,27 +154,34 @@ class AutoNavGoalPublisher:
         
         # Terminal output
         term_frame = tk.LabelFrame(parent, text="Terminal Output",
-                                   font=("Arial", 11, "bold"),
-                                   bg="#2b2b2b", fg="white")
+                       font=("Arial", 11, "bold"),
+                       bg="#2b2b2b", fg="white")
         term_frame.pack(fill=tk.BOTH, expand=True, padx=10, pady=10)
-        
-        self.terminal_output = scrolledtext.ScrolledText(term_frame, height=10,
-                                                         bg="#1e1e1e", fg="#00ff00",
-                                                         font=("Courier", 9))
+
+        self.terminal_output = scrolledtext.ScrolledText(term_frame, height=6,
+                                 bg="#1e1e1e", fg="#00ff00",
+                                 font=("Courier", 9), width=40)
         self.terminal_output.pack(fill=tk.BOTH, expand=True, padx=5, pady=5)
-        
+
         # Add clear button for terminal
         clear_term_btn = tk.Button(term_frame, text="Clear Output",
-                                   command=self.clear_terminal,
-                                   width=12, bg="#ff9800", fg="white")
+                       command=self.clear_terminal,
+                       width=12, bg="#ff9800", fg="white")
         clear_term_btn.pack(pady=5)
 
     def log_terminal(self, message):
-        """Add message to terminal output"""
+        """Add message to terminal output, thread-safe"""
+        import threading
         timestamp = datetime.now().strftime("%H:%M:%S")
-        self.terminal_output.insert(tk.END, f"[{timestamp}] {message}\n")
-        self.terminal_output.see(tk.END)
-        self.terminal_output.update()
+        def do_insert():
+            self.terminal_output.insert(tk.END, f"[{timestamp}] {message}\n")
+            self.terminal_output.see(tk.END)
+            self.terminal_output.update()
+        # 如果不是主线程，则用after调度到主线程
+        if threading.current_thread() is threading.main_thread():
+            do_insert()
+        else:
+            self.terminal_output.after(0, do_insert)
 
     def clear_terminal(self):
         """Clear terminal output"""
@@ -194,32 +201,36 @@ class AutoNavGoalPublisher:
         
         self.goal_info.insert(1.0, info)
 
+
     def load_yaml_file(self):
-        """Load YAML configuration file"""
+        """Prompt user to select YAML map file and load it"""
         file_path = filedialog.askopenfilename(
             title="Select Map YAML File",
-            filetypes=[("YAML files", "*.yaml *.yml"), ("All files", "*.*")]
+            filetypes=[("YAML files", "*.yaml *.yml"), ("All files", "*.")]
         )
-
         if file_path:
-            try:
-                with open(file_path, 'r') as f:
-                    self.map_data = yaml.safe_load(f)
+            self.load_map_from_path(file_path)
 
-                # Auto load corresponding image
-                map_dir = os.path.dirname(file_path)
-                image_file = os.path.join(map_dir, self.map_data['image'])
+    def load_map_from_path(self, file_path):
+        """Load map YAML and image from a given path"""
+        try:
+            with open(file_path, 'r') as f:
+                self.map_data = yaml.safe_load(f)
 
-                if os.path.exists(image_file):
-                    self.load_map_image(image_file)
-                    self.log_terminal(f"Map loaded: {os.path.basename(file_path)}")
-                    self.status_label.config(text="Click on map to set goal")
-                else:
-                    messagebox.showwarning("Warning", f"Image file not found: {image_file}")
+            # Auto load corresponding image
+            map_dir = os.path.dirname(file_path)
+            image_file = os.path.join(map_dir, self.map_data['image'])
 
-            except Exception as e:
-                messagebox.showerror("Error", f"Failed to load YAML file: {str(e)}")
-                self.log_terminal(f"Error: {str(e)}")
+            if os.path.exists(image_file):
+                self.load_map_image(image_file)
+                self.log_terminal(f"Map loaded: {os.path.basename(file_path)}")
+                self.status_label.config(text="Click on map to set goal")
+            else:
+                messagebox.showwarning("Warning", f"Image file not found: {image_file}")
+
+        except Exception as e:
+            messagebox.showerror("Error", f"Failed to load YAML file: {str(e)}")
+            self.log_terminal(f"Error: {str(e)}")
 
     def load_map_image(self, image_path):
         """Load and display map image"""
@@ -253,17 +264,8 @@ class AutoNavGoalPublisher:
 
     def resize_image(self, image, max_width=480, max_height=400):
         """Resize image"""
-        width, height = image.size
-        width_ratio = max_width / width
-        height_ratio = max_height / height
-        ratio = min(width_ratio, height_ratio)
-
-        if ratio < 1:
-            new_width = int(width * ratio)
-            new_height = int(height * ratio)
-            return image.resize((new_width, new_height), Image.Resampling.LANCZOS)
-
-        return image
+        # 固定为360x360
+        return image.resize((360, 360), Image.Resampling.LANCZOS)
 
     def pixel_to_world(self, pixel_x, pixel_y):
         """Convert pixel coordinates to world coordinates"""
@@ -567,18 +569,18 @@ class AutoNavGoalPublisher:
         
         # Create and execute command
         cmd = self.create_ros_command(self.current_pose)
-        
+
         def publish_thread():
             success = self.execute_command(cmd)
-            
+
             # Update UI in main thread
-            self.root.after(0, lambda: self.on_publish_complete(success))
-            
+            self.map_win.after(0, lambda: self.on_publish_complete(success))
+
             # Re-enable buttons
-            self.root.after(0, lambda: self.publish_btn.config(
+            self.map_win.after(0, lambda: self.publish_btn.config(
                 state=tk.NORMAL, text="PUBLISH GOAL"))
-            self.root.after(0, lambda: self.stop_btn.config(state=tk.DISABLED))
-        
+            self.map_win.after(0, lambda: self.stop_btn.config(state=tk.DISABLED))
+
         # Start publishing in background thread
         thread = threading.Thread(target=publish_thread, daemon=True)
         thread.start()
@@ -600,38 +602,38 @@ class AutoNavGoalPublisher:
                 if hasattr(self, '_stop_publishing') and self._stop_publishing:
                     self.log_terminal("Publishing stopped!")
                     break
-                    
-                self.root.after(0, lambda idx=i: 
+
+                self.map_win.after(0, lambda idx=i:
                     self.status_label.config(text=f"Publishing goal {idx}/{len(self.points)}"))
-                
+
                 cmd = self.create_ros_command(point)
                 self.log_terminal(f"Publishing goal {i}: ({point['world'][0]:.2f}, {point['world'][1]:.2f})")
-                
+
                 success = self.execute_command(cmd)
-                
+
                 if success:
                     self.publish_count += 1
-                    self.root.after(0, self.update_stats)
-                
+                    self.map_win.after(0, self.update_stats)
+
                 # Wait between goals (except for the last one)
                 if i < len(self.points) and not (hasattr(self, '_stop_publishing') and self._stop_publishing):
                     self.log_terminal(f"Waiting 2 seconds before next goal...")
                     time.sleep(2)
-            
+
             # Clean up
             if hasattr(self, '_stop_publishing'):
                 del self._stop_publishing
-                
+
             # Update UI in main thread
-            self.root.after(0, lambda: self.on_publish_all_complete())
-            
+            self.map_win.after(0, lambda: self.on_publish_all_complete())
+
             # Re-enable buttons
-            self.root.after(0, lambda: self.publish_all_btn.config(
+            self.map_win.after(0, lambda: self.publish_all_btn.config(
                 state=tk.NORMAL, text="PUBLISH ALL"))
-            self.root.after(0, lambda: self.stop_btn.config(state=tk.DISABLED))
-            self.root.after(0, lambda: self.status_label.config(
+            self.map_win.after(0, lambda: self.stop_btn.config(state=tk.DISABLED))
+            self.map_win.after(0, lambda: self.status_label.config(
                 text=f"Published {self.publish_count} goals"))
-        
+
         # Start publishing in background thread
         thread = threading.Thread(target=publish_all_thread, daemon=True)
         thread.start()
@@ -679,10 +681,8 @@ class AutoNavGoalPublisher:
 
 
 def main():
-    root = tk.Tk()
-    app = AutoNavGoalPublisher(root)
-    root.mainloop()
-
+    app = AutoNavGoalPublisher()
+    app.map_win.mainloop()
 
 if __name__ == "__main__":
     main()

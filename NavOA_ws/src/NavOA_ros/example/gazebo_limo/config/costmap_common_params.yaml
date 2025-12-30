@@ -4,7 +4,7 @@ footprint: [[0.25, 0.25], [0.25, -0.25], [-0.25, -0.25], [-0.25, 0.25]]
 # 或者用半径: robot_radius: 0.2
 
 # 膨胀半径 (通用设置)
-inflation_radius: 0.55
+inflation_radius: 0.4
 cost_scaling_factor: 3.0
 
 # 这里的 scan 配置其实对于"只做静态全局规划"不是必须的

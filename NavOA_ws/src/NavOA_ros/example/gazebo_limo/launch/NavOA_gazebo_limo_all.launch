@@ -7,7 +7,7 @@
       args="0 0 0 0 0 0 base_footprint imu_link" />
 
   <!-- Convert depth image to synthetic laser and merge with lidar -->
-  <!-- <include file="$(find NavOA_ros)/example/gazebo_limo/launch/depth_to_laserscan.launch" /> -->
+  <include file="$(find NavOA_ros)/example/gazebo_limo/launch/depth_to_laserscan.launch" />
   
   <!-- Lidar driver publishes /scan and base_footprint->laser_frame TF -->
   <include file="$(find lidar_ros)/launch/lidar.launch" />
@@ -20,7 +20,8 @@
 
 
   
-  <arg name="map_file" default="/home/ubuntu/Robit_SlamNav/NavOA_ws/src/NavOA_ros/example/gazebo_limo/maps/limo_carto.yaml" />
+
+  <arg name="map_file" default="/home/ubuntu/Robit_SlamNav/NavOA_ws/src/NavOA_ros/example/gazebo_limo/quan/maps/limo_carto.yaml" />
   <include file="$(find NavOA_ros)/example/gazebo_limo/launch/global_planner.launch">
     <arg name="map_file" value="$(arg map_file)" /> 
   </include>

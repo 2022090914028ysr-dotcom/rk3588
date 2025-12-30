@@ -42,7 +42,7 @@
         <param name="rknn_core" value="$(arg rknn_core)"/>
         <param name="refresh_initial_path" value="$(arg refresh_initial_path)"/>
         <!-- <remap from="/scan" to="/ultrasonic_scan"/> -->
-        <remap from="/scan" to="/scan"/>
+        <remap from="/scan" to="/merged_scan"/>
         <remap from="/NavOA_cmd_vel" to="/cmd_vel_tem"/> 
 
         <!-- <remap from="/NavOA_goal" to="/move_base_simple/goal"/> -->
@@ -54,6 +54,6 @@
     </node>
 
 
-    <node name="rviz" pkg="rviz" type="rviz" args="-d $(find NavOA_ros)/example/gazebo_limo/rviz/limo_gazebo.rviz" />
+    <!-- <node name="rviz" pkg="rviz" type="rviz" args="-d $(find NavOA_ros)/example/gazebo_limo/rviz/limo_gazebo.rviz" /> -->
 
 </launch>

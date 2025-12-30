@@ -17,5 +17,9 @@
 
     ���ˣ�x����
   roslaunch NavOA_ros external_cmd.launch stand:=true linear_speed:=1.0 duration:=10.0
+  
+    ���������walk
+  roslaunch NavOA_ros external_cmd.launch walk:=true linear_speed:=0.0 duration:=10.0
+
   -->
 </launch>
