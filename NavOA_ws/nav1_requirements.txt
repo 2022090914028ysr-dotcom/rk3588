@@ -1,16 +1,16 @@
 # Nav1 requirements
-numpy==1.23.5 
+
 matplotlib 
-scipy==1.12.0 
+
 pyyaml 
 rospkg 
-cvxpy==1.7.4 
-torch 
+cvxpy
 rich 
-cvxpylayers==0.1.9 
-ecos==2.0.10 
+cvxpylayers 
+ecos
 scikit-learn 
 colorama 
 dill
 gctl==1.2
 scikit-learn
+empy

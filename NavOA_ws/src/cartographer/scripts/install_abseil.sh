@@ -18,9 +18,9 @@ set -o errexit
 set -o verbose
 
 #git clone https://github.com/abseil/abseil-cpp.git
-cd abseil-cpp
+cd /home/ubuntu/Robit_SlamNav/NavOA_ws/src/cartographer/abseil-cpp
 # git checkout 215105818dfde3174fe799600bb0f3cae233d0bf # 20211102.0
-#mkdir build
+# mkdir build
 cd build
 cmake -G Ninja \
   -DCMAKE_BUILD_TYPE=Release \

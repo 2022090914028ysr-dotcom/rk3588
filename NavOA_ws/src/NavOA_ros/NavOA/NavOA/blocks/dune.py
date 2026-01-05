@@ -28,12 +28,28 @@ from ..util import time_it, file_check, repeat_mk_dirs
 from typing import Optional
 import sys
 
+# Clear any cached imports
+if 'rknnlite' in sys.modules:
+    del sys.modules['rknnlite']
+if 'rknnlite.api' in sys.modules:
+    del sys.modules['rknnlite.api']
 
 try:
-    # Optional import; only required when use_rknn=True
-    from rknn.api import RKNN
-except Exception:  # noqa: BLE001
-    RKNN = None
+    # Try RKNNLite first (for newer versions)
+    from rknnlite.api import RKNNLite
+    RKNN = RKNNLite
+    print(f"[DUNE] Using RKNNLite API, constants available: {hasattr(RKNN, 'NPU_CORE_AUTO')}")
+except ImportError as e:
+    print(f"[DUNE] RKNNLite import failed: {e}")
+    try:
+        # Fall back to old RKNN API
+        from rknn.api import RKNN
+        print("[DUNE] Using legacy RKNN API")
+    except ImportError:
+        RKNN = None
+        print("[DUNE] RKNN not available")
+        
+        
 class DUNE(torch.nn.Module):
 
     def __init__(
@@ -246,15 +262,33 @@ class DUNE(torch.nn.Module):
             pass
 
         core_mask = core_map.get(str(self.rknn_core).lower(), 0)
-        print(f"[DUNE][RKNN] init_runtime target={self.rknn_target} core={self.rknn_core} mask={hex(core_mask) if isinstance(core_mask,int) else core_mask}")
+        
+        # SIMPLE FIX: Convert string "None" to Python None, and handle case
+        if self.rknn_target in ["None", "null", ""]:
+            actual_target = None
+        elif self.rknn_target == "rk3588":
+            actual_target = "RK3588"  # Try uppercase
+        else:
+            actual_target = self.rknn_target
+            
+        print(f"[DUNE][RKNN] init_runtime target={actual_target} core={self.rknn_core} mask={hex(core_mask) if isinstance(core_mask,int) else core_mask}")
+        
         try:
             if core_mask:
-                ret = self.rknn.init_runtime(target=self.rknn_target, core_mask=core_mask)
+                ret = self.rknn.init_runtime(target=actual_target, core_mask=core_mask)
             else:
-                ret = self.rknn.init_runtime(target=self.rknn_target)
+                ret = self.rknn.init_runtime(target=actual_target)
         except TypeError:
             # older toolkit without core_mask param
-            ret = self.rknn.init_runtime(target=self.rknn_target)
+            ret = self.rknn.init_runtime(target=actual_target)
+        except Exception as e:
+            # If that fails, try without target
+            print(f"[DUNE][RKNN] First attempt failed: {e}, trying without target...")
+            if core_mask:
+                ret = self.rknn.init_runtime(core_mask=core_mask)
+            else:
+                ret = self.rknn.init_runtime()
+                
         if ret != 0:
             raise RuntimeError(f'init_runtime failed with code {ret}')
 
@@ -353,4 +387,6 @@ class DUNE(torch.nn.Module):
         '''
 
         return self.obstacle_points
+
+
 

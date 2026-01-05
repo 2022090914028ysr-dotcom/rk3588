@@ -15,7 +15,7 @@
     <arg name="dune_checkpoint" default='$(find NavOA_ros)/example/gazebo_limo/pretrain_limo/model_5000.pth'/>
     <arg name="use_rknn" default="true"/>
     <arg name="dune_rknn" default='$(find NavOA_ros)/example/gazebo_limo/pretrain_limo/model_5000_quant.rknn'/>
-    <arg name="rknn_target" default="rk3588"/>
+    <arg name="rknn_target" default="RK3588"/>
     <arg name="rknn_core" default="auto"/>
     <arg name="refresh_initial_path" default='true'/>
 
@@ -54,6 +54,6 @@
     </node>
 
 
-    <!-- <node name="rviz" pkg="rviz" type="rviz" args="-d $(find NavOA_ros)/example/gazebo_limo/rviz/limo_gazebo.rviz" /> -->
+    <node name="rviz" pkg="rviz" type="rviz" args="-d $(find NavOA_ros)/example/gazebo_limo/rviz/limo_gazebo.rviz" />
 
 </launch>
