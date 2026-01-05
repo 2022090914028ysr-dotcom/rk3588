@@ -266,8 +266,8 @@ class DUNE(torch.nn.Module):
         # SIMPLE FIX: Convert string "None" to Python None, and handle case
         if self.rknn_target in ["None", "null", ""]:
             actual_target = None
-        elif self.rknn_target == "rk3588":
-            actual_target = "RK3588"  # Try uppercase
+        elif self.rknn_target == "":
+            actual_target = ""  # Try uppercase
         else:
             actual_target = self.rknn_target
             

@@ -47,7 +47,7 @@ class NavOA_core:
         self.dune_checkpoint = rospy.get_param("~dune_checkpoint", None)
         self.use_rknn = rospy.get_param("~use_rknn", False)
         self.dune_rknn = rospy.get_param("~dune_rknn", None)
-        self.rknn_target = rospy.get_param("~rknn_target", "rk3588")
+        self.rknn_target = rospy.get_param("~rknn_target", "")
         self.rknn_core = rospy.get_param("~rknn_core", "auto")
         self.refresh_initial_path = rospy.get_param("~refresh_initial_path", False)
         self.flip_angle = rospy.get_param("~flip_angle", False)
