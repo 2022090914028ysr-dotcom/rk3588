@@ -1,0 +1,7 @@
+<launch>
+    <arg name="version" default="py" doc="version type [py,cpp]"/>
+    
+    <node name="ascam_rgb_image_py" pkg="ascam_visual" type="ascam_rgb_image.py" output="screen" if="$(eval arg('version') == 'py')"/>
+   <node name="ascam_rgb_image_cpp" pkg="ascam_visual" type="ascam_rgb_image" output="screen" unless="$(eval arg('version') == 'py')"/>
+ 
+</launch>

@@ -6,7 +6,7 @@
 ** WARNING! All changes made in this file will be lost!
 *****************************************************************************/
 
-#include "../../../../src/cartographer_ros/cartographer_rviz/cartographer_rviz/drawable_submap.h"
+#include "cartographer_rviz/drawable_submap.h"
 #include <QtCore/qbytearray.h>
 #include <QtCore/qmetatype.h>
 #if !defined(Q_MOC_OUTPUT_REVISION)

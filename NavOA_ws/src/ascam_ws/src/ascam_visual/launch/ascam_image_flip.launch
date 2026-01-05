@@ -1,0 +1,3 @@
+<launch>
+    <node name="ascam_image_flip_py" pkg="ascam_visual" type="ascam_image_flip.py" output="screen"/>
+</launch>

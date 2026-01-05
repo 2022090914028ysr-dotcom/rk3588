@@ -1,0 +1,6 @@
+<launch>
+    <arg name="camera_type" value="$(env CAMERA_TYPE)" doc="camera_type [astrapro,astraplus]"/>
+    <include file="$(find astra_camera)/launch/astrapro.launch" if="$(eval arg('camera_type') == 'astrapro')"/>
+     <include file="$(find astra_camera)/launch/astraproplus.launch" if="$(eval arg('camera_type') == 'astraplus')" />
+    <node name="IR_transform" pkg="yahboomcar_visual" type="IR_transform" output="screen"/>
+</launch>

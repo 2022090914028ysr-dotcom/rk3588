@@ -5,7 +5,7 @@
 if [ -z "$CATKIN_SHELL" ]; then
   CATKIN_SHELL=sh
 fi
-. "/home/ubuntu/Robit_SlamNav/NavOA_ws/devel_isolated/NavOA_ros/setup.$CATKIN_SHELL"
+. "/home/ubuntu/Robit_SlamNav/NavOA_ws/devel_isolated/astra_tracker/setup.$CATKIN_SHELL"
 
 # detect if running on Darwin platform
 _UNAME=`uname -s`
