@@ -53,7 +53,7 @@ class PAN(torch.nn.Module):
         dune_checkpoint=None,
         dune_rknn=None,
         use_rknn: bool = False,
-        rknn_target: str = "rk3588",
+        rknn_target: str = "",
         rknn_core: str = "auto",
         iter_threshold=0.1,
         adjust_kwargs=dict(),
