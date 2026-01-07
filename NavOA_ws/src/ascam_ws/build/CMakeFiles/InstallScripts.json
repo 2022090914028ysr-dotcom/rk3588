@@ -1,0 +1,16 @@
+{
+	"InstallScripts" : 
+	[
+		"/home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/build/cmake_install.cmake",
+		"/home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/build/gtest/cmake_install.cmake",
+		"/home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/build/gtest/googlemock/cmake_install.cmake",
+		"/home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/build/gtest/googletest/cmake_install.cmake",
+		"/home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/build/ascam_visual/cmake_install.cmake",
+		"/home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/build/astra_tracker/cmake_install.cmake",
+		"/home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/build/astra_tracker/include/astra_tracker/cmake_install.cmake",
+		"/home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/build/ascamera/cmake_install.cmake",
+		"/home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/build/yahboomcar_msgs/cmake_install.cmake",
+		"/home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/build/yahboomcar_mediapipe/cmake_install.cmake"
+	],
+	"Parallel" : false
+}

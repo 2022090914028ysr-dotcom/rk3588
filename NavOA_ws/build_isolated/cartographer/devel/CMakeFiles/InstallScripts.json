@@ -1,0 +1,7 @@
+{
+	"InstallScripts" : 
+	[
+		"/home/ubuntu/Robit_SlamNav/NavOA_ws/build_isolated/cartographer/devel/cmake_install.cmake"
+	],
+	"Parallel" : false
+}

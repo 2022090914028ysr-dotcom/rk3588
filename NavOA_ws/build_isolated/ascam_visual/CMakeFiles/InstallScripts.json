@@ -1,0 +1,10 @@
+{
+	"InstallScripts" : 
+	[
+		"/home/ubuntu/Robit_SlamNav/NavOA_ws/build_isolated/ascam_visual/cmake_install.cmake",
+		"/home/ubuntu/Robit_SlamNav/NavOA_ws/build_isolated/ascam_visual/gtest/cmake_install.cmake",
+		"/home/ubuntu/Robit_SlamNav/NavOA_ws/build_isolated/ascam_visual/gtest/googlemock/cmake_install.cmake",
+		"/home/ubuntu/Robit_SlamNav/NavOA_ws/build_isolated/ascam_visual/gtest/googletest/cmake_install.cmake"
+	],
+	"Parallel" : false
+}

@@ -1,6 +1,6 @@
-# ninja log v5
-0	42	1767514790521302585	/home/ubuntu/Robit_SlamNav/NavOA_ws/devel_isolated/NavOA_ros/include/NavOA_ros/RefSpeedConfig.h	4f034e37f31fba66
-0	42	1767514790521302585	/home/ubuntu/Robit_SlamNav/NavOA_ws/devel_isolated/NavOA_ros/share/NavOA_ros/docs/RefSpeedConfig.dox	4f034e37f31fba66
-0	42	1767514790521302585	/home/ubuntu/Robit_SlamNav/NavOA_ws/devel_isolated/NavOA_ros/share/NavOA_ros/docs/RefSpeedConfig-usage.dox	4f034e37f31fba66
-0	42	1767514790521302585	/home/ubuntu/Robit_SlamNav/NavOA_ws/devel_isolated/NavOA_ros/lib/python3/dist-packages/NavOA_ros/cfg/RefSpeedConfig.py	4f034e37f31fba66
-0	42	1767514790521302585	/home/ubuntu/Robit_SlamNav/NavOA_ws/devel_isolated/NavOA_ros/share/NavOA_ros/docs/RefSpeedConfig.wikidoc	4f034e37f31fba66
+# ninja log v7
+5	78	1767668982720373292	/home/ubuntu/Robit_SlamNav/NavOA_ws/devel_isolated/NavOA_ros/include/NavOA_ros/RefSpeedConfig.h	2248447be67c6bd7
+5	78	1767668982720373292	/home/ubuntu/Robit_SlamNav/NavOA_ws/devel_isolated/NavOA_ros/share/NavOA_ros/docs/RefSpeedConfig.dox	2248447be67c6bd7
+5	78	1767668982720373292	/home/ubuntu/Robit_SlamNav/NavOA_ws/devel_isolated/NavOA_ros/share/NavOA_ros/docs/RefSpeedConfig-usage.dox	2248447be67c6bd7
+5	78	1767668982720373292	/home/ubuntu/Robit_SlamNav/NavOA_ws/devel_isolated/NavOA_ros/lib/python3/dist-packages/NavOA_ros/cfg/RefSpeedConfig.py	2248447be67c6bd7
+5	78	1767668982720373292	/home/ubuntu/Robit_SlamNav/NavOA_ws/devel_isolated/NavOA_ros/share/NavOA_ros/docs/RefSpeedConfig.wikidoc	2248447be67c6bd7

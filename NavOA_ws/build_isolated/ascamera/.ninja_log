@@ -1,0 +1,16 @@
+# ninja log v7
+9	3304	1767666301315849726	CMakeFiles/ascamera_node.dir/src/TfTreeFrameIdInfo.cpp.o	e42b51d0533933d5
+8	9205	1767666301315849726	CMakeFiles/ascamera_node.dir/src/Camera.cpp.o	a108c486c85e9b4e
+6	12455	1767666301311849680	CMakeFiles/ascamera_node.dir/src/ascamera_node.cpp.o	853418db44d31024
+7	12838	1767666301311849680	CMakeFiles/ascamera_node.dir/src/CameraSrv.cpp.o	2d8dc067760b6fb5
+7	20624	1767666301311849680	CMakeFiles/ascamera_node.dir/src/CameraPublisher.cpp.o	e83e81be2eeb3ad0
+20625	21343	1767666321932082091	/home/ubuntu/Robit_SlamNav/NavOA_ws/devel_isolated/ascamera/lib/ascamera/ascamera_node	e93ce9e6abb1f20c
+11	2253	1767668988252478815	build.ninja	e133bd73ed7d5756
+11	2253	1767668988252478815	/home/ubuntu/Robit_SlamNav/NavOA_ws/build_isolated/ascamera/cmake_install.cmake	e133bd73ed7d5756
+11	2253	1767668988252478815	/home/ubuntu/Robit_SlamNav/NavOA_ws/build_isolated/ascamera/gtest/cmake_install.cmake	e133bd73ed7d5756
+11	2253	1767668988252478815	/home/ubuntu/Robit_SlamNav/NavOA_ws/build_isolated/ascamera/gtest/googlemock/cmake_install.cmake	e133bd73ed7d5756
+11	2253	1767668988252478815	/home/ubuntu/Robit_SlamNav/NavOA_ws/build_isolated/ascamera/gtest/googletest/cmake_install.cmake	e133bd73ed7d5756
+11	2253	1767668988252478815	/home/ubuntu/Robit_SlamNav/NavOA_ws/build_isolated/ascamera/CTestTestfile.cmake	e133bd73ed7d5756
+11	2253	1767668988252478815	/home/ubuntu/Robit_SlamNav/NavOA_ws/build_isolated/ascamera/gtest/CTestTestfile.cmake	e133bd73ed7d5756
+11	2253	1767668988252478815	/home/ubuntu/Robit_SlamNav/NavOA_ws/build_isolated/ascamera/gtest/googlemock/CTestTestfile.cmake	e133bd73ed7d5756
+11	2253	1767668988252478815	/home/ubuntu/Robit_SlamNav/NavOA_ws/build_isolated/ascamera/gtest/googletest/CTestTestfile.cmake	e133bd73ed7d5756

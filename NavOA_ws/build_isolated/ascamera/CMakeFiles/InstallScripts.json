@@ -1,0 +1,10 @@
+{
+	"InstallScripts" : 
+	[
+		"/home/ubuntu/Robit_SlamNav/NavOA_ws/build_isolated/ascamera/cmake_install.cmake",
+		"/home/ubuntu/Robit_SlamNav/NavOA_ws/build_isolated/ascamera/gtest/cmake_install.cmake",
+		"/home/ubuntu/Robit_SlamNav/NavOA_ws/build_isolated/ascamera/gtest/googlemock/cmake_install.cmake",
+		"/home/ubuntu/Robit_SlamNav/NavOA_ws/build_isolated/ascamera/gtest/googletest/cmake_install.cmake"
+	],
+	"Parallel" : false
+}

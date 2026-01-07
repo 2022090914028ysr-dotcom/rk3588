@@ -26,11 +26,21 @@ device = torch.device("cpu")
 time_print = False
 
 def np_to_tensor(array):
-        
-    if np.isscalar(array):
-        return torch.tensor(array).type(torch.float32).to(device)
 
-    return torch.from_numpy(array).type(torch.float32).to(device)
+    if array is None:
+        return None
+
+    # If already a tensor, just move/cast it.
+    if torch.is_tensor(array):
+        return array.to(device=device, dtype=torch.float32)
+
+    # Scalars
+    if np.isscalar(array):
+        return torch.tensor(array, dtype=torch.float32, device=device)
+
+    # Robustly handle any array-like (NumPy arrays, matrices, lists, etc.)
+    # Use as_tensor instead of from_numpy to avoid strict NumPy type coupling.
+    return torch.as_tensor(array, dtype=torch.float32, device=device)
 
 def tensor_to_np(tensor):
 

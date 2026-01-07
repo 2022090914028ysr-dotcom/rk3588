@@ -1,0 +1,10 @@
+{
+	"InstallScripts" : 
+	[
+		"/home/ubuntu/Robit_SlamNav/NavOA_ws/build_isolated/yahboomcar_msgs/cmake_install.cmake",
+		"/home/ubuntu/Robit_SlamNav/NavOA_ws/build_isolated/yahboomcar_msgs/gtest/cmake_install.cmake",
+		"/home/ubuntu/Robit_SlamNav/NavOA_ws/build_isolated/yahboomcar_msgs/gtest/googlemock/cmake_install.cmake",
+		"/home/ubuntu/Robit_SlamNav/NavOA_ws/build_isolated/yahboomcar_msgs/gtest/googletest/cmake_install.cmake"
+	],
+	"Parallel" : false
+}
