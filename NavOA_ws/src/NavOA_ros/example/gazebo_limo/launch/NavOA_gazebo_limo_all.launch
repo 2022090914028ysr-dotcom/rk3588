@@ -32,4 +32,20 @@
 
   <!-- Real robot command bridge listening on /cmd_vel -->
 
+  <!-- Bridge /cmd_vel and IMU over /dev/ttyS6 to the other PC -->
+  <node pkg="NavOA_ros" type="serial_cmd_vel_imu_bridge.py" name="serial_cmd_vel_imu_bridge" output="screen">
+    <param name="serial_port" value="/dev/ttyS6" />
+    <param name="baudrate" value="230400" />
+    <!-- Publish IMU from serial onto /imu_serial; mux will prioritize this -->
+    <param name="imu_topic" value="/imu_serial" />
+  </node>
+
+  <!-- IMU mux: prefer serial IMU (/imu_serial), fall back to ROS /imu -->
+  <node pkg="NavOA_ros" type="imu_mux.py" name="imu_mux" output="screen">
+    <param name="primary_topic" value="/imu_serial" />
+    <param name="fallback_topic" value="/imu" />
+    <param name="output_topic" value="/imu_mux" />
+    <param name="timeout" value="0.2" />
+  </node>
+
 </launch>

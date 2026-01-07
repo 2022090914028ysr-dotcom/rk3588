@@ -17,10 +17,23 @@
 set -o errexit
 set -o verbose
 
-#git clone https://github.com/abseil/abseil-cpp.git
-cd /home/ubuntu/Robit_SlamNav/NavOA_ws/src/cartographer/abseil-cpp
-# git checkout 215105818dfde3174fe799600bb0f3cae233d0bf # 20211102.0
-# mkdir build
+
+# Ensure dependencies
+sudo apt-get update
+sudo apt-get install -y ninja-build stow git cmake
+
+# Download Abseil if not present
+ABSEIL_SRC="/home/ubuntu/Robit_SlamNav/NavOA_ws/src/cartographer/abseil-cpp"
+if [ ! -d "$ABSEIL_SRC" ]; then
+  git clone https://github.com/abseil/abseil-cpp.git "$ABSEIL_SRC"
+fi
+
+# Optionally checkout a specific commit for reproducibility
+# cd "$ABSEIL_SRC" && git checkout 215105818dfde3174fe799600bb0f3cae233d0bf
+
+# Build and install Abseil
+cd "$ABSEIL_SRC"
+mkdir -p build
 cd build
 cmake -G Ninja \
   -DCMAKE_BUILD_TYPE=Release \
@@ -28,8 +41,8 @@ cmake -G Ninja \
   -DCMAKE_INSTALL_PREFIX=/usr/local/stow/absl \
   ..
 ninja
-sudo apt-get update
-sudo apt-get install -y ninja-build
-sudo apt-get install -y stow
+sudo ninja install
+
+# Stow Abseil
 cd /usr/local/stow
 sudo stow absl
