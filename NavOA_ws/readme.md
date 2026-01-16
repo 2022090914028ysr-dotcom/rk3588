@@ -165,7 +165,7 @@ source devel_isolated/setup.bash
 
 catkin_make_isolated --use-ninja
 
-conda activate nav 
+conda activate control 
 
 export DISPLAY=:0
 
@@ -181,7 +181,7 @@ taskset -c 6,7 roslaunch NavOA_ros NavOA_gazebo_limo.launch
 
 roslaunch ascamera hp60c.launch
 
-taskset -c 3,4 
+taskset -c 6,7 python Ros_control/cmd_vel_bridge.py 
 
 
 **[File Content End]**

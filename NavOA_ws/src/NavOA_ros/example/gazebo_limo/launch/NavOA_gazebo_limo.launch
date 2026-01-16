@@ -1,4 +1,6 @@
-<launch> 
+<launch>
+    <arg name="use_sim_time" default="false"/>
+    <param name="use_sim_time" value="$(arg use_sim_time)"/>
     <!-- Ensure Python can import the embedded NavOA package -->
     <env name="PYTHONPATH" value="$(find NavOA_ros)/NavOA:$(optenv PYTHONPATH)"/>
     
@@ -19,10 +21,10 @@
     <arg name="rknn_core" default="auto"/>
     <arg name="refresh_initial_path" default='true'/>
 
-    <node name="path_segment_publisher" pkg="NavOA_ros" type="path_segment_publisher.py" output="screen"/>
-    <node name="vel_filter" pkg="NavOA_ros" type="vel_filter.py" output="screen"/> 
+    <node name="path_segment_publisher" pkg="NavOA_ros" type="path_segment_publisher.py" output="screen" launch-prefix="python3"/>
+    <node name="vel_filter" pkg="NavOA_ros" type="vel_filter.py" output="screen" launch-prefix="python3"/> 
 
-    <node name='NavOA_control' pkg="NavOA_ros" type="NavOA_node.py" output="screen">
+    <node name='NavOA_control' pkg="NavOA_ros" type="NavOA_node.py" output="screen" launch-prefix="python3">
         <param name="slow_down_radius" value="5.0" />
         <param name="max_speed_scale" value="2" />
         <param name="min_speed_near_goal" value="0.08" />

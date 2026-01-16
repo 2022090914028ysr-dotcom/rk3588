@@ -16,6 +16,7 @@ from visualization_msgs.msg import MarkerArray, Marker
 from sensor_msgs.msg import LaserScan
 from math import sin, cos, atan2
 import numpy as np
+import traceback
 from NavOA.util import get_transform
 import tf
 from std_msgs.msg import Float32, Bool
@@ -303,8 +304,11 @@ class NavOA_core:
                         + str(self.NavOA_planner.collision_threshold),
                     )
             
-            except Exception as e:
-                rospy.logerr_throttle(1.0, f"[NavOA] Error in main loop: {e}")
+            except Exception:
+                rospy.logerr_throttle(
+                    1.0,
+                    "[NavOA] Error in main loop:\n" + traceback.format_exc(),
+                )
                 self.vel_pub.publish(Twist())
 
             r.sleep()
