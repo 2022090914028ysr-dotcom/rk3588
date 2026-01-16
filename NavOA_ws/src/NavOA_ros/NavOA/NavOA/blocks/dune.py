@@ -338,8 +338,13 @@ class DUNE(torch.nn.Module):
             if self._dbg_counter % 50 == 1:
                 print(f"[DUNE][dbg] rknn chunk start={start} len={this_len} input={buf.shape} output={mu_np.shape}")
 
-        mu_concat = np.concatenate(mu_list, axis=0)  # (N, edge_dim)
-        mu_tensor = torch.from_numpy(mu_concat.T)  # (edge_dim, N)
+        mu_concat = np.concatenate(mu_list, axis=0).astype(np.float32, copy=False)  # (N, edge_dim)
+        # torch.from_numpy is fastest but can fail in some mixed/embedded numpy setups.
+        try:
+            mu_tensor = torch.from_numpy(mu_concat.T)  # (edge_dim, N)
+        except TypeError:
+            # Fallback: avoid the NumPy C-API path by materializing a Python list.
+            mu_tensor = torch.tensor(mu_concat.T.tolist(), dtype=torch.float32)
         return mu_tensor
 
 

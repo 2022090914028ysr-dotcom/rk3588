@@ -1,4 +1,6 @@
 <launch>
+  <arg name="use_sim_time" default="false"/>
+  <param name="use_sim_time" value="$(arg use_sim_time)"/>
   <!-- <node name="pub_imu" pkg="NavOA_ros" type="imu_publish.py" output="screen" /> -->
   <!-- <node pkg="tf" type="static_transform_publisher" name="base_to_imu" 
       args="0 0 0 0 0 0 base_footprint imu_link 100" /> -->

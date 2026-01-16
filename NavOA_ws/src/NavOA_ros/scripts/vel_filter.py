@@ -3,38 +3,93 @@
 
 import rospy
 from geometry_msgs.msg import Twist
+from sensor_msgs.msg import LaserScan
+import math
 
 class VelocityFilter:
     def __init__(self):
         # 1. 初始化节点
         rospy.init_node('cmd_vel_modifier_node', anonymous=True)
 
+        # Params
+        self.scan_topic = rospy.get_param('~scan_topic', '/scan')
+        self.allow_reverse = rospy.get_param('~allow_reverse', True)
+        # If True: only allow reverse when an obstacle is close in front
+        self.reverse_requires_obstacle = rospy.get_param('~reverse_requires_obstacle', True)
+        self.reverse_obstacle_distance = float(rospy.get_param('~reverse_obstacle_distance', 0.35))
+        # Front sector half-angle in radians (e.g. 30deg)
+        self.front_half_angle = float(rospy.get_param('~front_half_angle', 0.52))
+        # Limit reverse speed magnitude (m/s)
+        self.max_reverse_speed = float(rospy.get_param('~max_reverse_speed', 0.25))
+
+        self.front_min_range = float('inf')
+        self.obstacle_close = False
+
         # 2. 设置订阅者：监听 /cmd_vel_tem
         self.sub = rospy.Subscriber("/cmd_vel_tem", Twist, self.callback)
+
+        # Subscribe to scan for simple obstacle proximity gating
+        self.scan_sub = rospy.Subscriber(self.scan_topic, LaserScan, self.scan_callback)
 
         # 3. 设置发布者：将处理后的数据发往 /cmd_vel (或者是你的机器人实际接收的话题)
         self.pub = rospy.Publisher("/cmd_vel", Twist, queue_size=10)
 
         rospy.loginfo("节点已启动：正在监听 /cmd_vel_tem 并处理数据...")
 
+    def scan_callback(self, msg: LaserScan):
+        # Compute min range in a front angular window around 0 rad
+        if not msg.ranges or msg.angle_increment == 0.0:
+            self.front_min_range = float('inf')
+            self.obstacle_close = False
+            return
+
+        min_r = float('inf')
+        angle = msg.angle_min
+        for r in msg.ranges:
+            if -self.front_half_angle <= angle <= self.front_half_angle:
+                if r is not None and math.isfinite(r) and r > 0.0:
+                    if r < min_r:
+                        min_r = r
+            angle += msg.angle_increment
+
+        self.front_min_range = min_r
+        self.obstacle_close = (min_r < self.reverse_obstacle_distance)
+
     def callback(self, msg):
         """
         回调函数：每次接收到 /cmd_vel_tem 数据时触发
         """
-        # 复制一份消息，避免直接修改原引用（虽然在Python中赋值对于简单类型是安全的，但这是好习惯）
-        modified_twist = msg
+        # 复制一份消息，避免直接修改原引用
+        modified_twist = Twist()
+        modified_twist.linear.x = msg.linear.x
+        modified_twist.linear.y = msg.linear.y
+        modified_twist.linear.z = msg.linear.z
+        modified_twist.angular.x = msg.angular.x
+        modified_twist.angular.y = msg.angular.y
+        modified_twist.angular.z = msg.angular.z
 
-        # 4. 核心逻辑：检测 x 方向线速度是否小于 0
-        if modified_twist.linear.x < 0:
+        # 核心逻辑：
+        # - 永远不要“放大”倒车速度（之前的 -0.3 会导致意外快速后退）
+        # - 可配置：只有前方检测到近距离障碍物时才允许倒车
+        if modified_twist.linear.x < 0.0:
             original_x = modified_twist.linear.x
-            
-            # 5. 在此基础上减去 0.3
-            # 注意：负数减去 0.3 会变得更小（即绝对值变大，倒退速度变快）
-            # 例如：-0.1 变为 -0.4
-            modified_twist.linear.x = original_x - 0.3
-            
-            # 打印调试信息（可选）
-            rospy.loginfo(f"检测到后退: 原始值={original_x}, 修改后={modified_twist.linear.x}")
+
+            if not self.allow_reverse:
+                modified_twist.linear.x = 0.0
+                rospy.loginfo_throttle(0.5, f"倒车已禁用，已钳制为 0: 原始值={original_x}")
+            elif self.reverse_requires_obstacle and (not self.obstacle_close):
+                modified_twist.linear.x = 0.0
+                rospy.loginfo_throttle(
+                    0.5,
+                    f"未检测到前方近障碍物(最小距离={self.front_min_range:.3f}m)，倒车指令已钳制为 0: 原始值={original_x}",
+                )
+            else:
+                # Obstacle close: allow reverse but cap magnitude
+                modified_twist.linear.x = max(original_x, -abs(self.max_reverse_speed))
+                rospy.loginfo_throttle(
+                    0.5,
+                    f"检测到前方近障碍物(最小距离={self.front_min_range:.3f}m)，允许倒车并限幅: 原始值={original_x}, 修改后={modified_twist.linear.x}",
+                )
         
         # 6. 将（修改后或未修改的）数据发布出去
         self.pub.publish(modified_twist)
