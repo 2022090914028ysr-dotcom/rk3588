@@ -183,5 +183,5 @@ roslaunch ascamera hp60c.launch
 
 taskset -c 6,7 python Ros_control/cmd_vel_bridge.py 
 
-
+did some correction 
 **[File Content End]**
