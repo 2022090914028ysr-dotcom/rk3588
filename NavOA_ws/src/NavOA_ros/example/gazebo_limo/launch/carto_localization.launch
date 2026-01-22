@@ -4,11 +4,12 @@
   <arg name="imu_topic" default="/imu_mux" />
   <arg name="odom_topic" default="/odom" />
   <arg name="load_state_filename" default="$(find NavOA_ros)/example/gazebo_limo/maps/quan/limo_map.pbstream" />
+  <arg name="configuration_basename" default="limo_localization_recover.lua" />
 
   <node name="cartographer_node" pkg="cartographer_ros"
       type="cartographer_node" args="
           -configuration_directory $(find NavOA_ros)/example/gazebo_limo/config
-          -configuration_basename limo_localization_fast.lua
+        -configuration_basename $(arg configuration_basename)
           -load_state_filename $(arg load_state_filename)" 
       launch-prefix="taskset -c 6,7"
       output="screen">

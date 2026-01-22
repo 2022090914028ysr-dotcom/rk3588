@@ -19,6 +19,10 @@
 
   <include file="$(find rf2o_laser_odometry)/launch/ekf_fusion.launch" />
 
+  <include file="$(find NavOA_ros)/launch/voice_nav.launch">
+    <arg name="places_yaml" value="$(find NavOA_ros)/example/gazebo_limo/config/voice_places.yaml" />
+  </include>
+
   <!-- Add move_base global planning based on a map (map_file arg forwarded) -->
 
 

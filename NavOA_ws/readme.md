@@ -183,5 +183,74 @@ roslaunch ascamera hp60c.launch
 
 taskset -c 6,7 python Ros_control/cmd_vel_bridge.py 
 
+sudo stty -F /dev/ttyS6 230400 cs8 -cstopb -parenb -ixon -ixoff
+sudo cat /dev/ttyS6
+
 did some correction 
 **[File Content End]**
+
+
+#####################################################voice navigation (English place names)#####################################################
+
+This workspace already uses RViz "2D Nav Goal" by publishing a `PoseStamped` to `/move_base_simple/goal`.
+The voice integration added here follows the same interface:
+
+- Publish recognized text to: `/voice/text` (`std_msgs/String`)
+- The router publishes a goal to: `/move_base_simple/goal` (`geometry_msgs/PoseStamped`)
+
+### 1) Start the router
+
+In a terminal (after your usual `source devel_isolated/setup.bash`):
+
+```
+roslaunch NavOA_ros voice_nav.launch
+```
+
+It loads named places from:
+
+- `NavOA_ros/example/gazebo_limo/config/voice_places.yaml`
+
+Supported place names (canonical keys):
+
+- `kitchen`
+- `meeting_room` (accepts "meeting room")
+- `living_room` (accepts "living room")
+- `balcony` (accepts "balcony" / "balcoy")
+- `bedroom` (accepts "bed room")
+- `hall` (accepts "hall room" / "hallway")
+
+### 2) Test without a real microphone (simulate ASR)
+
+Send a text command:
+
+```
+rostopic pub -1 /voice/text std_msgs/String "data: 'go to kitchen'"
+```
+
+Other examples:
+
+```
+rostopic pub -1 /voice/text std_msgs/String "data: 'navigate to meeting room'"
+rostopic pub -1 /voice/text std_msgs/String "data: 'go living room'"
+rostopic pub -1 /voice/text std_msgs/String "data: 'go to balcoy'"
+```
+
+### 3) Fill in real coordinates for each place
+
+By default all places are 0.0. To set a place:
+
+1) In RViz, use **2D Nav Goal** to click the desired location and heading.
+2) In another terminal, run the capture helper (it waits for the next `/move_base_simple/goal`):
+
+```
+rosrun NavOA_ros waypoint_capture_from_goal.py _name:=kitchen
+```
+
+3) Click the goal in RViz again. The terminal prints a YAML line like:
+
+```
+	kitchen: { x: 1.234, y: -0.456, yaw: 1.570 }
+```
+
+4) Paste it under `places:` in `NavOA_ros/example/gazebo_limo/config/voice_places.yaml`.
+

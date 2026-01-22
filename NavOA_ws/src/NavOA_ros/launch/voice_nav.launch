@@ -1,0 +1,17 @@
+<launch>
+  <!-- Voice (text) to navigation goal router.
+       Publish recognized text to /voice/text, this node publishes PoseStamped to /move_base_simple/goal. -->
+
+  <arg name="voice_topic" default="/voice/text" />
+  <arg name="goal_topic" default="/move_base_simple/goal" />
+  <arg name="frame_id" default="map" />
+  <arg name="places_yaml" default="$(find NavOA_ros)/example/gazebo_limo/config/voice_places.yaml" />
+
+  <node name="voice_goal_router" pkg="NavOA_ros" type="voice_goal_router.py" output="screen">
+    <!-- Load into this node's private namespace; YAML root key 'places' becomes ~places -->
+    <rosparam file="$(arg places_yaml)" command="load" />
+    <param name="voice_topic" value="$(arg voice_topic)" />
+    <param name="goal_topic" value="$(arg goal_topic)" />
+    <param name="frame_id" value="$(arg frame_id)" />
+  </node>
+</launch>

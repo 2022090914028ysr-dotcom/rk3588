@@ -199,6 +199,14 @@ if(CMAKE_INSTALL_COMPONENT STREQUAL "Unspecified" OR NOT CMAKE_INSTALL_COMPONENT
   file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib/NavOA_ros" TYPE PROGRAM FILES "/home/ubuntu/Robit_SlamNav/NavOA_ws/build_isolated/NavOA_ros/catkin_generated/installspace/test_ref_speed.py")
 endif()
 
+if(CMAKE_INSTALL_COMPONENT STREQUAL "Unspecified" OR NOT CMAKE_INSTALL_COMPONENT)
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib/NavOA_ros" TYPE PROGRAM FILES "/home/ubuntu/Robit_SlamNav/NavOA_ws/build_isolated/NavOA_ros/catkin_generated/installspace/voice_goal_router.py")
+endif()
+
+if(CMAKE_INSTALL_COMPONENT STREQUAL "Unspecified" OR NOT CMAKE_INSTALL_COMPONENT)
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib/NavOA_ros" TYPE PROGRAM FILES "/home/ubuntu/Robit_SlamNav/NavOA_ws/build_isolated/NavOA_ros/catkin_generated/installspace/waypoint_capture_from_goal.py")
+endif()
+
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for each subdirectory.
   include("/home/ubuntu/Robit_SlamNav/NavOA_ws/build_isolated/NavOA_ros/gtest/cmake_install.cmake")

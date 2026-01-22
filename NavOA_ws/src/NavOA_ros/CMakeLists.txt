@@ -168,6 +168,8 @@ catkin_install_python(PROGRAMS
   scripts/velocity_subscriber.py
   scripts/data_logger.py
   scripts/test_ref_speed.py
+  scripts/voice_goal_router.py
+  scripts/waypoint_capture_from_goal.py
   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
 
