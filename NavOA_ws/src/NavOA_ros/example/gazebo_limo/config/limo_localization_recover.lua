@@ -9,10 +9,10 @@ MAP_BUILDER.num_background_threads = 2
 -- Process scans even when stationary (important for fast recovery).
 TRAJECTORY_BUILDER_2D.motion_filter.max_distance_meters = 0.02
 TRAJECTORY_BUILDER_2D.motion_filter.max_angle_radians = math.rad(0.5)
-TRAJECTORY_BUILDER_2D.motion_filter.max_time_seconds = 0.1
+TRAJECTORY_BUILDER_2D.motion_filter.max_time_seconds = 0.5
 
 -- Lower latency.
-TRAJECTORY_BUILDER_2D.num_accumulated_range_data = 1
+TRAJECTORY_BUILDER_2D.num_accumulated_range_data = 2
 
 -- Keep submaps small for quicker matching.
 TRAJECTORY_BUILDER.pure_localization_trimmer = {
@@ -20,11 +20,11 @@ TRAJECTORY_BUILDER.pure_localization_trimmer = {
 }
 
 -- More frequent optimization so constraints take effect quickly.
-POSE_GRAPH.optimize_every_n_nodes = 10
+POSE_GRAPH.optimize_every_n_nodes = 20
 
 -- Try global constraints more often (this is what helps recovery).
 POSE_GRAPH.global_sampling_ratio = 0.05
-POSE_GRAPH.constraint_builder.sampling_ratio = 0.7
+POSE_GRAPH.constraint_builder.sampling_ratio = 0.3
 
 -- Global localization acceptance threshold.
 -- If you see occasional wrong "teleport" to a different corridor, increase this (e.g. 0.45).

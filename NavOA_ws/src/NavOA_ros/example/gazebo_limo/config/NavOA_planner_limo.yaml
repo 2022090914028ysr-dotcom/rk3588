@@ -11,8 +11,9 @@ robot:
   kinematics: 'diff'
   max_speed: [0.4, 1]
   max_acce: [0.5, 1]
-  length: 0.8
-  width: 0.5
+  # Real robot size (meters)
+  length: 0.40
+  width: 0.35
 
 # initial path
 ipath:
@@ -38,5 +39,11 @@ adjust:
   q_s: 0.3
   p_u: 2.5
   eta: 10.0
-  d_max: 0.15
-  d_min: 0.01
+  # Safety distance shaping:
+  # - d_min: desired minimum obstacle distance (meters)
+  # - d_max: max distance where obstacles still affect optimization (meters)
+  d_min: 0.30
+  d_max: 1.00
+
+# Stop condition (meters). If planner estimates min_distance < threshold => stop.
+collision_threshold: 0.30

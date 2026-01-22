@@ -17,6 +17,15 @@ class VelocityFilter:
         # If True: only allow reverse when an obstacle is close in front
         self.reverse_requires_obstacle = rospy.get_param('~reverse_requires_obstacle', True)
         self.reverse_obstacle_distance = float(rospy.get_param('~reverse_obstacle_distance', 0.35))
+
+        # Forward safety (stop before hitting walls)
+        self.enable_forward_safety = rospy.get_param('~enable_forward_safety', True)
+        # If front obstacle is closer than this, block forward motion
+        self.forward_stop_distance = float(rospy.get_param('~forward_stop_distance', 0.30))
+        # If closer than this, linearly scale down forward speed (must be > stop_distance)
+        self.forward_slow_distance = float(rospy.get_param('~forward_slow_distance', 0.60))
+        # Minimum forward speed allowed when slowing (set 0 to allow crawl)
+        self.min_forward_speed = float(rospy.get_param('~min_forward_speed', 0.05))
         # Front sector half-angle in radians (e.g. 30deg)
         self.front_half_angle = float(rospy.get_param('~front_half_angle', 0.52))
         # Limit reverse speed magnitude (m/s)
@@ -89,6 +98,32 @@ class VelocityFilter:
                 rospy.loginfo_throttle(
                     0.5,
                     f"检测到前方近障碍物(最小距离={self.front_min_range:.3f}m)，允许倒车并限幅: 原始值={original_x}, 修改后={modified_twist.linear.x}",
+                )
+
+        # Forward safety: keep distance from walls/obstacles
+        if self.enable_forward_safety and modified_twist.linear.x > 0.0:
+            original_x = modified_twist.linear.x
+            d = self.front_min_range
+
+            # Hard stop inside stop distance
+            if math.isfinite(d) and d < self.forward_stop_distance:
+                modified_twist.linear.x = 0.0
+                rospy.logwarn_throttle(
+                    0.2,
+                    f"前方障碍过近(最小距离={d:.3f}m < stop={self.forward_stop_distance:.2f}m)，前进指令已钳制为 0: 原始值={original_x}",
+                )
+            # Soft slow-down in the buffer zone
+            elif math.isfinite(d) and d < self.forward_slow_distance and self.forward_slow_distance > self.forward_stop_distance:
+                scale = (d - self.forward_stop_distance) / (self.forward_slow_distance - self.forward_stop_distance)
+                scale = max(0.0, min(1.0, scale))
+                limited = original_x * scale
+                limited = max(0.0, min(original_x, limited))
+                if self.min_forward_speed > 0.0:
+                    limited = max(min(limited, original_x), min(self.min_forward_speed, original_x))
+                modified_twist.linear.x = limited
+                rospy.loginfo_throttle(
+                    0.5,
+                    f"前方接近障碍(最小距离={d:.3f}m)，前进限速: 原始={original_x:.3f}, 修改后={modified_twist.linear.x:.3f}",
                 )
         
         # 6. 将（修改后或未修改的）数据发布出去

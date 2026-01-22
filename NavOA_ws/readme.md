@@ -175,7 +175,7 @@ taskset -c 1,2 python3  /home/ubuntu/Robit_SlamNav/NavOA_ws/src/NavOA_ros/script
 
 taskset -c 1,2 python3 /home/ubuntu/Robit_SlamNav/NavOA_ws/src/NavOA_ros/scripts/maplocation.py
 
-taskset -c 5,6 roslaunch NavOA_ros NavOA_gazebo_limo_all.launch
+taskset -c 4,5 roslaunch NavOA_ros NavOA_gazebo_limo_all.launch
 
 taskset -c 6,7 roslaunch NavOA_ros NavOA_gazebo_limo.launch
 
@@ -212,12 +212,12 @@ It loads named places from:
 
 Supported place names (canonical keys):
 
-- `kitchen`
-- `meeting_room` (accepts "meeting room")
-- `living_room` (accepts "living room")
-- `balcony` (accepts "balcony" / "balcoy")
-- `bedroom` (accepts "bed room")
-- `hall` (accepts "hall room" / "hallway")
+- `kitchen` (accepts: "kitchen" / "厨房")
+- `meeting_room` (accepts: "meeting room" / "会议室")
+- `living_room` (accepts: "living room" / "客厅")
+- `balcony` (accepts: "balcony" / "balcoy" / "阳台")
+- `bedroom` (accepts: "bed room" / "卧室")
+- `hall` (accepts: "hall room" / "hallway" / "大厅" / "走廊")
 
 ### 2) Test without a real microphone (simulate ASR)
 
@@ -233,6 +233,15 @@ Other examples:
 rostopic pub -1 /voice/text std_msgs/String "data: 'navigate to meeting room'"
 rostopic pub -1 /voice/text std_msgs/String "data: 'go living room'"
 rostopic pub -1 /voice/text std_msgs/String "data: 'go to balcoy'"
+
+Chinese examples:
+
+```
+rostopic pub -1 /voice/text std_msgs/String "data: '去厨房'"
+rostopic pub -1 /voice/text std_msgs/String "data: '前往会议室'"
+rostopic pub -1 /voice/text std_msgs/String "data: '导航到客厅'"
+rostopic pub -1 /voice/text std_msgs/String "data: '去阳台'"
+```
 ```
 
 ### 3) Fill in real coordinates for each place

@@ -13,7 +13,7 @@
     <arg name="scan_angle_range" default='-3.14 3.14'/>
     <arg name="marker_size" default='0.05'/>
     <arg name="marker_z" default='0.3'/>
-    <arg name="scan_downsample" default='6'/>
+    <arg name="scan_downsample" default='2'/>
     <arg name="dune_checkpoint" default='$(find NavOA_ros)/example/gazebo_limo/pretrain_limo/model_5000.pth'/>
     <arg name="use_rknn" default="true"/>
     <arg name="dune_rknn" default='$(find NavOA_ros)/example/gazebo_limo/pretrain_limo/model_5000_quant.rknn'/>
@@ -22,7 +22,14 @@
     <arg name="refresh_initial_path" default='true'/>
 
     <node name="path_segment_publisher" pkg="NavOA_ros" type="path_segment_publisher.py" output="screen" launch-prefix="python3"/>
-    <node name="vel_filter" pkg="NavOA_ros" type="vel_filter.py" output="screen" launch-prefix="python3"/> 
+    <node name="vel_filter" pkg="NavOA_ros" type="vel_filter.py" output="screen" launch-prefix="python3">
+        <param name="scan_topic" value="/merged_scan" />
+        <param name="enable_forward_safety" value="true" />
+        <param name="forward_stop_distance" value="0.30" />
+        <param name="forward_slow_distance" value="0.60" />
+        <param name="front_half_angle" value="0.70" />
+        <param name="reverse_obstacle_distance" value="0.35" />
+    </node>
 
     <node name='NavOA_control' pkg="NavOA_ros" type="NavOA_node.py" output="screen" launch-prefix="python3">
         <param name="slow_down_radius" value="5.0" />

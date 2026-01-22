@@ -14,8 +14,16 @@ local_costmap:
 
 
   plugins:
+    - {name: static_layer, type: "costmap_2d::StaticLayer"}
     - {name: obstacle_layer, type: "costmap_2d::ObstacleLayer"}
     - {name: inflation_layer, type: "costmap_2d::InflationLayer"}
+
+
+  # 使用静态地图作为“墙体底座”，避免激光识别/清除不稳定导致贴墙或撞墙。
+  static_layer:
+    map_topic: "/map"
+    subscribe_to_updates: false
+    track_unknown_space: true
 
 
   obstacle_layer:
