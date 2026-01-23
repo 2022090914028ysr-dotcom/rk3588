@@ -4,7 +4,7 @@
   <arg name="imu_topic" default="/imu_mux" />
   <arg name="odom_topic" default="/odom" />
   <arg name="load_state_filename" default="$(find NavOA_ros)/example/gazebo_limo/maps/quan/limo_map.pbstream" />
-  <arg name="configuration_basename" default="limo_localization_recover.lua" />
+  <arg name="configuration_basename" default="limo_localization_fast.lua" />
 
   <node name="cartographer_node" pkg="cartographer_ros"
       type="cartographer_node" args="

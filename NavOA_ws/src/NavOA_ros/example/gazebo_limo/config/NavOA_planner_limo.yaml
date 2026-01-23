@@ -12,8 +12,8 @@ robot:
   max_speed: [0.4, 1]
   max_acce: [0.5, 1]
   # Real robot size (meters)
-  length: 0.40
-  width: 0.35
+  length: 0.70
+  width: 0.5
 
 # initial path
 ipath:
@@ -42,8 +42,5 @@ adjust:
   # Safety distance shaping:
   # - d_min: desired minimum obstacle distance (meters)
   # - d_max: max distance where obstacles still affect optimization (meters)
-  d_min: 0.30
-  d_max: 1.00
-
-# Stop condition (meters). If planner estimates min_distance < threshold => stop.
-collision_threshold: 0.30
+  d_min: 0.05
+  d_max: 0.15

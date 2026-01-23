@@ -117,6 +117,11 @@ class NavOA_core:
         # --- 新增：规划完成标志位，用于控制流程 ---
         self.planning_finished = False
 
+        # If enabled, do not move until an explicit goal/path/waypoints arrives.
+        # This prevents unexpected motion on startup or after recovering from faults.
+        self.require_explicit_goal = bool(rospy.get_param("~require_explicit_goal", False))
+        self._explicit_goal_active = False
+
         # publisher
         self.vel_pub = rospy.Publisher("/NavOA_cmd_vel", Twist, queue_size=10)
         self.plan_pub = rospy.Publisher("/NavOA_plan", Path, queue_size=10)
@@ -235,6 +240,15 @@ class NavOA_core:
                 "robot state received {}".format(self.robot_state.tolist())
             )
 
+            if self.require_explicit_goal and (not self._explicit_goal_active):
+                rospy.logwarn_throttle(
+                    1.0,
+                    "[NavOA] require_explicit_goal enabled; waiting for /NavOA_goal or /NavOA_waypoints or /initial_path",
+                )
+                self.vel_pub.publish(Twist())
+                r.sleep()
+                continue
+
             if (
                 len(self.NavOA_planner.waypoints) >= 1
                 and self.NavOA_planner.initial_path is None
@@ -275,6 +289,9 @@ class NavOA_core:
                     
                     # 2. 清除目标变量
                     self.goal = None
+
+                    # 2.1 Clear explicit-goal latch so we won't move again until a new goal/path arrives
+                    self._explicit_goal_active = False
                     
                     # 3. 设置标志位为 True。这将导致下一次循环进入 "waiting for NEW path" 状态
                     #    直到 path_callback 或 goal_callback 将其重置为 False
@@ -424,6 +441,7 @@ class NavOA_core:
                 
                 # 收到新路径，激活规划逻辑
                 self.planning_finished = False
+                self._explicit_goal_active = True
                 
                 rospy.loginfo("[NavOA] Initial path updated successfully.")
             except IndexError as e:
@@ -466,6 +484,7 @@ class NavOA_core:
             self.NavOA_planner.reset()
             # 收到新航点，激活规划逻辑
             self.planning_finished = False
+            self._explicit_goal_active = True
 
     def goal_callback(self, goal):
 
@@ -474,6 +493,7 @@ class NavOA_core:
         theta = self.quat_to_yaw(goal.pose.orientation)
 
         self.goal = np.array([[x], [y], [theta]])
+        self._explicit_goal_active = True
 
         print(f"set NavOA goal: {[x, y, theta]}")
 

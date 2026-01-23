@@ -24,14 +24,20 @@
     <node name="path_segment_publisher" pkg="NavOA_ros" type="path_segment_publisher.py" output="screen" launch-prefix="python3"/>
     <node name="vel_filter" pkg="NavOA_ros" type="vel_filter.py" output="screen" launch-prefix="python3">
         <param name="scan_topic" value="/merged_scan" />
+        <param name="cmd_in_topic" value="/cmd_vel_tem" />
+        <param name="cmd_out_topic" value="/cmd_vel" />
+        <param name="cmd_timeout" value="0.5" />
+        <param name="publish_rate" value="50.0" />
         <param name="enable_forward_safety" value="true" />
         <param name="forward_stop_distance" value="0.30" />
         <param name="forward_slow_distance" value="0.60" />
         <param name="front_half_angle" value="0.70" />
         <param name="reverse_obstacle_distance" value="0.35" />
+        <param name="stop_turn_when_forward_blocked" value="true" />
     </node>
 
     <node name='NavOA_control' pkg="NavOA_ros" type="NavOA_node.py" output="screen" launch-prefix="python3">
+        <param name="require_explicit_goal" value="true" />
         <param name="slow_down_radius" value="5.0" />
         <param name="max_speed_scale" value="2" />
         <param name="min_speed_near_goal" value="0.08" />
