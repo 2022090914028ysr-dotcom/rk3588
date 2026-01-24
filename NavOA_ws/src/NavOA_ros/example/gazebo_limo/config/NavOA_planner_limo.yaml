@@ -1,16 +1,15 @@
-# mpc
-receding: 5
-step_time: 0.3
-ref_speed: 0.15
-device: 'cpu'
-time_print: False
-collision_threshold: -0.5
+# MPC (prediction) parameters
+# These are read by NavOA.NavOA.init_from_yaml() as top-level keys.
+receding: 10
+step_time: 0.2
+ref_speed: 0.3
+collision_threshold: 0.05
 
 # robot
 robot:
   kinematics: 'diff'
-  max_speed: [0.4, 1]
-  max_acce: [0.5, 1]
+  max_speed: [0.4, 0.8]
+  max_acce: [0.4, 0.8]
   # Real robot size (meters)
   length: 0.70
   width: 0.5
@@ -28,7 +27,7 @@ ipath:
   
 # proximal alternating minimization network
 pan:
-  iter_num: 2
+  iter_num: 4
   dune_max_num: 100
   nrmp_max_num: 10
   dune_checkpoint: None
@@ -36,11 +35,12 @@ pan:
 
 # adjust parameters
 adjust:
-  q_s: 0.3
-  p_u: 2.5
+  q_s: 0.5
+  p_u: 0.5
   eta: 10.0
   # Safety distance shaping:
   # - d_min: desired minimum obstacle distance (meters)
   # - d_max: max distance where obstacles still affect optimization (meters)
-  d_min: 0.05
-  d_max: 0.15
+  d_min: 0.2
+  d_max: 1
+  ro_obs: 500.0

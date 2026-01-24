@@ -1,4 +1,6 @@
 TrajectoryPlannerROS:
+  # Allow small TF delays without throwing (Cartographer/map TF can lag by ~10-60ms).
+  transform_tolerance: 0.5
   # 机器人速度参数
   max_vel_x: 0.8
   min_vel_x: 0.1

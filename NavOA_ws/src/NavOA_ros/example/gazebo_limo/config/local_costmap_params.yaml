@@ -1,5 +1,7 @@
 local_costmap:
-  global_frame: odom
+  # Use 'map' as local costmap frame to avoid frequent map<->odom TF lookups
+  # causing 'extrapolation into the future' when Cartographer TF lags by tens of ms.
+  global_frame: map
   robot_base_frame: base_footprint
   update_frequency: 10.0
   publish_frequency: 10.0
@@ -43,5 +45,5 @@ local_costmap:
 
   inflation_layer:
     enabled: true
-    inflation_radius: 0.8
+    inflation_radius: 0.5
     cost_scaling_factor: 2.0

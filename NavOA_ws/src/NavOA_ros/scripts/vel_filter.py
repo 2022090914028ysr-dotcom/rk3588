@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
 import copy
@@ -33,6 +33,17 @@ class VelocityFilter:
         self.forward_slow_distance = float(rospy.get_param('~forward_slow_distance', 0.60))
         self.min_forward_speed = float(rospy.get_param('~min_forward_speed', 0.05))
         self.front_half_angle = float(rospy.get_param('~front_half_angle', 0.52))
+
+        # Output clamps (safety / easy tuning)
+        # Use <=0 to disable.
+        self.max_forward_speed = float(rospy.get_param('~max_forward_speed', 0.0))
+        self.max_angular_speed = float(rospy.get_param('~max_angular_speed', 0.0))
+
+        # If enabled: when an obstacle is closer than the stop distance and an incoming
+        # command requests forward motion, override to a small reverse speed.
+        # This is useful when the upstream planner keeps commanding forward.
+        self.enable_auto_reverse = bool(rospy.get_param('~enable_auto_reverse', False))
+        self.auto_reverse_speed = float(rospy.get_param('~auto_reverse_speed', -0.1))
 
         self.stop_turn_when_forward_blocked = bool(
             rospy.get_param('~stop_turn_when_forward_blocked', True)
@@ -103,30 +114,7 @@ class VelocityFilter:
 
         modified = copy.deepcopy(msg)
 
-        # Reverse gating (never amplify reverse speed)
-        if modified.linear.x < 0.0:
-            original_x = modified.linear.x
 
-            if not self.allow_reverse:
-                modified.linear.x = 0.0
-                rospy.loginfo_throttle(0.5, "倒车已禁用，已钳制为 0: 原始值=%.3f", original_x)
-            elif self.reverse_requires_obstacle and (not self.obstacle_close):
-                modified.linear.x = 0.0
-                rospy.loginfo_throttle(
-                    0.5,
-                    "未检测到前方近障碍物(最小距离=%.3fm)，倒车指令已钳制为 0: 原始值=%.3f",
-                    self.front_min_range,
-                    original_x,
-                )
-            else:
-                modified.linear.x = max(original_x, -abs(self.max_reverse_speed))
-                rospy.loginfo_throttle(
-                    0.5,
-                    "检测到前方近障碍物(最小距离=%.3fm)，允许倒车并限幅: 原始=%.3f 修改后=%.3f",
-                    self.front_min_range,
-                    original_x,
-                    modified.linear.x,
-                )
 
         # Forward safety (stop/slow when obstacle is in front)
         if self.enable_forward_safety and modified.linear.x > 0.0:
@@ -135,16 +123,28 @@ class VelocityFilter:
 
 
             if math.isfinite(d) and d < self.forward_stop_distance:
-                modified.linear.x = 0.0
-                if self.stop_turn_when_forward_blocked:
+                if self.enable_auto_reverse and self.allow_reverse:
+                    modified.linear.x = -abs(float(self.auto_reverse_speed))
                     modified.angular.z = 0.0
-                rospy.logwarn_throttle(
-                    0.2,
-                    "前方障碍过近(最小距离=%.3fm < stop=%.2fm)，前进指令已钳制为 0: 原始=%.3f",
-                    d,
-                    self.forward_stop_distance,
-                    original_x,
-                )
+                    rospy.logwarn_throttle(
+                        1.0,
+                        "前方障碍过近(最小距离=%.3fm < stop=%.2fm)，触发自动倒车: 原始前进=%.3f 倒车=%.3f",
+                        d,
+                        self.forward_stop_distance,
+                        original_x,
+                        modified.linear.x,
+                    )
+                else:
+                    modified.linear.x = 0.0
+                    if self.stop_turn_when_forward_blocked:
+                        modified.angular.z = 0.0
+                    rospy.logwarn_throttle(
+                        1.0,
+                        "前方障碍过近(最小距离=%.3fm < stop=%.2fm)，前进指令已钳制为 0: 原始=%.3f",
+                        d,
+                        self.forward_stop_distance,
+                        original_x,
+                    )
             elif (
                 math.isfinite(d)
                 and d < self.forward_slow_distance
@@ -160,12 +160,45 @@ class VelocityFilter:
                     limited = max(min(limited, original_x), min(self.min_forward_speed, original_x))
                 modified.linear.x = limited
                 rospy.loginfo_throttle(
-                    0.5,
+                    1.0,
                     "前方接近障碍(最小距离=%.3fm)，前进限速: 原始=%.3f 修改后=%.3f",
                     d,
                     original_x,
                     modified.linear.x,
                 )
+
+        # Reverse gating (never amplify reverse speed)
+        if modified.linear.x < 0.0:
+            original_x = modified.linear.x
+
+            if not self.allow_reverse:
+                modified.linear.x = 0.0
+                rospy.loginfo_throttle(2.0, "倒车已禁用，已钳制为 0: 原始值=%.3f", original_x)
+            elif self.reverse_requires_obstacle and (not self.obstacle_close):
+                modified.linear.x = 0.0
+                rospy.loginfo_throttle(
+                    2.0,
+                    "未检测到前方近障碍物(最小距离=%.3fm)，倒车指令已钳制为 0: 原始值=%.3f",
+                    self.front_min_range,
+                    original_x,
+                )
+            else:
+                modified.linear.x = max(original_x, -abs(self.max_reverse_speed))
+                rospy.loginfo_throttle(
+                    2.0,
+                    "检测到前方近障碍物(最小距离=%.3fm)，允许倒车并限幅: 原始=%.3f 修改后=%.3f",
+                    self.front_min_range,
+                    original_x,
+                    modified.linear.x,
+                )
+
+        # Clamp outputs (after all safety logic)
+        if self.max_forward_speed > 0.0 and modified.linear.x > self.max_forward_speed:
+            modified.linear.x = self.max_forward_speed
+        if self.max_angular_speed > 0.0:
+            az = modified.angular.z
+            if abs(az) > self.max_angular_speed:
+                modified.angular.z = math.copysign(self.max_angular_speed, az)
 
         modified = self._apply_deadband(modified)
         self._latest_output = modified

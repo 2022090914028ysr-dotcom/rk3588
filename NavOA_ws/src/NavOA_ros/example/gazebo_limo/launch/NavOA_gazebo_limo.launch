@@ -9,7 +9,7 @@
     <arg name="base_frame" default='base_footprint'/>
     <arg name="lidar_frame" default='laser_frame'/>
     <arg name="scan_range" default='0.1 5.0'/>
-    <arg name="ref_speed" default="0.3"/>
+    <arg name="ref_speed" default="0.4"/>
     <arg name="scan_angle_range" default='-3.14 3.14'/>
     <arg name="marker_size" default='0.05'/>
     <arg name="marker_z" default='0.3'/>
@@ -27,12 +27,16 @@
         <param name="cmd_in_topic" value="/cmd_vel_tem" />
         <param name="cmd_out_topic" value="/cmd_vel" />
         <param name="cmd_timeout" value="0.5" />
-        <param name="publish_rate" value="50.0" />
+        <param name="publish_rate" value="20.0" />
         <param name="enable_forward_safety" value="true" />
-        <param name="forward_stop_distance" value="0.30" />
+        <param name="forward_stop_distance" value="0.40" />
         <param name="forward_slow_distance" value="0.60" />
         <param name="front_half_angle" value="0.70" />
-        <param name="reverse_obstacle_distance" value="0.35" />
+        <param name="reverse_obstacle_distance" value="0.45" />
+        <param name="enable_auto_reverse" value="true" />
+        <param name="auto_reverse_speed" value="-0.15" />
+        <param name="max_forward_speed" value="0.2" />
+        <param name="max_angular_speed" value="0.5" />
         <param name="stop_turn_when_forward_blocked" value="true" />
     </node>
 
@@ -56,15 +60,16 @@
         <param name="rknn_target" value="$(arg rknn_target)"/>
         <param name="rknn_core" value="$(arg rknn_core)"/>
         <param name="refresh_initial_path" value="$(arg refresh_initial_path)"/>
-        <!-- <remap from="/scan" to="/ultrasonic_scan"/> -->
+        <remap from="/scan" to="/scan"/>
         <remap from="/scan" to="/merged_scan"/>
         <remap from="/NavOA_cmd_vel" to="/cmd_vel_tem"/> 
 
-        <!-- <remap from="/NavOA_goal" to="/move_base_simple/goal"/> -->
+        <!-- <remap from="/NavOA_cmd_vel" to="/cmd_vel"/>  -->
+        <remap from="/NavOA_goal" to="/move_base_simple/goal"/>
         
         <remap from="/NavOA_goal" to="/split_goal"/>
         
-        <!-- <remap from="/initial_path" to="/move_base/GlobalPlanner/plan"/> -->
+        <remap from="/initial_path" to="/move_base/GlobalPlanner/plan"/>
 
     </node>
 
