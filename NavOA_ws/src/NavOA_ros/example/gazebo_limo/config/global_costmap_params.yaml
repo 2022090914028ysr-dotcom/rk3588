@@ -4,7 +4,7 @@ global_costmap:
   update_frequency: 1.0
   publish_frequency: 1.0
   transform_tolerance: 1  
-  footprint_padding: 0.2
+  footprint_padding: 0.1
   
 
   plugins:
