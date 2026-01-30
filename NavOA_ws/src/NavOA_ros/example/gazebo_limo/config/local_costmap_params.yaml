@@ -1,7 +1,5 @@
 local_costmap:
-  # Use 'map' as local costmap frame to avoid frequent map<->odom TF lookups
-  # causing 'extrapolation into the future' when Cartographer TF lags by tens of ms.
-  global_frame: map
+  global_frame: odom
   robot_base_frame: base_footprint
   update_frequency: 10.0
   publish_frequency: 10.0
@@ -16,16 +14,12 @@ local_costmap:
 
 
   plugins:
-    - {name: static_layer, type: "costmap_2d::StaticLayer"}
+
     - {name: obstacle_layer, type: "costmap_2d::ObstacleLayer"}
     - {name: inflation_layer, type: "costmap_2d::InflationLayer"}
 
 
-  # 使用静态地图作为“墙体底座”，避免激光识别/清除不稳定导致贴墙或撞墙。
-  static_layer:
-    map_topic: "/map"
-    subscribe_to_updates: false
-    track_unknown_space: true
+
 
 
   obstacle_layer:
@@ -45,5 +39,5 @@ local_costmap:
 
   inflation_layer:
     enabled: true
-    inflation_radius: 0.5
+    inflation_radius: 0.8
     cost_scaling_factor: 2.0

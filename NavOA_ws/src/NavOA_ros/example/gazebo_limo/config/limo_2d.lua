@@ -6,9 +6,9 @@ options = {
   trajectory_builder = TRAJECTORY_BUILDER,
   map_frame = "map",
   tracking_frame = "base_footprint",     -- ✅ 与你的 TF 树一致
-  published_frame = "odom",              -- Cartographer 发布 map->odom
+  published_frame = "base_footprint",              -- Cartographer 发布 map->odom
   odom_frame = "odom",                   -- 接收 /odom topic
-  provide_odom_frame = false,            -- ✅ false：由 vins_to_odom 提供 odom->base_footprint
+  provide_odom_frame = true,            -- ✅ false：由 vins_to_odom 提供 odom->base_footprint
   publish_frame_projected_to_2d = false,
   use_pose_extrapolator = true,
 

@@ -4,7 +4,7 @@ global_costmap:
   update_frequency: 1.0
   publish_frequency: 1.0
   transform_tolerance: 1  
-  footprint_padding: 0.1
+  
   
 
   plugins:
@@ -26,8 +26,8 @@ global_costmap:
     
     
   inflation_layer:
-    inflation_radius: 0.5
-    cost_scaling_factor: 1.0
+    inflation_radius: 0.8
+    cost_scaling_factor: 2.0
     inscribed_radius: 0.35
     
   # 可选：发布话题配置
