@@ -159,15 +159,33 @@ rosrun map_server map_saver -f /home/ubuntu/Robit_SlamNav/NavOA_ws/src/NavOA_ros
 
 
 #####################################################easy navigation launch file#####################################################
-cd NavOA_ws
-rm -rf build_isolated/ devel_isolated/
+
+#rm -rf build_isolated/ devel_isolated/
+
+
+#catkin_make_isolated --use-ninja
+
+cd Robit_SlamNav/NavOA_ws
+
+# 两个 terminal 要炮开
+如果从新开的话要作 source 一下
+sh port.sh
+
 source devel_isolated/setup.bash
 
-catkin_make_isolated --use-ninja
+
 
 conda activate control 
 
+1. taskset -c 4,5 roslaunch NavOA_ros NavOA_gazebo_limo_all.launch
+
+2.
 export DISPLAY=:0
+
+roslaunch NavOA_ros NavOA_gazebo_limo.launch
+
+#234 first open control code
+taskset -c 6,7 python Ros_control/cmd_vel_bridge.py 
 
 tmux attach -t robot_start
 
@@ -175,13 +193,16 @@ taskset -c 1,2 python3  /home/ubuntu/Robit_SlamNav/NavOA_ws/src/NavOA_ros/script
 
 taskset -c 1,2 python3 /home/ubuntu/Robit_SlamNav/NavOA_ws/src/NavOA_ros/scripts/maplocation.py
 
-taskset -c 4,5 roslaunch NavOA_ros NavOA_gazebo_limo_all.launch
 
-taskset -c 6,7 roslaunch NavOA_ros NavOA_gazebo_limo.launch
+
+
+
+
+
 
 roslaunch ascamera hp60c.launch
 
-taskset -c 6,7 python Ros_control/cmd_vel_bridge.py 
+
 
 sudo stty -F /dev/ttyS6 230400 cs8 -cstopb -parenb -ixon -ixoff
 sudo cat /dev/ttyS6
