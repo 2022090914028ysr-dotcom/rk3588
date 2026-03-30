@@ -1,10 +1,10 @@
 # ninja log v7
-5	113	1767669144239226914	CMakeFiles/lidar_node.dir/sdk/src/interface/console/interface_console.cpp.o	f07baf76f19514e0
-115	1460	1767669144347228679	CMakeFiles/lidar_node.dir/sdk/src/interface/serial/unix/interface_serial.cpp.o	e64864d806217aba
-114	1521	1767669144347228679	CMakeFiles/lidar_node.dir/sdk/src/lidar.cpp.o	edf2f92553717646
-115	2006	1767669144347228679	CMakeFiles/lidar_node.dir/sdk/src/lidar/lidar_protocol.cpp.o	ba3bc59a76ac908f
-5	2943	1767669144239226914	CMakeFiles/lidar_node.dir/ros/src/ros_convert.cpp.o	cd4c77fb3e15f9b
-4	3213	1767669144239226914	CMakeFiles/lidar_node.dir/ros/src/ros_node.cpp.o	f4e8653348cce39a
-4	3280	1767669144235226849	CMakeFiles/lidar_client.dir/ros/src/ros_client.cpp.o	e157f8c259ba3739
-3213	3563	1767669147447279293	/home/ubuntu/Robit_SlamNav/NavOA_ws/devel_isolated/lidar_ros/lib/lidar_ros/lidar_node	9eef2dbb243b31c9
-3280	3607	1767669147511280337	/home/ubuntu/Robit_SlamNav/NavOA_ws/devel_isolated/lidar_ros/lib/lidar_ros/lidar_client	4b390a2d2f9f4f5b
+1	32	1774510657441691595	CMakeFiles/lidar_node.dir/sdk/src/interface/console/interface_console.cpp.o	265de5eb3a68eaae
+2	138	1774510657441691595	CMakeFiles/lidar_node.dir/sdk/src/interface/serial/unix/interface_serial.cpp.o	658ec621df322728
+1	199	1774510657441691595	CMakeFiles/lidar_node.dir/sdk/src/lidar.cpp.o	30709635186dff7a
+2	304	1774510657441691595	CMakeFiles/lidar_node.dir/sdk/src/lidar/lidar_protocol.cpp.o	985d4a09eb5fe868
+1	847	1774510657441691595	CMakeFiles/lidar_node.dir/ros/src/ros_convert.cpp.o	4cce84bd25f177f6
+1	922	1774510657441691595	CMakeFiles/lidar_node.dir/ros/src/ros_node.cpp.o	f95f005bcd825624
+0	960	1774510657441691595	CMakeFiles/lidar_client.dir/ros/src/ros_client.cpp.o	c45113e5a897fa34
+922	991	1774510658361688143	/home/rana/Robit_SlamNav/NavOA_ws/devel_isolated/lidar_ros/lib/lidar_ros/lidar_node	a42c39b1b4a39a1a
+960	1021	1774510658401687992	/home/rana/Robit_SlamNav/NavOA_ws/devel_isolated/lidar_ros/lib/lidar_ros/lidar_client	4362a1d017881c53

@@ -67,14 +67,14 @@ set(cartographer_ros_CONFIG_INCLUDED TRUE)
 
 # set variables for source/devel/install prefixes
 if("FALSE" STREQUAL "TRUE")
-  set(cartographer_ros_SOURCE_PREFIX /home/ubuntu/Robit_SlamNav/NavOA_ws/src/cartographer_ros/cartographer_ros)
-  set(cartographer_ros_DEVEL_PREFIX /home/ubuntu/Robit_SlamNav/NavOA_ws/devel_isolated/cartographer_ros)
+  set(cartographer_ros_SOURCE_PREFIX /home/rana/Robit_SlamNav/NavOA_ws/src/cartographer_ros/cartographer_ros)
+  set(cartographer_ros_DEVEL_PREFIX /home/rana/Robit_SlamNav/NavOA_ws/devel_isolated/cartographer_ros)
   set(cartographer_ros_INSTALL_PREFIX "")
   set(cartographer_ros_PREFIX ${cartographer_ros_DEVEL_PREFIX})
 else()
   set(cartographer_ros_SOURCE_PREFIX "")
   set(cartographer_ros_DEVEL_PREFIX "")
-  set(cartographer_ros_INSTALL_PREFIX /home/ubuntu/Robit_SlamNav/NavOA_ws/install_isolated)
+  set(cartographer_ros_INSTALL_PREFIX /home/rana/Robit_SlamNav/NavOA_ws/install_isolated)
   set(cartographer_ros_PREFIX ${cartographer_ros_INSTALL_PREFIX})
 endif()
 
@@ -116,7 +116,7 @@ if(NOT "include;/usr/include/pcl-1.10;/usr/include/eigen3;/usr/include " STREQUA
   endforeach()
 endif()
 
-set(libraries "cartographer_ros;/usr/lib/aarch64-linux-gnu/libpcl_common.so;/usr/lib/aarch64-linux-gnu/libboost_system.so.1.71.0;/usr/lib/aarch64-linux-gnu/libboost_filesystem.so;/usr/lib/aarch64-linux-gnu/libboost_date_time.so;/usr/lib/aarch64-linux-gnu/libboost_iostreams.so.1.71.0;/usr/lib/aarch64-linux-gnu/libboost_regex.so")
+set(libraries "cartographer_ros;/usr/lib/x86_64-linux-gnu/libpcl_common.so;/usr/lib/x86_64-linux-gnu/libboost_system.so.1.71.0;/usr/lib/x86_64-linux-gnu/libboost_filesystem.so;/usr/lib/x86_64-linux-gnu/libboost_date_time.so;/usr/lib/x86_64-linux-gnu/libboost_iostreams.so.1.71.0;/usr/lib/x86_64-linux-gnu/libboost_regex.so")
 foreach(library ${libraries})
   # keep build configuration keywords, generator expressions, target names, and absolute libraries as-is
   if("${library}" MATCHES "^(debug|optimized|general)$")
@@ -156,7 +156,7 @@ foreach(library ${libraries})
     set(lib_path "")
     set(lib "${library}-NOTFOUND")
     # since the path where the library is found is returned we have to iterate over the paths manually
-    foreach(path /home/ubuntu/Robit_SlamNav/NavOA_ws/install_isolated/lib;/home/ubuntu/Robit_SlamNav/NavOA_ws/devel_isolated/cartographer_ros_msgs/lib;/home/ubuntu/Robit_SlamNav/NavOA_ws/devel_isolated/astra_tracker/lib;/home/ubuntu/Robit_SlamNav/NavOA_ws/devel_isolated/ascamera/lib;/home/ubuntu/Robit_SlamNav/NavOA_ws/devel_isolated/ascam_visual/lib;/home/ubuntu/Robit_SlamNav/NavOA_ws/devel_isolated/NavOA_ros/lib;/opt/ros/noetic/lib)
+    foreach(path /home/rana/Robit_SlamNav/NavOA_ws/install_isolated/lib;/home/rana/Robit_SlamNav/NavOA_ws/devel_isolated/cartographer_ros_msgs/lib;/home/rana/Robit_SlamNav/NavOA_ws/devel_isolated/astra_tracker/lib;/home/rana/Robit_SlamNav/NavOA_ws/devel_isolated/ascamera/lib;/home/rana/Robit_SlamNav/NavOA_ws/devel_isolated/ascam_visual/lib;/home/rana/Robit_SlamNav/NavOA_ws/devel_isolated/NavOA_ros/lib;/opt/ros/noetic/lib)
       find_library(lib ${library}
         PATHS ${path}
         NO_DEFAULT_PATH NO_CMAKE_FIND_ROOT_PATH)

@@ -1,8 +1,8 @@
-# Install script for directory: /home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/src/astra_tracker
+# Install script for directory: /home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/src/astra_tracker
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
-  set(CMAKE_INSTALL_PREFIX "/home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/install")
+  set(CMAKE_INSTALL_PREFIX "/home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/install")
 endif()
 string(REGEX REPLACE "/$" "" CMAKE_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}")
 
@@ -37,51 +37,40 @@ if(NOT DEFINED CMAKE_CROSSCOMPILING)
   set(CMAKE_CROSSCOMPILING "FALSE")
 endif()
 
-# Set path to fallback-tool for dependency-resolution.
-if(NOT DEFINED CMAKE_OBJDUMP)
-  set(CMAKE_OBJDUMP "/usr/bin/objdump")
+if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/include/astra_tracker" TYPE FILE FILES "/home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/devel/include/astra_tracker/AstraColorHSVConfig.h")
 endif()
 
-if(CMAKE_INSTALL_COMPONENT STREQUAL "Unspecified" OR NOT CMAKE_INSTALL_COMPONENT)
-  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/include/astra_tracker" TYPE FILE FILES "/home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/devel/include/astra_tracker/AstraColorHSVConfig.h")
+if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib/python3/dist-packages/astra_tracker" TYPE FILE FILES "/home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/devel/lib/python3/dist-packages/astra_tracker/__init__.py")
 endif()
 
-if(CMAKE_INSTALL_COMPONENT STREQUAL "Unspecified" OR NOT CMAKE_INSTALL_COMPONENT)
-  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib/python3/dist-packages/astra_tracker" TYPE FILE FILES "/home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/devel/lib/python3/dist-packages/astra_tracker/__init__.py")
+if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
+  execute_process(COMMAND "/home/rana/miniconda3/bin/python3" -m compileall "/home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/devel/lib/python3/dist-packages/astra_tracker/cfg")
 endif()
 
-if(CMAKE_INSTALL_COMPONENT STREQUAL "Unspecified" OR NOT CMAKE_INSTALL_COMPONENT)
-  execute_process(COMMAND "/usr/bin/python3" -m compileall "/home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/devel/lib/python3/dist-packages/astra_tracker/cfg")
+if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib/python3/dist-packages/astra_tracker" TYPE DIRECTORY FILES "/home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/devel/lib/python3/dist-packages/astra_tracker/cfg")
 endif()
 
-if(CMAKE_INSTALL_COMPONENT STREQUAL "Unspecified" OR NOT CMAKE_INSTALL_COMPONENT)
-  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib/python3/dist-packages/astra_tracker" TYPE DIRECTORY FILES "/home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/devel/lib/python3/dist-packages/astra_tracker/cfg")
+if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib/pkgconfig" TYPE FILE FILES "/home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/build/astra_tracker/catkin_generated/installspace/astra_tracker.pc")
 endif()
 
-if(CMAKE_INSTALL_COMPONENT STREQUAL "Unspecified" OR NOT CMAKE_INSTALL_COMPONENT)
-  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib/pkgconfig" TYPE FILE FILES "/home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/build/astra_tracker/catkin_generated/installspace/astra_tracker.pc")
-endif()
-
-if(CMAKE_INSTALL_COMPONENT STREQUAL "Unspecified" OR NOT CMAKE_INSTALL_COMPONENT)
+if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
   file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/astra_tracker/cmake" TYPE FILE FILES
-    "/home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/build/astra_tracker/catkin_generated/installspace/astra_trackerConfig.cmake"
-    "/home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/build/astra_tracker/catkin_generated/installspace/astra_trackerConfig-version.cmake"
+    "/home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/build/astra_tracker/catkin_generated/installspace/astra_trackerConfig.cmake"
+    "/home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/build/astra_tracker/catkin_generated/installspace/astra_trackerConfig-version.cmake"
     )
 endif()
 
-if(CMAKE_INSTALL_COMPONENT STREQUAL "Unspecified" OR NOT CMAKE_INSTALL_COMPONENT)
-  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/astra_tracker" TYPE FILE FILES "/home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/src/astra_tracker/package.xml")
+if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/astra_tracker" TYPE FILE FILES "/home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/src/astra_tracker/package.xml")
 endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for each subdirectory.
-  include("/home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/build/astra_tracker/include/astra_tracker/cmake_install.cmake")
+  include("/home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/build/astra_tracker/include/astra_tracker/cmake_install.cmake")
 
 endif()
 
-string(REPLACE ";" "\n" CMAKE_INSTALL_MANIFEST_CONTENT
-       "${CMAKE_INSTALL_MANIFEST_FILES}")
-if(CMAKE_INSTALL_LOCAL_ONLY)
-  file(WRITE "/home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/build/astra_tracker/install_local_manifest.txt"
-     "${CMAKE_INSTALL_MANIFEST_CONTENT}")
-endif()

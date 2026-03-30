@@ -1,6 +1,6 @@
 <launch>
   <node name="lidar_node"  pkg="lidar_ros"  type="lidar_node" output="screen" respawn="false" >
-    <param name="serial_name"                 type="string" value="/dev/ttyS4"/>  
+    <param name="serial_name"                 type="string" value="/dev/ttyUSB0"/>  
     <param name="serial_baud"                 type="int" value="230400"/>  
     <param name="frame_id"                    type="string" value="laser_frame"/>
     <param name="counterclockwise"            type="bool"   value="true"/>

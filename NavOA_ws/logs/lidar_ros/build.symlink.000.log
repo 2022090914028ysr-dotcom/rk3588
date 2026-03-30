@@ -1,0 +1,5 @@
+Symlinking /home/rana/Robit_SlamNav/NavOA_ws/devel/share/lidar_ros/cmake/lidar_rosConfig-version.cmake
+Symlinking /home/rana/Robit_SlamNav/NavOA_ws/devel/share/lidar_ros/cmake/lidar_rosConfig.cmake
+Symlinking /home/rana/Robit_SlamNav/NavOA_ws/devel/lib/pkgconfig/lidar_ros.pc
+Symlinking /home/rana/Robit_SlamNav/NavOA_ws/devel/lib/lidar_ros/lidar_node
+Symlinking /home/rana/Robit_SlamNav/NavOA_ws/devel/lib/lidar_ros/lidar_client

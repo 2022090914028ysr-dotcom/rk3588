@@ -1,0 +1,36 @@
+<launch>
+    <!-- Launch the camera -->
+    <include file="$(find ascamera)/launch/hp60c.launch">
+        <arg name="fps" value="30"/>
+    </include>
+    
+    <!-- Fix camera axes orientation -->
+    <!-- This rotates the camera frame to align with ROS standard:
+         - Original camera frame: Z forward, X right, Y down
+         - Target robot frame: X forward, Y left, Z up
+         Rotation: -90° around X, then -90° around Z -->
+    <node pkg="tf2_ros" type="static_transform_publisher" name="camera_orientation_fix" 
+          args="0 0 0 -1.5708 0 -1.5708 ascamera_hp60c_color_0 camera_optical" />
+    
+    <!-- Create a link from camera_optical to base_link if needed -->
+    <node pkg="tf2_ros" type="static_transform_publisher" name="camera_base_link" 
+          args="0 0 0 0 0 0 camera_optical base_link" />
+    
+    <!-- RTAB-Map with visual odometry -->
+    <include file="$(find rtabmap_ros)/launch/rtabmap.launch">
+        <param name="delete_db_on_start" value="true"/>
+        
+        <param name="visual_odometry" value="true"/>
+        <param name="approx_sync" value="true"/>
+        <param name="approx_sync_max_interval" value="5.0"/>
+        <param name="depth_scale" value="0.001"/>
+        <param name="frame_id" value="ascamera_hp60c_color_0"/>
+        <remap from="rgb_topic/image" to="/ascamera_hp60c/rgb0/image"/>
+        <remap from="depth_topic/image" to="/ascamera_hp60c/depth0/image_raw"/>
+        <remap from="camera_info_topic" to="/ascamera_hp60c/rgb0/camera_info"/>
+        
+        <param name="rtabmapviz" value="true"/>
+        <param name="rviz" value="false"/>
+    </include>
+</launch>
+

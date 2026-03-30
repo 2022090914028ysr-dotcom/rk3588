@@ -1,8 +1,8 @@
-# Install script for directory: /home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/src/astra_tracker/include/astra_tracker
+# Install script for directory: /home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/src/astra_tracker/include/astra_tracker
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
-  set(CMAKE_INSTALL_PREFIX "/home/ubuntu/Robit_SlamNav/NavOA_ws/install_isolated")
+  set(CMAKE_INSTALL_PREFIX "/home/rana/Robit_SlamNav/NavOA_ws/install_isolated")
 endif()
 string(REGEX REPLACE "/$" "" CMAKE_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}")
 
@@ -45,6 +45,6 @@ endif()
 string(REPLACE ";" "\n" CMAKE_INSTALL_MANIFEST_CONTENT
        "${CMAKE_INSTALL_MANIFEST_FILES}")
 if(CMAKE_INSTALL_LOCAL_ONLY)
-  file(WRITE "/home/ubuntu/Robit_SlamNav/NavOA_ws/build_isolated/astra_tracker/include/astra_tracker/install_local_manifest.txt"
+  file(WRITE "/home/rana/Robit_SlamNav/NavOA_ws/build_isolated/astra_tracker/include/astra_tracker/install_local_manifest.txt"
      "${CMAKE_INSTALL_MANIFEST_CONTENT}")
 endif()

@@ -1,5 +1,5 @@
 file(REMOVE_RECURSE
-  "/home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/devel/share/common-lisp/ros/yahboomcar_msgs/msg/PointArray.lisp"
+  "/home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/devel/share/common-lisp/ros/yahboomcar_msgs/msg/PointArray.lisp"
   "CMakeFiles/yahboomcar_msgs_generate_messages_lisp"
 )
 

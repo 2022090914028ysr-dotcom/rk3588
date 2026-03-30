@@ -1,9 +1,9 @@
 file(REMOVE_RECURSE
-  "/home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/devel/include/astra_tracker/AstraColorHSVConfig.h"
-  "/home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/devel/lib/python3/dist-packages/astra_tracker/cfg/AstraColorHSVConfig.py"
-  "/home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/devel/share/astra_tracker/docs/AstraColorHSVConfig-usage.dox"
-  "/home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/devel/share/astra_tracker/docs/AstraColorHSVConfig.dox"
-  "/home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/devel/share/astra_tracker/docs/AstraColorHSVConfig.wikidoc"
+  "/home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/devel/include/astra_tracker/AstraColorHSVConfig.h"
+  "/home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/devel/lib/python3/dist-packages/astra_tracker/cfg/AstraColorHSVConfig.py"
+  "/home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/devel/share/astra_tracker/docs/AstraColorHSVConfig-usage.dox"
+  "/home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/devel/share/astra_tracker/docs/AstraColorHSVConfig.dox"
+  "/home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/devel/share/astra_tracker/docs/AstraColorHSVConfig.wikidoc"
   "CMakeFiles/astra_tracker_gencfg"
 )
 

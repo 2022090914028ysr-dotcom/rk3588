@@ -1,1 +1,1 @@
-set(ORDERED_PATHS "/home/ubuntu/Robit_SlamNav/NavOA_ws/devel_isolated/cartographer_ros/lib;/opt/ros/noetic/lib")
+set(ORDERED_PATHS "/home/rana/Robit_SlamNav/NavOA_ws/devel_isolated/cartographer_ros/lib;/opt/ros/noetic/lib")

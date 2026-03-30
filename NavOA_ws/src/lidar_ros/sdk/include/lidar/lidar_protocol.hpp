@@ -9,6 +9,7 @@
 #include <stdint.h>
 #include <vector>
 #include <functional>
+#include <string>
 
 namespace nvistar{
 

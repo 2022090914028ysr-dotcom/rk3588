@@ -1,4 +1,4 @@
-prefix=/home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/devel
+prefix=/home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/devel
 
 Name: ascamera
 Description: Description of ascamera

@@ -6,7 +6,7 @@
     
     <arg name="config_file" default='$(find NavOA_ros)/example/gazebo_limo/config/NavOA_planner_limo.yaml'/>
     <arg name="map_frame" default='map'/>
-    <arg name="base_frame" default='base_footprint'/>
+    <arg name="base_frame" default='ascamera_hp60c_color_0'/>
     <arg name="lidar_frame" default='laser_frame'/>
     <arg name="scan_range" default='0.1 5.0'/>
     <arg name="ref_speed" default="0.4"/>
@@ -15,7 +15,7 @@
     <arg name="marker_z" default='0.3'/>
     <arg name="scan_downsample" default='2'/>
     <arg name="dune_checkpoint" default='$(find NavOA_ros)/example/gazebo_limo/pretrain_limo/model_5000.pth'/>
-    <arg name="use_rknn" default="true"/>
+    <arg name="use_rknn" default="false"/>
     <arg name="dune_rknn" default='$(find NavOA_ros)/example/gazebo_limo/pretrain_limo/model_5000_quant.rknn'/>
     <arg name="rknn_target" default=""/>
     <arg name="rknn_core" default="auto"/>
@@ -66,11 +66,11 @@
            <!-- NOTE: Do not remap NavOA_cmd_vel directly to /cmd_vel when vel_filter is enabled,
                otherwise vel_filter will also publish zeros to /cmd_vel on timeout and override commands. -->
            <!-- <remap from="/NavOA_cmd_vel" to="/cmd_vel"/> -->
-        <!-- <remap from="/NavOA_goal" to="/move_base_simple/goal"/> -->
+        <remap from="/NavOA_goal" to="/move_base_simple/goal"/>
         
         <remap from="/NavOA_goal" to="/split_goal"/>
         
-        <!-- <remap from="/initial_path" to="/move_base/GlobalPlanner/plan"/> -->
+        <remap from="/initial_path" to="/move_base/GlobalPlanner/plan"/>
 
     </node>
 

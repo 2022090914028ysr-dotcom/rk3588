@@ -1,16 +1,11 @@
 file(REMOVE_RECURSE
-  "/home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/devel/lib/ascamera/ascamera_node"
-  "/home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/devel/lib/ascamera/ascamera_node.pdb"
+  "/home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/devel/lib/ascamera/ascamera_node"
+  "/home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/devel/lib/ascamera/ascamera_node.pdb"
   "CMakeFiles/ascamera_node.dir/src/Camera.cpp.o"
-  "CMakeFiles/ascamera_node.dir/src/Camera.cpp.o.d"
   "CMakeFiles/ascamera_node.dir/src/CameraPublisher.cpp.o"
-  "CMakeFiles/ascamera_node.dir/src/CameraPublisher.cpp.o.d"
   "CMakeFiles/ascamera_node.dir/src/CameraSrv.cpp.o"
-  "CMakeFiles/ascamera_node.dir/src/CameraSrv.cpp.o.d"
   "CMakeFiles/ascamera_node.dir/src/TfTreeFrameIdInfo.cpp.o"
-  "CMakeFiles/ascamera_node.dir/src/TfTreeFrameIdInfo.cpp.o.d"
   "CMakeFiles/ascamera_node.dir/src/ascamera_node.cpp.o"
-  "CMakeFiles/ascamera_node.dir/src/ascamera_node.cpp.o.d"
 )
 
 # Per-language clean rules from dependency scanning.

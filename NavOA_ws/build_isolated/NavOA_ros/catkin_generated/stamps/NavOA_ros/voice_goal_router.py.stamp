@@ -18,14 +18,32 @@ def _normalize_text(text: str) -> str:
     if text is None:
         return ""
     text = text.strip().lower()
-    text = re.sub(r"[^a-z0-9\s]", " ", text)
+    # Keep unicode word characters (includes Chinese), drop punctuation.
+    # Note: in Python3, \w is unicode-aware by default.
+    text = re.sub(r"[^\w\s]", " ", text, flags=re.UNICODE)
     text = re.sub(r"\s+", " ", text).strip()
     return text
 
 
 def _extract_target_phrase(text: str) -> str:
     """Return the part after common command prefixes, else the full text."""
-    t = _normalize_text(text)
+    raw = (text or "").strip()
+    if not raw:
+        return ""
+
+    # Check raw (non-normalized) first for Chinese commands like "去厨房" (no spaces).
+    raw_prefixes = [
+        "去到",
+        "去",
+        "前往",
+        "导航到",
+        "带我去",
+    ]
+    for p in raw_prefixes:
+        if raw.startswith(p):
+            return raw[len(p):].strip()
+
+    t = _normalize_text(raw)
     if not t:
         return ""
 
@@ -53,6 +71,7 @@ def _canonicalize_place_name(raw: str) -> str:
     t = t.replace("hall room", "hall")
 
     aliases = {
+        # English
         "meeting room": "meeting_room",
         "meetingroom": "meeting_room",
         "living room": "living_room",
@@ -63,6 +82,19 @@ def _canonicalize_place_name(raw: str) -> str:
         "balcoy": "balcony",  # user-typed variant
         "hall": "hall",
         "hallway": "hall",
+
+        # Chinese
+        "厨房": "kitchen",
+        "会议室": "meeting_room",
+        "会议厅": "meeting_room",
+        "客厅": "living_room",
+        "起居室": "living_room",
+        "阳台": "balcony",
+        "卧室": "bedroom",
+        "卧房": "bedroom",
+        "大厅": "hall",
+        "大堂": "hall",
+        "走廊": "hall",
     }
 
     if t in aliases:

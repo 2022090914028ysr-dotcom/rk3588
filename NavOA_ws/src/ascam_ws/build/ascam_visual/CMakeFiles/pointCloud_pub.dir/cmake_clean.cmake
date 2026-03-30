@@ -1,8 +1,7 @@
 file(REMOVE_RECURSE
-  "/home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/devel/lib/ascam_visual/pointCloud_pub"
-  "/home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/devel/lib/ascam_visual/pointCloud_pub.pdb"
+  "/home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/devel/lib/ascam_visual/pointCloud_pub"
+  "/home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/devel/lib/ascam_visual/pointCloud_pub.pdb"
   "CMakeFiles/pointCloud_pub.dir/src/pointCloud_pub.cpp.o"
-  "CMakeFiles/pointCloud_pub.dir/src/pointCloud_pub.cpp.o.d"
 )
 
 # Per-language clean rules from dependency scanning.

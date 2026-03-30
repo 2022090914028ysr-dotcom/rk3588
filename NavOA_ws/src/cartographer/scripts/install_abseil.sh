@@ -22,8 +22,8 @@ set -o verbose
 sudo apt-get update
 sudo apt-get install -y ninja-build stow git cmake
 
-# Download Abseil if not present
-ABSEIL_SRC="/home/ubuntu/Robit_SlamNav/NavOA_ws/src/cartographer/abseil-cpp"
+# # Download Abseil if not present
+ABSEIL_SRC="/home/rana/Robit_SlamNav/NavOA_ws/src/cartographer/abseil-cpp"
 if [ ! -d "$ABSEIL_SRC" ]; then
   git clone https://github.com/abseil/abseil-cpp.git "$ABSEIL_SRC"
 fi

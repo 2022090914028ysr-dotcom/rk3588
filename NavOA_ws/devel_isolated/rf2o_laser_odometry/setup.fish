@@ -18,7 +18,7 @@ if not type -q bass
 end
 
 if test -z $_CATKIN_SETUP_DIR
-    set _CATKIN_SETUP_DIR /home/ubuntu/Robit_SlamNav/NavOA_ws/devel_isolated/rf2o_laser_odometry
+    set _CATKIN_SETUP_DIR /home/rana/Robit_SlamNav/NavOA_ws/devel_isolated/rf2o_laser_odometry
 end
 
 set _SETUP_UTIL "$_CATKIN_SETUP_DIR/_setup_util.py"

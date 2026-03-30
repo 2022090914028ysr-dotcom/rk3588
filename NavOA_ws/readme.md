@@ -149,10 +149,10 @@ Important: After finishing mapping and before killing the current SLAM terminal,
 #Save MAP-----------------------------
 ```
 rosservice call /write_state \
-"filename: '/home/ubuntu/Robit_SlamNav/NavOA_ws/src/NavOA_ros/example/gazebo_limo/maps/limo_map.pbstream'
+"filename: '/home/rana/Robit_SlamNav/NavOA_ws/src/NavOA_ros/example/gazebo_limo/maps/limo_map.pbstream'
 include_unfinished_submaps: true"
 ```
-rosrun map_server map_saver -f /home/ubuntu/Robit_SlamNav/NavOA_ws/src/NavOA_ros/example/gazebo_limo/maps/limo_carto
+rosrun map_server map_saver -f /home/rana/Robit_SlamNav/NavOA_ws/src/NavOA_ros/example/gazebo_limo/maps/limo_carto
 
 # Must save as `.pbstream` format, and modify the save path to your own address.
 
@@ -189,9 +189,9 @@ taskset -c 6,7 python Ros_control/cmd_vel_bridge.py
 
 tmux attach -t robot_start
 
-taskset -c 1,2 python3  /home/ubuntu/Robit_SlamNav/NavOA_ws/src/NavOA_ros/scripts/pub.py
+taskset -c 1,2 python3  /home/rana/Robit_SlamNav/NavOA_ws/src/NavOA_ros/scripts/pub.py
 
-taskset -c 1,2 python3 /home/ubuntu/Robit_SlamNav/NavOA_ws/src/NavOA_ros/scripts/maplocation.py
+taskset -c 1,2 python3 /home/rana/Robit_SlamNav/NavOA_ws/src/NavOA_ros/scripts/maplocation.py
 
 
 
