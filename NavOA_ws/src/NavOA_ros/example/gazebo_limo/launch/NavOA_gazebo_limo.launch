@@ -6,7 +6,7 @@
     
     <arg name="config_file" default='$(find NavOA_ros)/example/gazebo_limo/config/NavOA_planner_limo.yaml'/>
     <arg name="map_frame" default='map'/>
-    <arg name="base_frame" default='ascamera_hp60c_color_0'/>
+    <arg name="base_frame" default='base_footprint'/>
     <arg name="lidar_frame" default='laser_frame'/>
     <arg name="scan_range" default='0.1 5.0'/>
     <arg name="ref_speed" default="0.4"/>

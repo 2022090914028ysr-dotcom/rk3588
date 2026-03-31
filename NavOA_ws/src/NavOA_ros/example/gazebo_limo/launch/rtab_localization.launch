@@ -1,18 +1,15 @@
 <launch>
     <!-- 
-        RTAB-Map Localization Launch File
-        For use with NavOA navigation after mapping is complete
-        
-        IMPORTANT: After launching, use RViz "2D Pose Estimate" to set robot position!
+        RTAB-Map Mapping Launch File
+        Camera + lidar scan mapping with external odometry from EKF.
     -->
     
-    <arg name="database_path" default="~/.ros/rtabmap.db"/>
+    <arg name="database_path" default="/home/rana/.ros/rtabmap.db"/>
     <arg name="use_sim_time" default="false"/>
-    <arg name="frame_id" default="ascamera_hp60c_color_0"/>
-    
-    <!-- Publish a static /map frame as a fallback until RTAB-Map initializes -->
-    <node pkg="tf" type="static_transform_publisher" name="map_broadcaster"
-          args="0 0 0 0 0 0 map odom 100"/>
+    <arg name="frame_id" default="base_footprint"/>
+    <arg name="subscribe_scan" default="true"/>
+    <arg name="rtabmap_viz" default="true"/>
+    <arg name="rviz" default="true"/>
     
     <include file="$(find rtabmap_launch)/launch/rtabmap.launch">
         <arg name="use_sim_time"            value="$(arg use_sim_time)"/>
@@ -20,20 +17,23 @@
         <arg name="frame_id"                value="$(arg frame_id)"/>
         <arg name="map_frame_id"            value="map"/>
         <arg name="odom_frame_id"           value="odom"/>
-        <arg name="localization"            value="true"/>
-        <arg name="visual_odometry"         value="true"/>
+        <arg name="localization"            value="false"/>
+        <arg name="visual_odometry"         value="false"/>
         <arg name="publish_tf_map"          value="true"/>
         <arg name="rgb_topic"               value="/ascamera_hp60c/rgb0/image"/>
         <arg name="depth_topic"             value="/ascamera_hp60c/depth0/image_raw"/>
         <arg name="camera_info_topic"       value="/ascamera_hp60c/rgb0/camera_info"/>
-        <arg name="scan_topic"              value="/scan"/>
+        <arg name="scan_topic"              value="/merged_scan"/>
         <arg name="odom_topic"              value="/odom"/>
         <arg name="approx_sync"             value="true"/>
         <arg name="approx_sync_max_interval"    value="0.5"/>
         <arg name="depth_scale"                 value="0.001"/>
-        <arg name="subscribe_scan"             value="false"/>
+        <arg name="subscribe_scan"             value="$(arg subscribe_scan)"/>
+        <arg name="wait_for_transform"         value="0.4"/>
+        <arg name="topic_queue_size"           value="10"/>
+        <arg name="sync_queue_size"            value="30"/>
 
-        <arg name="rviz"                   value="false"/>
-        <arg name="rtabmap_viz"            value="true"/>
+        <arg name="rviz"                   value="$(arg rviz)"/>
+        <arg name="rtabmap_viz"            value="$(arg rtabmap_viz)"/>
     </include>
 </launch>

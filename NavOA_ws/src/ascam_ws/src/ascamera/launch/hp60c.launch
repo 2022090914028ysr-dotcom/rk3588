@@ -25,6 +25,8 @@
 
     </node>
 
+    
+
 <!-- add nodes to enable multi camera activation: usb_bus_no and usb_path should be different -->
     <!-- <node pkg="ascamera" name="ascamera_hp60c_ln_2" type="ascamera_node" respawn="true" output="screen">
         <param name = "usb_bus_no" type="int" value="2"/>

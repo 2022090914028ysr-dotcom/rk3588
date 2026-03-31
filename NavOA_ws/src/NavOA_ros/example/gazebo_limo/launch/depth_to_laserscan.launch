@@ -5,7 +5,7 @@
         <remap from="scan" to="/depth_scan"/> 
         
         <!-- 参数配置 -->
-        <param name="output_frame_id" value="ascamera_hp60c_color_0"/>
+        <param name="output_frame_id" value="camera_base_link"/>
         <param name="scan_height" value="10"/>  <!-- 使用多少行像素生成激光扫描 -->
         <param name="range_min" value="0.05"/> <!-- 测算地面到相机的深度，修改这个 -->
         <param name="range_max" value="5.0"/>
@@ -16,8 +16,11 @@
 
     <!-- 发布 camera 相对于 base_footprint 的静态变换，修改这个-->
 
+    <node pkg="tf" type="static_transform_publisher" name="camera_base_tf_pub"
+        args="0.1 0.0 0.45 0 0 0 base_footprint camera_base_link 100" />
+
     <node pkg="tf" type="static_transform_publisher" name="camera_tf_pub"
-        args="0.1 0.0 0.45 0 0 0 base_footprint ascamera_hp60c_camera_link_0 100" />
+        args="0 0 0 -1.57079632679 0 -1.57079632679 camera_base_link ascamera_hp60c_camera_link_0 100" />
 
     <!-- <node pkg="tf" type="static_transform_publisher" name="link_to_color_tf_static" 
       args="0 0 0 -1.57079632679 0 -1.57079632679 ascamera_hp60c_camera_link_0 ascamera_hp60c_color_0 100" output="screen" /> -->

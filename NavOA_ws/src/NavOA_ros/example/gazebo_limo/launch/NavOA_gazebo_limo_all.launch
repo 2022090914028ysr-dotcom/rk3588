@@ -5,8 +5,8 @@
   <!-- <node pkg="tf" type="static_transform_publisher" name="base_to_imu" 
       args="0 0 0 0 0 0 base_footprint imu_link 100" /> -->
 
-  <node pkg="tf2_ros" type="static_transform_publisher" name="base_to_imu"
-      args="0 0 0 0 0 0 ascamera_hp60c_color_0 imu_link" />
+  <!-- <node pkg="tf2_ros" type="static_transform_publisher" name="base_to_imu"
+      args="0 0 0 0 0 0 ascamera_hp60c_color_0 imu_link" /> -->
 
   <include file="$(find ascamera)/launch/hp60c.launch" />
   <!-- Convert depth image to synthetic laser and merge with lidar -->
