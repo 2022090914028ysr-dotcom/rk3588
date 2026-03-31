@@ -202,6 +202,7 @@ taskset -c 1,2 python3 /home/rana/Robit_SlamNav/NavOA_ws/src/NavOA_ros/scripts/m
 
 roslaunch ascamera hp60c.launch
 
+rosrun map_server map_saver -f ./src/NavOA_ros/example/gazebo_limo/maps/rtabmap/rtabmap_2d map:=/rtabmap/grid_map
 
 
 sudo stty -F /dev/ttyS6 230400 cs8 -cstopb -parenb -ixon -ixoff

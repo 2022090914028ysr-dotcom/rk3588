@@ -21,7 +21,8 @@
     <arg name="rknn_core" default="auto"/>
     <arg name="refresh_initial_path" default='true'/>
 
-    <node name="path_segment_publisher" pkg="NavOA_ros" type="path_segment_publisher.py" output="screen" launch-prefix="python3"/>
+    <!-- Bypass path segmentation and send RViz 2D goals directly to NavOA -->
+    <!-- <node name="path_segment_publisher" pkg="NavOA_ros" type="path_segment_publisher.py" output="screen" launch-prefix="python3"/> -->
     <node name="vel_filter" pkg="NavOA_ros" type="vel_filter.py" output="screen" launch-prefix="python3">
         <param name="scan_topic" value="/merged_scan" />
         <param name="cmd_in_topic" value="/cmd_vel_tem" />
@@ -60,17 +61,13 @@
         <param name="rknn_target" value="$(arg rknn_target)"/>
         <param name="rknn_core" value="$(arg rknn_core)"/>
         <param name="refresh_initial_path" value="$(arg refresh_initial_path)"/>
-        <remap from="/scan" to="/scan"/>
-        <!-- <remap from="/scan" to="/merged_scan"/> -->
+        <!-- <remap from="/scan" to="/scan"/> -->
+        <remap from="/scan" to="/merged_scan"/>
            <remap from="/NavOA_cmd_vel" to="/cmd_vel_tem"/>
            <!-- NOTE: Do not remap NavOA_cmd_vel directly to /cmd_vel when vel_filter is enabled,
                otherwise vel_filter will also publish zeros to /cmd_vel on timeout and override commands. -->
            <!-- <remap from="/NavOA_cmd_vel" to="/cmd_vel"/> -->
         <remap from="/NavOA_goal" to="/move_base_simple/goal"/>
-        
-        <remap from="/NavOA_goal" to="/split_goal"/>
-        
-        <remap from="/initial_path" to="/move_base/GlobalPlanner/plan"/>
 
     </node>
 

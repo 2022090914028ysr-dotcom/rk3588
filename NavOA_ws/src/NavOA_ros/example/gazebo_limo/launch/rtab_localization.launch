@@ -1,7 +1,7 @@
 <launch>
     <!-- 
-        RTAB-Map Mapping Launch File
-        Camera + lidar scan mapping with external odometry from EKF.
+        RTAB-Map Localization Launch File
+        Camera + lidar localization using the existing database.
     -->
     
     <arg name="database_path" default="/home/rana/.ros/rtabmap.db"/>
@@ -17,7 +17,7 @@
         <arg name="frame_id"                value="$(arg frame_id)"/>
         <arg name="map_frame_id"            value="map"/>
         <arg name="odom_frame_id"           value="odom"/>
-        <arg name="localization"            value="false"/>
+        <arg name="localization"            value="true"/>
         <arg name="visual_odometry"         value="false"/>
         <arg name="publish_tf_map"          value="true"/>
         <arg name="rgb_topic"               value="/ascamera_hp60c/rgb0/image"/>
