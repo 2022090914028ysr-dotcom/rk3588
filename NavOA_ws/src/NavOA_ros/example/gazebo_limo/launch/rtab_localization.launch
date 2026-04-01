@@ -2,6 +2,7 @@
     <!-- 
         RTAB-Map Localization Launch File
         Camera + lidar localization using the existing database.
+        ICP enabled for better scan matching.
     -->
     
     <arg name="database_path" default="/home/rana/.ros/rtabmap.db"/>
@@ -10,6 +11,9 @@
     <arg name="subscribe_scan" default="true"/>
     <arg name="rtabmap_viz" default="true"/>
     <arg name="rviz" default="true"/>
+    
+    <!-- ICP parameters loaded before rtabmap node starts -->
+    <rosparam command="load" file="$(find NavOA_ros)/example/gazebo_limo/config/rtabmap_icp.yaml" ns="rtabmap"/>
     
     <include file="$(find rtabmap_launch)/launch/rtabmap.launch">
         <arg name="use_sim_time"            value="$(arg use_sim_time)"/>

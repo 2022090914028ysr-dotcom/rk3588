@@ -28,12 +28,12 @@
 
   
 
-  <arg name="map_file" default="/home/rana/Robit_SlamNav/NavOA_ws/src/NavOA_ros/example/gazebo_limo/maps/rtabmap/rtabmap_2d.yaml" />
+  <arg name="map_file" default="/home/rana/Robit_SlamNav/NavOA_ws/src/NavOA_ros/example/gazebo_limo/maps/rtabmap/rtabmap.yaml" />
   <include file="$(find NavOA_ros)/example/gazebo_limo/launch/global_planner.launch">
     <arg name="map_file" value="$(arg map_file)" /> 
   </include>
 
-  <include file="$(find NavOA_ros)/example/gazebo_limo/launch/rtab_localization.launch" />
+  <include file="$(find NavOA_ros)/example/gazebo_limo/launch/rtab_map.launch" />
 
 
   <!-- Real robot command bridge listening on /cmd_vel -->

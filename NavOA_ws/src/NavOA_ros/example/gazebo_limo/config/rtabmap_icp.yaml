@@ -1,0 +1,37 @@
+# RTAB-Map ICP Configuration
+# For lidar-based scan matching and mapping
+
+# Registration strategy: 0=Visual, 1=ICP, 2=Visual+ICP
+Reg/Strategy: 1
+
+# ICP Point-to-Plane for better alignment on flat surfaces
+Icp/PointToPlane: true
+Icp/PointToPlaneK: 20
+Icp/PointToPlaneRadius: 0.0
+
+# ICP correspondence settings
+Icp/MaxCorrespondenceDistance: 0.5
+Icp/CorrespondenceRatio: 0.2
+
+# ICP iterations
+Icp/MaxIterations: 100
+Icp/Epsilon: 0.0001
+
+# ICP voxel filtering for speed
+Icp/VoxelSize: 0.05
+
+# ICP step size for robustness
+Icp/Step: 1.0
+
+# Use ICP for loop closure
+Icp/LoopClosure: true
+
+# Cloud filtering for map quality
+Cloud/VoxelSize: 0.02
+Cloud/MaxDepth: 4.0
+Cloud/MinDepth: 0.3
+
+# Grid map settings
+Grid/CellSize: 0.05
+Grid/RangeMax: 4.0
+Grid/RangeMin: 0.3
