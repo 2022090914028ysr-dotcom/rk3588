@@ -1,7 +1,6 @@
 # Ignore build and runtime artifacts
-/build/
-/devel/
-/logs/
-/devel_isolated/*
-/build_isolated/*
+/NavOA_ws/build/
+/NavOA_ws/build_isolated/
+/NavOA_ws/devel/
+/NavOA_ws/devel_isolated/
 /logs/*
