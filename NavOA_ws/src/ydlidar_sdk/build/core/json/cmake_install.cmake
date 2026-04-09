@@ -1,4 +1,4 @@
-# Install script for directory: /home/rana/Robit_SlamNav/NavOA_ws/src/ydlidar_sdk/core/json
+# Install script for directory: /home/ubuntu/Robit_SlamNav/NavOA_ws/src/ydlidar_sdk/core/json
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)

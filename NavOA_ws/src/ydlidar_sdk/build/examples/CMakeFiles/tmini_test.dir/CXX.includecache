@@ -190,7 +190,7 @@ string
 map
 -
 
-/home/rana/Robit_SlamNav/NavOA_ws/src/ydlidar_sdk/examples/tmini_test.cpp
+/home/ubuntu/Robit_SlamNav/NavOA_ws/src/ydlidar_sdk/examples/tmini_test.cpp
 iostream
 -
 string
@@ -200,9 +200,9 @@ algorithm
 cctype
 -
 CYdLidar.h
-/home/rana/Robit_SlamNav/NavOA_ws/src/ydlidar_sdk/examples/CYdLidar.h
+/home/ubuntu/Robit_SlamNav/NavOA_ws/src/ydlidar_sdk/examples/CYdLidar.h
 core/common/ydlidar_help.h
-/home/rana/Robit_SlamNav/NavOA_ws/src/ydlidar_sdk/examples/core/common/ydlidar_help.h
+/home/ubuntu/Robit_SlamNav/NavOA_ws/src/ydlidar_sdk/examples/core/common/ydlidar_help.h
 
 ydlidar_config.h
 

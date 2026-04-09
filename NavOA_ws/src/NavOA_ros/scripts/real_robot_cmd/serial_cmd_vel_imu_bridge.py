@@ -12,8 +12,10 @@ From this PC:
 Expected IMU line format from the other PC:
   IMU,ax,ay,az,gx,gy,gz,roll,pitch,yaw\n
 
+Optional extended IMU line format:
+    IMU,ax,ay,az,gx,gy,gz,roll,pitch,yaw,stamp_sec\n
 Expected cmd_vel line format sent to the other PC:
-  CMD_VEL,linear_x,angular_z\n
+    CMD_VEL,linear_x,angular_z\n
 """
 
 import threading
@@ -54,7 +56,7 @@ class SerialCmdVelImuBridge(object):
             raise RuntimeError("pyserial is required for serial_cmd_vel_imu_bridge")
 
         # Parameters
-        self.port = rospy.get_param("~serial_port", "/dev/ttyS6")
+        self.port = rospy.get_param("~serial_port", "/dev/ttyS7")
         self.baudrate = rospy.get_param("~baudrate", 230400)
         self.serial_timeout = rospy.get_param("~serial_timeout", 0.1)
 
@@ -63,6 +65,11 @@ class SerialCmdVelImuBridge(object):
         # This is the IMU topic used by the rest of the stack; by default /imu
         self.imu_topic = rospy.get_param("~imu_topic", "/imu")
         self.imu_frame_id = rospy.get_param("~imu_frame_id", "imu_link")
+        self.imu_time_offset = rospy.get_param("~imu_time_offset", 0.12)
+        self.imu_min_dt = rospy.get_param("~imu_min_dt", 0.001)
+        self.imu_max_future = rospy.get_param("~imu_max_future", 0.2)
+        self.prefer_device_stamp = rospy.get_param("~prefer_device_stamp", True)
+        self.last_imu_stamp = None
 
         # Serial
         self.serial_lock = threading.Lock()
@@ -95,7 +102,10 @@ class SerialCmdVelImuBridge(object):
         rospy.on_shutdown(self.shutdown)
 
         rospy.loginfo(
-            "serial_cmd_vel_imu_bridge running: IMU & cmd_vel over %s", self.port
+            "serial_cmd_vel_imu_bridge running: IMU & cmd_vel over %s (offset=%.3fs, min_dt=%.4fs)",
+            self.port,
+            self.imu_time_offset,
+            self.imu_min_dt,
         )
 
     # ------------------------------------------------------------------
@@ -170,12 +180,12 @@ class SerialCmdVelImuBridge(object):
 
     def _handle_imu_line(self, line: str):
         parts = line.split(",")
-        if len(parts) != 10:
+        if len(parts) not in (10, 11):
             rospy.logwarn_throttle(5.0, "Invalid IMU line: %s", line)
             return
 
         try:
-            _, ax, ay, az, gx, gy, gz, roll, pitch, yaw = parts
+            _, ax, ay, az, gx, gy, gz, roll, pitch, yaw = parts[:10]
             ax_f = float(ax)
             ay_f = float(ay)
             az_f = float(az)
@@ -185,12 +195,13 @@ class SerialCmdVelImuBridge(object):
             roll_f = float(roll)
             pitch_f = float(pitch)
             yaw_f = float(yaw)
+            device_stamp = float(parts[10]) if len(parts) == 11 else None
         except ValueError:
             rospy.logwarn_throttle(5.0, "Failed to parse IMU line: %s", line)
             return
 
         msg = Imu()
-        msg.header.stamp = rospy.Time.now()
+        msg.header.stamp = self._compute_imu_stamp(device_stamp)
         msg.header.frame_id = self.imu_frame_id
 
         msg.linear_acceleration.x = ax_f
@@ -213,6 +224,24 @@ class SerialCmdVelImuBridge(object):
         msg.orientation_covariance = [1e-4, 0, 0, 0, 1e-4, 0, 0, 0, 1e-4]
 
         self.imu_pub.publish(msg)
+
+    def _compute_imu_stamp(self, device_stamp: float):
+        if self.prefer_device_stamp and device_stamp is not None:
+            stamp = rospy.Time.from_sec(device_stamp)
+        else:
+            stamp = rospy.Time.now()
+
+        stamp += rospy.Duration.from_sec(self.imu_time_offset)
+
+        max_future_stamp = rospy.Time.now() + rospy.Duration.from_sec(self.imu_max_future)
+        if stamp > max_future_stamp:
+            stamp = max_future_stamp
+
+        if self.last_imu_stamp is not None and stamp <= self.last_imu_stamp:
+            stamp = self.last_imu_stamp + rospy.Duration.from_sec(self.imu_min_dt)
+
+        self.last_imu_stamp = stamp
+        return stamp
 
     # ------------------------------------------------------------------
     # Shutdown

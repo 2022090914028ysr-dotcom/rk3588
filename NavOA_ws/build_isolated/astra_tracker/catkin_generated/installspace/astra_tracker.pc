@@ -1,4 +1,4 @@
-prefix=/home/rana/Robit_SlamNav/NavOA_ws/install_isolated
+prefix=/home/ubuntu/Robit_SlamNav/NavOA_ws/install_isolated
 
 Name: astra_tracker
 Description: Description of astra_tracker

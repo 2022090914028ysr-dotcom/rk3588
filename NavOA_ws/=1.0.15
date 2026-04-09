@@ -1,4 +1,4 @@
-Requirement already satisfied: diffcp in /home/rana/miniconda3/envs/nav/lib/python3.10/site-packages (1.1.2)
+Requirement already satisfied: diffcp in /home/ubuntu/miniconda3/envs/nav/lib/python3.10/site-packages (1.1.2)
 Collecting diffcp
   Downloading diffcp-1.1.4.tar.gz (2.1 MB)
      ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 2.1/2.1 MB 25.6 kB/s  0:01:13

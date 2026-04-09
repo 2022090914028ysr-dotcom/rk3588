@@ -18,5 +18,5 @@ examples/CMakeFiles/gs_restart.dir/gs_restart.cpp.o
  ../src/CYdLidar.h
  ../src/filters/FilterInterface.h
  ../src/filters/StrongLightFilter.h
- /home/rana/Robit_SlamNav/NavOA_ws/src/ydlidar_sdk/examples/gs_restart.cpp
+ /home/ubuntu/Robit_SlamNav/NavOA_ws/src/ydlidar_sdk/examples/gs_restart.cpp
  ydlidar_config.h

@@ -15,5 +15,5 @@ examples/CMakeFiles/tri_restart.dir/tri_restart.cpp.o
  ../core/common/ydlidar_def.h
  ../core/common/ydlidar_protocol.h
  ../src/CYdLidar.h
- /home/rana/Robit_SlamNav/NavOA_ws/src/ydlidar_sdk/examples/tri_restart.cpp
+ /home/ubuntu/Robit_SlamNav/NavOA_ws/src/ydlidar_sdk/examples/tri_restart.cpp
  ydlidar_config.h

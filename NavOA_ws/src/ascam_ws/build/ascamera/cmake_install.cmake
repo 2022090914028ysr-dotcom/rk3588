@@ -1,8 +1,8 @@
-# Install script for directory: /home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/src/ascamera
+# Install script for directory: /home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/src/ascamera
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
-  set(CMAKE_INSTALL_PREFIX "/home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/install")
+  set(CMAKE_INSTALL_PREFIX "/home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/install")
 endif()
 string(REGEX REPLACE "/$" "" CMAKE_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}")
 
@@ -38,18 +38,18 @@ if(NOT DEFINED CMAKE_CROSSCOMPILING)
 endif()
 
 if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
-  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib/pkgconfig" TYPE FILE FILES "/home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/build/ascamera/catkin_generated/installspace/ascamera.pc")
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib/pkgconfig" TYPE FILE FILES "/home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/build/ascamera/catkin_generated/installspace/ascamera.pc")
 endif()
 
 if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
   file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/ascamera/cmake" TYPE FILE FILES
-    "/home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/build/ascamera/catkin_generated/installspace/ascameraConfig.cmake"
-    "/home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/build/ascamera/catkin_generated/installspace/ascameraConfig-version.cmake"
+    "/home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/build/ascamera/catkin_generated/installspace/ascameraConfig.cmake"
+    "/home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/build/ascamera/catkin_generated/installspace/ascameraConfig-version.cmake"
     )
 endif()
 
 if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
-  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/ascamera" TYPE FILE FILES "/home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/src/ascamera/package.xml")
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/ascamera" TYPE FILE FILES "/home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/src/ascamera/package.xml")
 endif()
 
 if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
@@ -59,12 +59,12 @@ if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_
          FILE "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/lib/ascamera/ascamera_node"
          RPATH "")
   endif()
-  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib/ascamera" TYPE EXECUTABLE FILES "/home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/devel/lib/ascamera/ascamera_node")
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib/ascamera" TYPE EXECUTABLE FILES "/home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/devel/lib/ascamera/ascamera_node")
   if(EXISTS "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/lib/ascamera/ascamera_node" AND
      NOT IS_SYMLINK "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/lib/ascamera/ascamera_node")
     file(RPATH_CHANGE
          FILE "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/lib/ascamera/ascamera_node"
-         OLD_RPATH "/home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/src/ascamera/libs/lib/x86_64-linux-gnu:/opt/ros/noetic/lib:"
+         OLD_RPATH "/home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/src/ascamera/libs/lib/x86_64-linux-gnu:/opt/ros/noetic/lib:"
          NEW_RPATH "")
     if(CMAKE_INSTALL_DO_STRIP)
       execute_process(COMMAND "/usr/bin/strip" "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/lib/ascamera/ascamera_node")
@@ -73,10 +73,10 @@ if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_
 endif()
 
 if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
-  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/ascamera/launch" TYPE DIRECTORY FILES "/home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/src/ascamera/launch/")
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/ascamera/launch" TYPE DIRECTORY FILES "/home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/src/ascamera/launch/")
 endif()
 
 if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
-  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib" TYPE DIRECTORY FILES "/home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/src/ascamera/libs/lib/x86_64-linux-gnu/")
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib" TYPE DIRECTORY FILES "/home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/src/ascamera/libs/lib/x86_64-linux-gnu/")
 endif()
 

@@ -1,0 +1,82 @@
+<launch>
+  <arg name="use_sim_time" default="false"/>
+  <arg name="imu_topic" default="/imu_mux"/>
+  <arg name="enable_imu" default="true"/>
+  <arg name="imu_time_offset" default="0.12"/>
+  <arg name="camera_fps" default="15"/>
+  <arg name="rtabmap_subscribe_scan" default="false"/>
+  <arg name="rtabmap_viz" default="false"/>
+  <arg name="rviz" default="false"/>
+  <arg name="enable_rf2o" default="true"/>
+  <arg name="enable_rtabmap" default="true"/>
+
+  <param name="use_sim_time" value="$(arg use_sim_time)"/>
+
+  <!-- Keep the robot sensor tree intact while removing navigation consumers. -->
+  <node pkg="tf2_ros" type="static_transform_publisher" name="base_to_imu"
+      args="0 0 0 0 0 0 base_footprint imu_link" />
+
+  <include file="$(find ascamera)/launch/hp60c.launch">
+    <arg name="fps" value="$(arg camera_fps)" />
+  </include>
+
+  <include file="$(find NavOA_ros)/example/gazebo_limo/launch/depth_to_laserscan.launch" />
+  <include file="$(find lidar_ros)/launch/lidar.launch" />
+
+  <include if="$(eval enable_rf2o and enable_rtabmap)" file="$(find rf2o_laser_odometry)/launch/rf2o_laser_odometry.launch" />
+
+  <include if="$(eval enable_rf2o and not enable_rtabmap)" file="$(find rf2o_laser_odometry)/launch/rf2o_laser_odometry.launch">
+    <arg name="odom_topic" value="/odom" />
+  </include>
+
+  <node if="$(eval enable_rf2o and not enable_rtabmap)" pkg="NavOA_ros" type="odom_topic_to_tf.py" name="rf2o_odom_topic_to_tf" output="screen" launch-prefix="python3">
+    <param name="odom_topic" value="/odom" />
+    <param name="parent_frame" value="odom" />
+    <param name="child_frame" value="base_footprint" />
+    <param name="flatten_2d" value="true" />
+  </node>
+
+  <include if="$(eval enable_rtabmap and enable_imu)" file="$(find NavOA_ros)/example/gazebo_limo/launch/rtab_map.launch">
+    <arg name="imu_topic" value="$(arg imu_topic)" />
+    <arg name="odom_topic" value="/odom" />
+    <arg name="odom_frame_id" value="odom" />
+    <arg name="wait_imu_to_init" value="true" />
+    <arg name="subscribe_scan" value="$(arg rtabmap_subscribe_scan)" />
+    <arg name="rtabmap_viz" value="$(arg rtabmap_viz)" />
+    <arg name="rviz" value="$(arg rviz)" />
+  </include>
+
+  <include if="$(eval enable_rtabmap and not enable_imu)" file="$(find NavOA_ros)/example/gazebo_limo/launch/rtab_map.launch">
+    <arg name="imu_topic" value="/imu_disabled" />
+    <arg name="odom_topic" value="/odom" />
+    <arg name="odom_frame_id" value="odom" />
+    <arg name="wait_imu_to_init" value="false" />
+    <arg name="subscribe_scan" value="$(arg rtabmap_subscribe_scan)" />
+    <arg name="rtabmap_viz" value="$(arg rtabmap_viz)" />
+    <arg name="rviz" value="$(arg rviz)" />
+  </include>
+
+  <node if="$(arg enable_rtabmap)" pkg="NavOA_ros" type="odom_topic_to_tf.py" name="odom_topic_to_tf" output="screen" launch-prefix="python3">
+    <param name="odom_topic" value="/odom" />
+    <param name="parent_frame" value="odom" />
+    <param name="child_frame" value="base_footprint" />
+    <param name="flatten_2d" value="true" />
+  </node>
+
+  <node if="$(eval enable_rtabmap and enable_imu)" pkg="NavOA_ros" type="serial_cmd_vel_imu_bridge.py" name="serial_cmd_vel_imu_bridge" output="screen">
+    <param name="serial_port" value="/dev/ttyS7" />
+    <param name="baudrate" value="230400" />
+    <param name="imu_topic" value="/imu_serial" />
+    <param name="imu_time_offset" value="$(arg imu_time_offset)" />
+    <param name="imu_min_dt" value="0.001" />
+    <param name="imu_max_future" value="0.2" />
+    <param name="prefer_device_stamp" value="true" />
+  </node>
+
+  <node if="$(eval enable_rtabmap and enable_imu)" pkg="NavOA_ros" type="imu_mux.py" name="imu_mux" output="screen">
+    <param name="primary_topic" value="/imu_serial" />
+    <param name="fallback_topic" value="/imu" />
+    <param name="output_topic" value="$(arg imu_topic)" />
+    <param name="timeout" value="0.2" />
+  </node>
+</launch>

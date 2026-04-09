@@ -48,10 +48,10 @@ RM = /usr/bin/cmake -E remove -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/src
+CMAKE_SOURCE_DIR = /home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/src
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/build
+CMAKE_BINARY_DIR = /home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/build
 
 #=============================================================================
 # Targets provided globally by CMake.
@@ -137,14 +137,14 @@ install/fast: preinstall/fast
 
 # The main all target
 all: cmake_check_build_system
-	cd /home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/build && $(CMAKE_COMMAND) -E cmake_progress_start /home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/build/CMakeFiles /home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/build/ascam_visual/CMakeFiles/progress.marks
-	cd /home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/build && $(MAKE) -f CMakeFiles/Makefile2 ascam_visual/all
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/build/CMakeFiles 0
+	cd /home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/build && $(CMAKE_COMMAND) -E cmake_progress_start /home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/build/CMakeFiles /home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/build/ascam_visual/CMakeFiles/progress.marks
+	cd /home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/build && $(MAKE) -f CMakeFiles/Makefile2 ascam_visual/all
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/build/CMakeFiles 0
 .PHONY : all
 
 # The main clean target
 clean:
-	cd /home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/build && $(MAKE) -f CMakeFiles/Makefile2 ascam_visual/clean
+	cd /home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/build && $(MAKE) -f CMakeFiles/Makefile2 ascam_visual/clean
 .PHONY : clean
 
 # The main clean target
@@ -154,22 +154,22 @@ clean/fast: clean
 
 # Prepare targets for installation.
 preinstall: all
-	cd /home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/build && $(MAKE) -f CMakeFiles/Makefile2 ascam_visual/preinstall
+	cd /home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/build && $(MAKE) -f CMakeFiles/Makefile2 ascam_visual/preinstall
 .PHONY : preinstall
 
 # Prepare targets for installation.
 preinstall/fast:
-	cd /home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/build && $(MAKE) -f CMakeFiles/Makefile2 ascam_visual/preinstall
+	cd /home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/build && $(MAKE) -f CMakeFiles/Makefile2 ascam_visual/preinstall
 .PHONY : preinstall/fast
 
 # clear depends
 depend:
-	cd /home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/build && $(CMAKE_COMMAND) -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 1
+	cd /home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/build && $(CMAKE_COMMAND) -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 1
 .PHONY : depend
 
 # Convenience name for target.
 ascam_visual/CMakeFiles/IR_transform.dir/rule:
-	cd /home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/build && $(MAKE) -f CMakeFiles/Makefile2 ascam_visual/CMakeFiles/IR_transform.dir/rule
+	cd /home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/build && $(MAKE) -f CMakeFiles/Makefile2 ascam_visual/CMakeFiles/IR_transform.dir/rule
 .PHONY : ascam_visual/CMakeFiles/IR_transform.dir/rule
 
 # Convenience name for target.
@@ -179,12 +179,12 @@ IR_transform: ascam_visual/CMakeFiles/IR_transform.dir/rule
 
 # fast build rule for target.
 IR_transform/fast:
-	cd /home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/build && $(MAKE) -f ascam_visual/CMakeFiles/IR_transform.dir/build.make ascam_visual/CMakeFiles/IR_transform.dir/build
+	cd /home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/build && $(MAKE) -f ascam_visual/CMakeFiles/IR_transform.dir/build.make ascam_visual/CMakeFiles/IR_transform.dir/build
 .PHONY : IR_transform/fast
 
 # Convenience name for target.
 ascam_visual/CMakeFiles/rosgraph_msgs_generate_messages_py.dir/rule:
-	cd /home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/build && $(MAKE) -f CMakeFiles/Makefile2 ascam_visual/CMakeFiles/rosgraph_msgs_generate_messages_py.dir/rule
+	cd /home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/build && $(MAKE) -f CMakeFiles/Makefile2 ascam_visual/CMakeFiles/rosgraph_msgs_generate_messages_py.dir/rule
 .PHONY : ascam_visual/CMakeFiles/rosgraph_msgs_generate_messages_py.dir/rule
 
 # Convenience name for target.
@@ -194,12 +194,12 @@ rosgraph_msgs_generate_messages_py: ascam_visual/CMakeFiles/rosgraph_msgs_genera
 
 # fast build rule for target.
 rosgraph_msgs_generate_messages_py/fast:
-	cd /home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/build && $(MAKE) -f ascam_visual/CMakeFiles/rosgraph_msgs_generate_messages_py.dir/build.make ascam_visual/CMakeFiles/rosgraph_msgs_generate_messages_py.dir/build
+	cd /home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/build && $(MAKE) -f ascam_visual/CMakeFiles/rosgraph_msgs_generate_messages_py.dir/build.make ascam_visual/CMakeFiles/rosgraph_msgs_generate_messages_py.dir/build
 .PHONY : rosgraph_msgs_generate_messages_py/fast
 
 # Convenience name for target.
 ascam_visual/CMakeFiles/roscpp_generate_messages_lisp.dir/rule:
-	cd /home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/build && $(MAKE) -f CMakeFiles/Makefile2 ascam_visual/CMakeFiles/roscpp_generate_messages_lisp.dir/rule
+	cd /home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/build && $(MAKE) -f CMakeFiles/Makefile2 ascam_visual/CMakeFiles/roscpp_generate_messages_lisp.dir/rule
 .PHONY : ascam_visual/CMakeFiles/roscpp_generate_messages_lisp.dir/rule
 
 # Convenience name for target.
@@ -209,12 +209,12 @@ roscpp_generate_messages_lisp: ascam_visual/CMakeFiles/roscpp_generate_messages_
 
 # fast build rule for target.
 roscpp_generate_messages_lisp/fast:
-	cd /home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/build && $(MAKE) -f ascam_visual/CMakeFiles/roscpp_generate_messages_lisp.dir/build.make ascam_visual/CMakeFiles/roscpp_generate_messages_lisp.dir/build
+	cd /home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/build && $(MAKE) -f ascam_visual/CMakeFiles/roscpp_generate_messages_lisp.dir/build.make ascam_visual/CMakeFiles/roscpp_generate_messages_lisp.dir/build
 .PHONY : roscpp_generate_messages_lisp/fast
 
 # Convenience name for target.
 ascam_visual/CMakeFiles/geometry_msgs_generate_messages_cpp.dir/rule:
-	cd /home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/build && $(MAKE) -f CMakeFiles/Makefile2 ascam_visual/CMakeFiles/geometry_msgs_generate_messages_cpp.dir/rule
+	cd /home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/build && $(MAKE) -f CMakeFiles/Makefile2 ascam_visual/CMakeFiles/geometry_msgs_generate_messages_cpp.dir/rule
 .PHONY : ascam_visual/CMakeFiles/geometry_msgs_generate_messages_cpp.dir/rule
 
 # Convenience name for target.
@@ -224,12 +224,12 @@ geometry_msgs_generate_messages_cpp: ascam_visual/CMakeFiles/geometry_msgs_gener
 
 # fast build rule for target.
 geometry_msgs_generate_messages_cpp/fast:
-	cd /home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/build && $(MAKE) -f ascam_visual/CMakeFiles/geometry_msgs_generate_messages_cpp.dir/build.make ascam_visual/CMakeFiles/geometry_msgs_generate_messages_cpp.dir/build
+	cd /home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/build && $(MAKE) -f ascam_visual/CMakeFiles/geometry_msgs_generate_messages_cpp.dir/build.make ascam_visual/CMakeFiles/geometry_msgs_generate_messages_cpp.dir/build
 .PHONY : geometry_msgs_generate_messages_cpp/fast
 
 # Convenience name for target.
 ascam_visual/CMakeFiles/geometry_msgs_generate_messages_nodejs.dir/rule:
-	cd /home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/build && $(MAKE) -f CMakeFiles/Makefile2 ascam_visual/CMakeFiles/geometry_msgs_generate_messages_nodejs.dir/rule
+	cd /home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/build && $(MAKE) -f CMakeFiles/Makefile2 ascam_visual/CMakeFiles/geometry_msgs_generate_messages_nodejs.dir/rule
 .PHONY : ascam_visual/CMakeFiles/geometry_msgs_generate_messages_nodejs.dir/rule
 
 # Convenience name for target.
@@ -239,12 +239,12 @@ geometry_msgs_generate_messages_nodejs: ascam_visual/CMakeFiles/geometry_msgs_ge
 
 # fast build rule for target.
 geometry_msgs_generate_messages_nodejs/fast:
-	cd /home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/build && $(MAKE) -f ascam_visual/CMakeFiles/geometry_msgs_generate_messages_nodejs.dir/build.make ascam_visual/CMakeFiles/geometry_msgs_generate_messages_nodejs.dir/build
+	cd /home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/build && $(MAKE) -f ascam_visual/CMakeFiles/geometry_msgs_generate_messages_nodejs.dir/build.make ascam_visual/CMakeFiles/geometry_msgs_generate_messages_nodejs.dir/build
 .PHONY : geometry_msgs_generate_messages_nodejs/fast
 
 # Convenience name for target.
 ascam_visual/CMakeFiles/rosgraph_msgs_generate_messages_lisp.dir/rule:
-	cd /home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/build && $(MAKE) -f CMakeFiles/Makefile2 ascam_visual/CMakeFiles/rosgraph_msgs_generate_messages_lisp.dir/rule
+	cd /home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/build && $(MAKE) -f CMakeFiles/Makefile2 ascam_visual/CMakeFiles/rosgraph_msgs_generate_messages_lisp.dir/rule
 .PHONY : ascam_visual/CMakeFiles/rosgraph_msgs_generate_messages_lisp.dir/rule
 
 # Convenience name for target.
@@ -254,12 +254,12 @@ rosgraph_msgs_generate_messages_lisp: ascam_visual/CMakeFiles/rosgraph_msgs_gene
 
 # fast build rule for target.
 rosgraph_msgs_generate_messages_lisp/fast:
-	cd /home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/build && $(MAKE) -f ascam_visual/CMakeFiles/rosgraph_msgs_generate_messages_lisp.dir/build.make ascam_visual/CMakeFiles/rosgraph_msgs_generate_messages_lisp.dir/build
+	cd /home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/build && $(MAKE) -f ascam_visual/CMakeFiles/rosgraph_msgs_generate_messages_lisp.dir/build.make ascam_visual/CMakeFiles/rosgraph_msgs_generate_messages_lisp.dir/build
 .PHONY : rosgraph_msgs_generate_messages_lisp/fast
 
 # Convenience name for target.
 ascam_visual/CMakeFiles/rosgraph_msgs_generate_messages_eus.dir/rule:
-	cd /home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/build && $(MAKE) -f CMakeFiles/Makefile2 ascam_visual/CMakeFiles/rosgraph_msgs_generate_messages_eus.dir/rule
+	cd /home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/build && $(MAKE) -f CMakeFiles/Makefile2 ascam_visual/CMakeFiles/rosgraph_msgs_generate_messages_eus.dir/rule
 .PHONY : ascam_visual/CMakeFiles/rosgraph_msgs_generate_messages_eus.dir/rule
 
 # Convenience name for target.
@@ -269,12 +269,12 @@ rosgraph_msgs_generate_messages_eus: ascam_visual/CMakeFiles/rosgraph_msgs_gener
 
 # fast build rule for target.
 rosgraph_msgs_generate_messages_eus/fast:
-	cd /home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/build && $(MAKE) -f ascam_visual/CMakeFiles/rosgraph_msgs_generate_messages_eus.dir/build.make ascam_visual/CMakeFiles/rosgraph_msgs_generate_messages_eus.dir/build
+	cd /home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/build && $(MAKE) -f ascam_visual/CMakeFiles/rosgraph_msgs_generate_messages_eus.dir/build.make ascam_visual/CMakeFiles/rosgraph_msgs_generate_messages_eus.dir/build
 .PHONY : rosgraph_msgs_generate_messages_eus/fast
 
 # Convenience name for target.
 ascam_visual/CMakeFiles/std_msgs_generate_messages_cpp.dir/rule:
-	cd /home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/build && $(MAKE) -f CMakeFiles/Makefile2 ascam_visual/CMakeFiles/std_msgs_generate_messages_cpp.dir/rule
+	cd /home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/build && $(MAKE) -f CMakeFiles/Makefile2 ascam_visual/CMakeFiles/std_msgs_generate_messages_cpp.dir/rule
 .PHONY : ascam_visual/CMakeFiles/std_msgs_generate_messages_cpp.dir/rule
 
 # Convenience name for target.
@@ -284,12 +284,12 @@ std_msgs_generate_messages_cpp: ascam_visual/CMakeFiles/std_msgs_generate_messag
 
 # fast build rule for target.
 std_msgs_generate_messages_cpp/fast:
-	cd /home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/build && $(MAKE) -f ascam_visual/CMakeFiles/std_msgs_generate_messages_cpp.dir/build.make ascam_visual/CMakeFiles/std_msgs_generate_messages_cpp.dir/build
+	cd /home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/build && $(MAKE) -f ascam_visual/CMakeFiles/std_msgs_generate_messages_cpp.dir/build.make ascam_visual/CMakeFiles/std_msgs_generate_messages_cpp.dir/build
 .PHONY : std_msgs_generate_messages_cpp/fast
 
 # Convenience name for target.
 ascam_visual/CMakeFiles/rosgraph_msgs_generate_messages_cpp.dir/rule:
-	cd /home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/build && $(MAKE) -f CMakeFiles/Makefile2 ascam_visual/CMakeFiles/rosgraph_msgs_generate_messages_cpp.dir/rule
+	cd /home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/build && $(MAKE) -f CMakeFiles/Makefile2 ascam_visual/CMakeFiles/rosgraph_msgs_generate_messages_cpp.dir/rule
 .PHONY : ascam_visual/CMakeFiles/rosgraph_msgs_generate_messages_cpp.dir/rule
 
 # Convenience name for target.
@@ -299,12 +299,12 @@ rosgraph_msgs_generate_messages_cpp: ascam_visual/CMakeFiles/rosgraph_msgs_gener
 
 # fast build rule for target.
 rosgraph_msgs_generate_messages_cpp/fast:
-	cd /home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/build && $(MAKE) -f ascam_visual/CMakeFiles/rosgraph_msgs_generate_messages_cpp.dir/build.make ascam_visual/CMakeFiles/rosgraph_msgs_generate_messages_cpp.dir/build
+	cd /home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/build && $(MAKE) -f ascam_visual/CMakeFiles/rosgraph_msgs_generate_messages_cpp.dir/build.make ascam_visual/CMakeFiles/rosgraph_msgs_generate_messages_cpp.dir/build
 .PHONY : rosgraph_msgs_generate_messages_cpp/fast
 
 # Convenience name for target.
 ascam_visual/CMakeFiles/roscpp_generate_messages_nodejs.dir/rule:
-	cd /home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/build && $(MAKE) -f CMakeFiles/Makefile2 ascam_visual/CMakeFiles/roscpp_generate_messages_nodejs.dir/rule
+	cd /home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/build && $(MAKE) -f CMakeFiles/Makefile2 ascam_visual/CMakeFiles/roscpp_generate_messages_nodejs.dir/rule
 .PHONY : ascam_visual/CMakeFiles/roscpp_generate_messages_nodejs.dir/rule
 
 # Convenience name for target.
@@ -314,12 +314,12 @@ roscpp_generate_messages_nodejs: ascam_visual/CMakeFiles/roscpp_generate_message
 
 # fast build rule for target.
 roscpp_generate_messages_nodejs/fast:
-	cd /home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/build && $(MAKE) -f ascam_visual/CMakeFiles/roscpp_generate_messages_nodejs.dir/build.make ascam_visual/CMakeFiles/roscpp_generate_messages_nodejs.dir/build
+	cd /home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/build && $(MAKE) -f ascam_visual/CMakeFiles/roscpp_generate_messages_nodejs.dir/build.make ascam_visual/CMakeFiles/roscpp_generate_messages_nodejs.dir/build
 .PHONY : roscpp_generate_messages_nodejs/fast
 
 # Convenience name for target.
 ascam_visual/CMakeFiles/std_msgs_generate_messages_eus.dir/rule:
-	cd /home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/build && $(MAKE) -f CMakeFiles/Makefile2 ascam_visual/CMakeFiles/std_msgs_generate_messages_eus.dir/rule
+	cd /home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/build && $(MAKE) -f CMakeFiles/Makefile2 ascam_visual/CMakeFiles/std_msgs_generate_messages_eus.dir/rule
 .PHONY : ascam_visual/CMakeFiles/std_msgs_generate_messages_eus.dir/rule
 
 # Convenience name for target.
@@ -329,12 +329,12 @@ std_msgs_generate_messages_eus: ascam_visual/CMakeFiles/std_msgs_generate_messag
 
 # fast build rule for target.
 std_msgs_generate_messages_eus/fast:
-	cd /home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/build && $(MAKE) -f ascam_visual/CMakeFiles/std_msgs_generate_messages_eus.dir/build.make ascam_visual/CMakeFiles/std_msgs_generate_messages_eus.dir/build
+	cd /home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/build && $(MAKE) -f ascam_visual/CMakeFiles/std_msgs_generate_messages_eus.dir/build.make ascam_visual/CMakeFiles/std_msgs_generate_messages_eus.dir/build
 .PHONY : std_msgs_generate_messages_eus/fast
 
 # Convenience name for target.
 ascam_visual/CMakeFiles/geometry_msgs_generate_messages_lisp.dir/rule:
-	cd /home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/build && $(MAKE) -f CMakeFiles/Makefile2 ascam_visual/CMakeFiles/geometry_msgs_generate_messages_lisp.dir/rule
+	cd /home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/build && $(MAKE) -f CMakeFiles/Makefile2 ascam_visual/CMakeFiles/geometry_msgs_generate_messages_lisp.dir/rule
 .PHONY : ascam_visual/CMakeFiles/geometry_msgs_generate_messages_lisp.dir/rule
 
 # Convenience name for target.
@@ -344,12 +344,12 @@ geometry_msgs_generate_messages_lisp: ascam_visual/CMakeFiles/geometry_msgs_gene
 
 # fast build rule for target.
 geometry_msgs_generate_messages_lisp/fast:
-	cd /home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/build && $(MAKE) -f ascam_visual/CMakeFiles/geometry_msgs_generate_messages_lisp.dir/build.make ascam_visual/CMakeFiles/geometry_msgs_generate_messages_lisp.dir/build
+	cd /home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/build && $(MAKE) -f ascam_visual/CMakeFiles/geometry_msgs_generate_messages_lisp.dir/build.make ascam_visual/CMakeFiles/geometry_msgs_generate_messages_lisp.dir/build
 .PHONY : geometry_msgs_generate_messages_lisp/fast
 
 # Convenience name for target.
 ascam_visual/CMakeFiles/std_msgs_generate_messages_lisp.dir/rule:
-	cd /home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/build && $(MAKE) -f CMakeFiles/Makefile2 ascam_visual/CMakeFiles/std_msgs_generate_messages_lisp.dir/rule
+	cd /home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/build && $(MAKE) -f CMakeFiles/Makefile2 ascam_visual/CMakeFiles/std_msgs_generate_messages_lisp.dir/rule
 .PHONY : ascam_visual/CMakeFiles/std_msgs_generate_messages_lisp.dir/rule
 
 # Convenience name for target.
@@ -359,12 +359,12 @@ std_msgs_generate_messages_lisp: ascam_visual/CMakeFiles/std_msgs_generate_messa
 
 # fast build rule for target.
 std_msgs_generate_messages_lisp/fast:
-	cd /home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/build && $(MAKE) -f ascam_visual/CMakeFiles/std_msgs_generate_messages_lisp.dir/build.make ascam_visual/CMakeFiles/std_msgs_generate_messages_lisp.dir/build
+	cd /home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/build && $(MAKE) -f ascam_visual/CMakeFiles/std_msgs_generate_messages_lisp.dir/build.make ascam_visual/CMakeFiles/std_msgs_generate_messages_lisp.dir/build
 .PHONY : std_msgs_generate_messages_lisp/fast
 
 # Convenience name for target.
 ascam_visual/CMakeFiles/rosgraph_msgs_generate_messages_nodejs.dir/rule:
-	cd /home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/build && $(MAKE) -f CMakeFiles/Makefile2 ascam_visual/CMakeFiles/rosgraph_msgs_generate_messages_nodejs.dir/rule
+	cd /home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/build && $(MAKE) -f CMakeFiles/Makefile2 ascam_visual/CMakeFiles/rosgraph_msgs_generate_messages_nodejs.dir/rule
 .PHONY : ascam_visual/CMakeFiles/rosgraph_msgs_generate_messages_nodejs.dir/rule
 
 # Convenience name for target.
@@ -374,12 +374,12 @@ rosgraph_msgs_generate_messages_nodejs: ascam_visual/CMakeFiles/rosgraph_msgs_ge
 
 # fast build rule for target.
 rosgraph_msgs_generate_messages_nodejs/fast:
-	cd /home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/build && $(MAKE) -f ascam_visual/CMakeFiles/rosgraph_msgs_generate_messages_nodejs.dir/build.make ascam_visual/CMakeFiles/rosgraph_msgs_generate_messages_nodejs.dir/build
+	cd /home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/build && $(MAKE) -f ascam_visual/CMakeFiles/rosgraph_msgs_generate_messages_nodejs.dir/build.make ascam_visual/CMakeFiles/rosgraph_msgs_generate_messages_nodejs.dir/build
 .PHONY : rosgraph_msgs_generate_messages_nodejs/fast
 
 # Convenience name for target.
 ascam_visual/CMakeFiles/roscpp_generate_messages_eus.dir/rule:
-	cd /home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/build && $(MAKE) -f CMakeFiles/Makefile2 ascam_visual/CMakeFiles/roscpp_generate_messages_eus.dir/rule
+	cd /home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/build && $(MAKE) -f CMakeFiles/Makefile2 ascam_visual/CMakeFiles/roscpp_generate_messages_eus.dir/rule
 .PHONY : ascam_visual/CMakeFiles/roscpp_generate_messages_eus.dir/rule
 
 # Convenience name for target.
@@ -389,12 +389,12 @@ roscpp_generate_messages_eus: ascam_visual/CMakeFiles/roscpp_generate_messages_e
 
 # fast build rule for target.
 roscpp_generate_messages_eus/fast:
-	cd /home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/build && $(MAKE) -f ascam_visual/CMakeFiles/roscpp_generate_messages_eus.dir/build.make ascam_visual/CMakeFiles/roscpp_generate_messages_eus.dir/build
+	cd /home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/build && $(MAKE) -f ascam_visual/CMakeFiles/roscpp_generate_messages_eus.dir/build.make ascam_visual/CMakeFiles/roscpp_generate_messages_eus.dir/build
 .PHONY : roscpp_generate_messages_eus/fast
 
 # Convenience name for target.
 ascam_visual/CMakeFiles/sensor_msgs_generate_messages_eus.dir/rule:
-	cd /home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/build && $(MAKE) -f CMakeFiles/Makefile2 ascam_visual/CMakeFiles/sensor_msgs_generate_messages_eus.dir/rule
+	cd /home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/build && $(MAKE) -f CMakeFiles/Makefile2 ascam_visual/CMakeFiles/sensor_msgs_generate_messages_eus.dir/rule
 .PHONY : ascam_visual/CMakeFiles/sensor_msgs_generate_messages_eus.dir/rule
 
 # Convenience name for target.
@@ -404,12 +404,12 @@ sensor_msgs_generate_messages_eus: ascam_visual/CMakeFiles/sensor_msgs_generate_
 
 # fast build rule for target.
 sensor_msgs_generate_messages_eus/fast:
-	cd /home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/build && $(MAKE) -f ascam_visual/CMakeFiles/sensor_msgs_generate_messages_eus.dir/build.make ascam_visual/CMakeFiles/sensor_msgs_generate_messages_eus.dir/build
+	cd /home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/build && $(MAKE) -f ascam_visual/CMakeFiles/sensor_msgs_generate_messages_eus.dir/build.make ascam_visual/CMakeFiles/sensor_msgs_generate_messages_eus.dir/build
 .PHONY : sensor_msgs_generate_messages_eus/fast
 
 # Convenience name for target.
 ascam_visual/CMakeFiles/roscpp_generate_messages_cpp.dir/rule:
-	cd /home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/build && $(MAKE) -f CMakeFiles/Makefile2 ascam_visual/CMakeFiles/roscpp_generate_messages_cpp.dir/rule
+	cd /home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/build && $(MAKE) -f CMakeFiles/Makefile2 ascam_visual/CMakeFiles/roscpp_generate_messages_cpp.dir/rule
 .PHONY : ascam_visual/CMakeFiles/roscpp_generate_messages_cpp.dir/rule
 
 # Convenience name for target.
@@ -419,12 +419,12 @@ roscpp_generate_messages_cpp: ascam_visual/CMakeFiles/roscpp_generate_messages_c
 
 # fast build rule for target.
 roscpp_generate_messages_cpp/fast:
-	cd /home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/build && $(MAKE) -f ascam_visual/CMakeFiles/roscpp_generate_messages_cpp.dir/build.make ascam_visual/CMakeFiles/roscpp_generate_messages_cpp.dir/build
+	cd /home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/build && $(MAKE) -f ascam_visual/CMakeFiles/roscpp_generate_messages_cpp.dir/build.make ascam_visual/CMakeFiles/roscpp_generate_messages_cpp.dir/build
 .PHONY : roscpp_generate_messages_cpp/fast
 
 # Convenience name for target.
 ascam_visual/CMakeFiles/sensor_msgs_generate_messages_nodejs.dir/rule:
-	cd /home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/build && $(MAKE) -f CMakeFiles/Makefile2 ascam_visual/CMakeFiles/sensor_msgs_generate_messages_nodejs.dir/rule
+	cd /home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/build && $(MAKE) -f CMakeFiles/Makefile2 ascam_visual/CMakeFiles/sensor_msgs_generate_messages_nodejs.dir/rule
 .PHONY : ascam_visual/CMakeFiles/sensor_msgs_generate_messages_nodejs.dir/rule
 
 # Convenience name for target.
@@ -434,12 +434,12 @@ sensor_msgs_generate_messages_nodejs: ascam_visual/CMakeFiles/sensor_msgs_genera
 
 # fast build rule for target.
 sensor_msgs_generate_messages_nodejs/fast:
-	cd /home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/build && $(MAKE) -f ascam_visual/CMakeFiles/sensor_msgs_generate_messages_nodejs.dir/build.make ascam_visual/CMakeFiles/sensor_msgs_generate_messages_nodejs.dir/build
+	cd /home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/build && $(MAKE) -f ascam_visual/CMakeFiles/sensor_msgs_generate_messages_nodejs.dir/build.make ascam_visual/CMakeFiles/sensor_msgs_generate_messages_nodejs.dir/build
 .PHONY : sensor_msgs_generate_messages_nodejs/fast
 
 # Convenience name for target.
 ascam_visual/CMakeFiles/sensor_msgs_generate_messages_py.dir/rule:
-	cd /home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/build && $(MAKE) -f CMakeFiles/Makefile2 ascam_visual/CMakeFiles/sensor_msgs_generate_messages_py.dir/rule
+	cd /home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/build && $(MAKE) -f CMakeFiles/Makefile2 ascam_visual/CMakeFiles/sensor_msgs_generate_messages_py.dir/rule
 .PHONY : ascam_visual/CMakeFiles/sensor_msgs_generate_messages_py.dir/rule
 
 # Convenience name for target.
@@ -449,12 +449,12 @@ sensor_msgs_generate_messages_py: ascam_visual/CMakeFiles/sensor_msgs_generate_m
 
 # fast build rule for target.
 sensor_msgs_generate_messages_py/fast:
-	cd /home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/build && $(MAKE) -f ascam_visual/CMakeFiles/sensor_msgs_generate_messages_py.dir/build.make ascam_visual/CMakeFiles/sensor_msgs_generate_messages_py.dir/build
+	cd /home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/build && $(MAKE) -f ascam_visual/CMakeFiles/sensor_msgs_generate_messages_py.dir/build.make ascam_visual/CMakeFiles/sensor_msgs_generate_messages_py.dir/build
 .PHONY : sensor_msgs_generate_messages_py/fast
 
 # Convenience name for target.
 ascam_visual/CMakeFiles/geometry_msgs_generate_messages_py.dir/rule:
-	cd /home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/build && $(MAKE) -f CMakeFiles/Makefile2 ascam_visual/CMakeFiles/geometry_msgs_generate_messages_py.dir/rule
+	cd /home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/build && $(MAKE) -f CMakeFiles/Makefile2 ascam_visual/CMakeFiles/geometry_msgs_generate_messages_py.dir/rule
 .PHONY : ascam_visual/CMakeFiles/geometry_msgs_generate_messages_py.dir/rule
 
 # Convenience name for target.
@@ -464,12 +464,12 @@ geometry_msgs_generate_messages_py: ascam_visual/CMakeFiles/geometry_msgs_genera
 
 # fast build rule for target.
 geometry_msgs_generate_messages_py/fast:
-	cd /home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/build && $(MAKE) -f ascam_visual/CMakeFiles/geometry_msgs_generate_messages_py.dir/build.make ascam_visual/CMakeFiles/geometry_msgs_generate_messages_py.dir/build
+	cd /home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/build && $(MAKE) -f ascam_visual/CMakeFiles/geometry_msgs_generate_messages_py.dir/build.make ascam_visual/CMakeFiles/geometry_msgs_generate_messages_py.dir/build
 .PHONY : geometry_msgs_generate_messages_py/fast
 
 # Convenience name for target.
 ascam_visual/CMakeFiles/std_msgs_generate_messages_py.dir/rule:
-	cd /home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/build && $(MAKE) -f CMakeFiles/Makefile2 ascam_visual/CMakeFiles/std_msgs_generate_messages_py.dir/rule
+	cd /home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/build && $(MAKE) -f CMakeFiles/Makefile2 ascam_visual/CMakeFiles/std_msgs_generate_messages_py.dir/rule
 .PHONY : ascam_visual/CMakeFiles/std_msgs_generate_messages_py.dir/rule
 
 # Convenience name for target.
@@ -479,12 +479,12 @@ std_msgs_generate_messages_py: ascam_visual/CMakeFiles/std_msgs_generate_message
 
 # fast build rule for target.
 std_msgs_generate_messages_py/fast:
-	cd /home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/build && $(MAKE) -f ascam_visual/CMakeFiles/std_msgs_generate_messages_py.dir/build.make ascam_visual/CMakeFiles/std_msgs_generate_messages_py.dir/build
+	cd /home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/build && $(MAKE) -f ascam_visual/CMakeFiles/std_msgs_generate_messages_py.dir/build.make ascam_visual/CMakeFiles/std_msgs_generate_messages_py.dir/build
 .PHONY : std_msgs_generate_messages_py/fast
 
 # Convenience name for target.
 ascam_visual/CMakeFiles/std_msgs_generate_messages_nodejs.dir/rule:
-	cd /home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/build && $(MAKE) -f CMakeFiles/Makefile2 ascam_visual/CMakeFiles/std_msgs_generate_messages_nodejs.dir/rule
+	cd /home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/build && $(MAKE) -f CMakeFiles/Makefile2 ascam_visual/CMakeFiles/std_msgs_generate_messages_nodejs.dir/rule
 .PHONY : ascam_visual/CMakeFiles/std_msgs_generate_messages_nodejs.dir/rule
 
 # Convenience name for target.
@@ -494,12 +494,12 @@ std_msgs_generate_messages_nodejs: ascam_visual/CMakeFiles/std_msgs_generate_mes
 
 # fast build rule for target.
 std_msgs_generate_messages_nodejs/fast:
-	cd /home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/build && $(MAKE) -f ascam_visual/CMakeFiles/std_msgs_generate_messages_nodejs.dir/build.make ascam_visual/CMakeFiles/std_msgs_generate_messages_nodejs.dir/build
+	cd /home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/build && $(MAKE) -f ascam_visual/CMakeFiles/std_msgs_generate_messages_nodejs.dir/build.make ascam_visual/CMakeFiles/std_msgs_generate_messages_nodejs.dir/build
 .PHONY : std_msgs_generate_messages_nodejs/fast
 
 # Convenience name for target.
 ascam_visual/CMakeFiles/geometry_msgs_generate_messages_eus.dir/rule:
-	cd /home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/build && $(MAKE) -f CMakeFiles/Makefile2 ascam_visual/CMakeFiles/geometry_msgs_generate_messages_eus.dir/rule
+	cd /home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/build && $(MAKE) -f CMakeFiles/Makefile2 ascam_visual/CMakeFiles/geometry_msgs_generate_messages_eus.dir/rule
 .PHONY : ascam_visual/CMakeFiles/geometry_msgs_generate_messages_eus.dir/rule
 
 # Convenience name for target.
@@ -509,12 +509,12 @@ geometry_msgs_generate_messages_eus: ascam_visual/CMakeFiles/geometry_msgs_gener
 
 # fast build rule for target.
 geometry_msgs_generate_messages_eus/fast:
-	cd /home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/build && $(MAKE) -f ascam_visual/CMakeFiles/geometry_msgs_generate_messages_eus.dir/build.make ascam_visual/CMakeFiles/geometry_msgs_generate_messages_eus.dir/build
+	cd /home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/build && $(MAKE) -f ascam_visual/CMakeFiles/geometry_msgs_generate_messages_eus.dir/build.make ascam_visual/CMakeFiles/geometry_msgs_generate_messages_eus.dir/build
 .PHONY : geometry_msgs_generate_messages_eus/fast
 
 # Convenience name for target.
 ascam_visual/CMakeFiles/sensor_msgs_generate_messages_cpp.dir/rule:
-	cd /home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/build && $(MAKE) -f CMakeFiles/Makefile2 ascam_visual/CMakeFiles/sensor_msgs_generate_messages_cpp.dir/rule
+	cd /home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/build && $(MAKE) -f CMakeFiles/Makefile2 ascam_visual/CMakeFiles/sensor_msgs_generate_messages_cpp.dir/rule
 .PHONY : ascam_visual/CMakeFiles/sensor_msgs_generate_messages_cpp.dir/rule
 
 # Convenience name for target.
@@ -524,12 +524,12 @@ sensor_msgs_generate_messages_cpp: ascam_visual/CMakeFiles/sensor_msgs_generate_
 
 # fast build rule for target.
 sensor_msgs_generate_messages_cpp/fast:
-	cd /home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/build && $(MAKE) -f ascam_visual/CMakeFiles/sensor_msgs_generate_messages_cpp.dir/build.make ascam_visual/CMakeFiles/sensor_msgs_generate_messages_cpp.dir/build
+	cd /home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/build && $(MAKE) -f ascam_visual/CMakeFiles/sensor_msgs_generate_messages_cpp.dir/build.make ascam_visual/CMakeFiles/sensor_msgs_generate_messages_cpp.dir/build
 .PHONY : sensor_msgs_generate_messages_cpp/fast
 
 # Convenience name for target.
 ascam_visual/CMakeFiles/ascam_rgb_image.dir/rule:
-	cd /home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/build && $(MAKE) -f CMakeFiles/Makefile2 ascam_visual/CMakeFiles/ascam_rgb_image.dir/rule
+	cd /home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/build && $(MAKE) -f CMakeFiles/Makefile2 ascam_visual/CMakeFiles/ascam_rgb_image.dir/rule
 .PHONY : ascam_visual/CMakeFiles/ascam_rgb_image.dir/rule
 
 # Convenience name for target.
@@ -539,12 +539,12 @@ ascam_rgb_image: ascam_visual/CMakeFiles/ascam_rgb_image.dir/rule
 
 # fast build rule for target.
 ascam_rgb_image/fast:
-	cd /home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/build && $(MAKE) -f ascam_visual/CMakeFiles/ascam_rgb_image.dir/build.make ascam_visual/CMakeFiles/ascam_rgb_image.dir/build
+	cd /home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/build && $(MAKE) -f ascam_visual/CMakeFiles/ascam_rgb_image.dir/build.make ascam_visual/CMakeFiles/ascam_rgb_image.dir/build
 .PHONY : ascam_rgb_image/fast
 
 # Convenience name for target.
 ascam_visual/CMakeFiles/ascam_depth_image.dir/rule:
-	cd /home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/build && $(MAKE) -f CMakeFiles/Makefile2 ascam_visual/CMakeFiles/ascam_depth_image.dir/rule
+	cd /home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/build && $(MAKE) -f CMakeFiles/Makefile2 ascam_visual/CMakeFiles/ascam_depth_image.dir/rule
 .PHONY : ascam_visual/CMakeFiles/ascam_depth_image.dir/rule
 
 # Convenience name for target.
@@ -554,12 +554,12 @@ ascam_depth_image: ascam_visual/CMakeFiles/ascam_depth_image.dir/rule
 
 # fast build rule for target.
 ascam_depth_image/fast:
-	cd /home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/build && $(MAKE) -f ascam_visual/CMakeFiles/ascam_depth_image.dir/build.make ascam_visual/CMakeFiles/ascam_depth_image.dir/build
+	cd /home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/build && $(MAKE) -f ascam_visual/CMakeFiles/ascam_depth_image.dir/build.make ascam_visual/CMakeFiles/ascam_depth_image.dir/build
 .PHONY : ascam_depth_image/fast
 
 # Convenience name for target.
 ascam_visual/CMakeFiles/sensor_msgs_generate_messages_lisp.dir/rule:
-	cd /home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/build && $(MAKE) -f CMakeFiles/Makefile2 ascam_visual/CMakeFiles/sensor_msgs_generate_messages_lisp.dir/rule
+	cd /home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/build && $(MAKE) -f CMakeFiles/Makefile2 ascam_visual/CMakeFiles/sensor_msgs_generate_messages_lisp.dir/rule
 .PHONY : ascam_visual/CMakeFiles/sensor_msgs_generate_messages_lisp.dir/rule
 
 # Convenience name for target.
@@ -569,12 +569,12 @@ sensor_msgs_generate_messages_lisp: ascam_visual/CMakeFiles/sensor_msgs_generate
 
 # fast build rule for target.
 sensor_msgs_generate_messages_lisp/fast:
-	cd /home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/build && $(MAKE) -f ascam_visual/CMakeFiles/sensor_msgs_generate_messages_lisp.dir/build.make ascam_visual/CMakeFiles/sensor_msgs_generate_messages_lisp.dir/build
+	cd /home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/build && $(MAKE) -f ascam_visual/CMakeFiles/sensor_msgs_generate_messages_lisp.dir/build.make ascam_visual/CMakeFiles/sensor_msgs_generate_messages_lisp.dir/build
 .PHONY : sensor_msgs_generate_messages_lisp/fast
 
 # Convenience name for target.
 ascam_visual/CMakeFiles/pointCloud_pub.dir/rule:
-	cd /home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/build && $(MAKE) -f CMakeFiles/Makefile2 ascam_visual/CMakeFiles/pointCloud_pub.dir/rule
+	cd /home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/build && $(MAKE) -f CMakeFiles/Makefile2 ascam_visual/CMakeFiles/pointCloud_pub.dir/rule
 .PHONY : ascam_visual/CMakeFiles/pointCloud_pub.dir/rule
 
 # Convenience name for target.
@@ -584,12 +584,12 @@ pointCloud_pub: ascam_visual/CMakeFiles/pointCloud_pub.dir/rule
 
 # fast build rule for target.
 pointCloud_pub/fast:
-	cd /home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/build && $(MAKE) -f ascam_visual/CMakeFiles/pointCloud_pub.dir/build.make ascam_visual/CMakeFiles/pointCloud_pub.dir/build
+	cd /home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/build && $(MAKE) -f ascam_visual/CMakeFiles/pointCloud_pub.dir/build.make ascam_visual/CMakeFiles/pointCloud_pub.dir/build
 .PHONY : pointCloud_pub/fast
 
 # Convenience name for target.
 ascam_visual/CMakeFiles/roscpp_generate_messages_py.dir/rule:
-	cd /home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/build && $(MAKE) -f CMakeFiles/Makefile2 ascam_visual/CMakeFiles/roscpp_generate_messages_py.dir/rule
+	cd /home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/build && $(MAKE) -f CMakeFiles/Makefile2 ascam_visual/CMakeFiles/roscpp_generate_messages_py.dir/rule
 .PHONY : ascam_visual/CMakeFiles/roscpp_generate_messages_py.dir/rule
 
 # Convenience name for target.
@@ -599,12 +599,12 @@ roscpp_generate_messages_py: ascam_visual/CMakeFiles/roscpp_generate_messages_py
 
 # fast build rule for target.
 roscpp_generate_messages_py/fast:
-	cd /home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/build && $(MAKE) -f ascam_visual/CMakeFiles/roscpp_generate_messages_py.dir/build.make ascam_visual/CMakeFiles/roscpp_generate_messages_py.dir/build
+	cd /home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/build && $(MAKE) -f ascam_visual/CMakeFiles/roscpp_generate_messages_py.dir/build.make ascam_visual/CMakeFiles/roscpp_generate_messages_py.dir/build
 .PHONY : roscpp_generate_messages_py/fast
 
 # Convenience name for target.
 ascam_visual/CMakeFiles/pointCloud_visualize.dir/rule:
-	cd /home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/build && $(MAKE) -f CMakeFiles/Makefile2 ascam_visual/CMakeFiles/pointCloud_visualize.dir/rule
+	cd /home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/build && $(MAKE) -f CMakeFiles/Makefile2 ascam_visual/CMakeFiles/pointCloud_visualize.dir/rule
 .PHONY : ascam_visual/CMakeFiles/pointCloud_visualize.dir/rule
 
 # Convenience name for target.
@@ -614,7 +614,7 @@ pointCloud_visualize: ascam_visual/CMakeFiles/pointCloud_visualize.dir/rule
 
 # fast build rule for target.
 pointCloud_visualize/fast:
-	cd /home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/build && $(MAKE) -f ascam_visual/CMakeFiles/pointCloud_visualize.dir/build.make ascam_visual/CMakeFiles/pointCloud_visualize.dir/build
+	cd /home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/build && $(MAKE) -f ascam_visual/CMakeFiles/pointCloud_visualize.dir/build.make ascam_visual/CMakeFiles/pointCloud_visualize.dir/build
 .PHONY : pointCloud_visualize/fast
 
 src/IR_transform.o: src/IR_transform.cpp.o
@@ -623,7 +623,7 @@ src/IR_transform.o: src/IR_transform.cpp.o
 
 # target to build an object file
 src/IR_transform.cpp.o:
-	cd /home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/build && $(MAKE) -f ascam_visual/CMakeFiles/IR_transform.dir/build.make ascam_visual/CMakeFiles/IR_transform.dir/src/IR_transform.cpp.o
+	cd /home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/build && $(MAKE) -f ascam_visual/CMakeFiles/IR_transform.dir/build.make ascam_visual/CMakeFiles/IR_transform.dir/src/IR_transform.cpp.o
 .PHONY : src/IR_transform.cpp.o
 
 src/IR_transform.i: src/IR_transform.cpp.i
@@ -632,7 +632,7 @@ src/IR_transform.i: src/IR_transform.cpp.i
 
 # target to preprocess a source file
 src/IR_transform.cpp.i:
-	cd /home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/build && $(MAKE) -f ascam_visual/CMakeFiles/IR_transform.dir/build.make ascam_visual/CMakeFiles/IR_transform.dir/src/IR_transform.cpp.i
+	cd /home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/build && $(MAKE) -f ascam_visual/CMakeFiles/IR_transform.dir/build.make ascam_visual/CMakeFiles/IR_transform.dir/src/IR_transform.cpp.i
 .PHONY : src/IR_transform.cpp.i
 
 src/IR_transform.s: src/IR_transform.cpp.s
@@ -641,7 +641,7 @@ src/IR_transform.s: src/IR_transform.cpp.s
 
 # target to generate assembly for a file
 src/IR_transform.cpp.s:
-	cd /home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/build && $(MAKE) -f ascam_visual/CMakeFiles/IR_transform.dir/build.make ascam_visual/CMakeFiles/IR_transform.dir/src/IR_transform.cpp.s
+	cd /home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/build && $(MAKE) -f ascam_visual/CMakeFiles/IR_transform.dir/build.make ascam_visual/CMakeFiles/IR_transform.dir/src/IR_transform.cpp.s
 .PHONY : src/IR_transform.cpp.s
 
 src/ascam_depth_image.o: src/ascam_depth_image.cpp.o
@@ -650,7 +650,7 @@ src/ascam_depth_image.o: src/ascam_depth_image.cpp.o
 
 # target to build an object file
 src/ascam_depth_image.cpp.o:
-	cd /home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/build && $(MAKE) -f ascam_visual/CMakeFiles/ascam_depth_image.dir/build.make ascam_visual/CMakeFiles/ascam_depth_image.dir/src/ascam_depth_image.cpp.o
+	cd /home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/build && $(MAKE) -f ascam_visual/CMakeFiles/ascam_depth_image.dir/build.make ascam_visual/CMakeFiles/ascam_depth_image.dir/src/ascam_depth_image.cpp.o
 .PHONY : src/ascam_depth_image.cpp.o
 
 src/ascam_depth_image.i: src/ascam_depth_image.cpp.i
@@ -659,7 +659,7 @@ src/ascam_depth_image.i: src/ascam_depth_image.cpp.i
 
 # target to preprocess a source file
 src/ascam_depth_image.cpp.i:
-	cd /home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/build && $(MAKE) -f ascam_visual/CMakeFiles/ascam_depth_image.dir/build.make ascam_visual/CMakeFiles/ascam_depth_image.dir/src/ascam_depth_image.cpp.i
+	cd /home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/build && $(MAKE) -f ascam_visual/CMakeFiles/ascam_depth_image.dir/build.make ascam_visual/CMakeFiles/ascam_depth_image.dir/src/ascam_depth_image.cpp.i
 .PHONY : src/ascam_depth_image.cpp.i
 
 src/ascam_depth_image.s: src/ascam_depth_image.cpp.s
@@ -668,7 +668,7 @@ src/ascam_depth_image.s: src/ascam_depth_image.cpp.s
 
 # target to generate assembly for a file
 src/ascam_depth_image.cpp.s:
-	cd /home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/build && $(MAKE) -f ascam_visual/CMakeFiles/ascam_depth_image.dir/build.make ascam_visual/CMakeFiles/ascam_depth_image.dir/src/ascam_depth_image.cpp.s
+	cd /home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/build && $(MAKE) -f ascam_visual/CMakeFiles/ascam_depth_image.dir/build.make ascam_visual/CMakeFiles/ascam_depth_image.dir/src/ascam_depth_image.cpp.s
 .PHONY : src/ascam_depth_image.cpp.s
 
 src/ascam_rgb_image.o: src/ascam_rgb_image.cpp.o
@@ -677,7 +677,7 @@ src/ascam_rgb_image.o: src/ascam_rgb_image.cpp.o
 
 # target to build an object file
 src/ascam_rgb_image.cpp.o:
-	cd /home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/build && $(MAKE) -f ascam_visual/CMakeFiles/ascam_rgb_image.dir/build.make ascam_visual/CMakeFiles/ascam_rgb_image.dir/src/ascam_rgb_image.cpp.o
+	cd /home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/build && $(MAKE) -f ascam_visual/CMakeFiles/ascam_rgb_image.dir/build.make ascam_visual/CMakeFiles/ascam_rgb_image.dir/src/ascam_rgb_image.cpp.o
 .PHONY : src/ascam_rgb_image.cpp.o
 
 src/ascam_rgb_image.i: src/ascam_rgb_image.cpp.i
@@ -686,7 +686,7 @@ src/ascam_rgb_image.i: src/ascam_rgb_image.cpp.i
 
 # target to preprocess a source file
 src/ascam_rgb_image.cpp.i:
-	cd /home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/build && $(MAKE) -f ascam_visual/CMakeFiles/ascam_rgb_image.dir/build.make ascam_visual/CMakeFiles/ascam_rgb_image.dir/src/ascam_rgb_image.cpp.i
+	cd /home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/build && $(MAKE) -f ascam_visual/CMakeFiles/ascam_rgb_image.dir/build.make ascam_visual/CMakeFiles/ascam_rgb_image.dir/src/ascam_rgb_image.cpp.i
 .PHONY : src/ascam_rgb_image.cpp.i
 
 src/ascam_rgb_image.s: src/ascam_rgb_image.cpp.s
@@ -695,7 +695,7 @@ src/ascam_rgb_image.s: src/ascam_rgb_image.cpp.s
 
 # target to generate assembly for a file
 src/ascam_rgb_image.cpp.s:
-	cd /home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/build && $(MAKE) -f ascam_visual/CMakeFiles/ascam_rgb_image.dir/build.make ascam_visual/CMakeFiles/ascam_rgb_image.dir/src/ascam_rgb_image.cpp.s
+	cd /home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/build && $(MAKE) -f ascam_visual/CMakeFiles/ascam_rgb_image.dir/build.make ascam_visual/CMakeFiles/ascam_rgb_image.dir/src/ascam_rgb_image.cpp.s
 .PHONY : src/ascam_rgb_image.cpp.s
 
 src/pointCloud_pub.o: src/pointCloud_pub.cpp.o
@@ -704,7 +704,7 @@ src/pointCloud_pub.o: src/pointCloud_pub.cpp.o
 
 # target to build an object file
 src/pointCloud_pub.cpp.o:
-	cd /home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/build && $(MAKE) -f ascam_visual/CMakeFiles/pointCloud_pub.dir/build.make ascam_visual/CMakeFiles/pointCloud_pub.dir/src/pointCloud_pub.cpp.o
+	cd /home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/build && $(MAKE) -f ascam_visual/CMakeFiles/pointCloud_pub.dir/build.make ascam_visual/CMakeFiles/pointCloud_pub.dir/src/pointCloud_pub.cpp.o
 .PHONY : src/pointCloud_pub.cpp.o
 
 src/pointCloud_pub.i: src/pointCloud_pub.cpp.i
@@ -713,7 +713,7 @@ src/pointCloud_pub.i: src/pointCloud_pub.cpp.i
 
 # target to preprocess a source file
 src/pointCloud_pub.cpp.i:
-	cd /home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/build && $(MAKE) -f ascam_visual/CMakeFiles/pointCloud_pub.dir/build.make ascam_visual/CMakeFiles/pointCloud_pub.dir/src/pointCloud_pub.cpp.i
+	cd /home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/build && $(MAKE) -f ascam_visual/CMakeFiles/pointCloud_pub.dir/build.make ascam_visual/CMakeFiles/pointCloud_pub.dir/src/pointCloud_pub.cpp.i
 .PHONY : src/pointCloud_pub.cpp.i
 
 src/pointCloud_pub.s: src/pointCloud_pub.cpp.s
@@ -722,7 +722,7 @@ src/pointCloud_pub.s: src/pointCloud_pub.cpp.s
 
 # target to generate assembly for a file
 src/pointCloud_pub.cpp.s:
-	cd /home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/build && $(MAKE) -f ascam_visual/CMakeFiles/pointCloud_pub.dir/build.make ascam_visual/CMakeFiles/pointCloud_pub.dir/src/pointCloud_pub.cpp.s
+	cd /home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/build && $(MAKE) -f ascam_visual/CMakeFiles/pointCloud_pub.dir/build.make ascam_visual/CMakeFiles/pointCloud_pub.dir/src/pointCloud_pub.cpp.s
 .PHONY : src/pointCloud_pub.cpp.s
 
 src/pointCloud_visualize.o: src/pointCloud_visualize.cpp.o
@@ -731,7 +731,7 @@ src/pointCloud_visualize.o: src/pointCloud_visualize.cpp.o
 
 # target to build an object file
 src/pointCloud_visualize.cpp.o:
-	cd /home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/build && $(MAKE) -f ascam_visual/CMakeFiles/pointCloud_visualize.dir/build.make ascam_visual/CMakeFiles/pointCloud_visualize.dir/src/pointCloud_visualize.cpp.o
+	cd /home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/build && $(MAKE) -f ascam_visual/CMakeFiles/pointCloud_visualize.dir/build.make ascam_visual/CMakeFiles/pointCloud_visualize.dir/src/pointCloud_visualize.cpp.o
 .PHONY : src/pointCloud_visualize.cpp.o
 
 src/pointCloud_visualize.i: src/pointCloud_visualize.cpp.i
@@ -740,7 +740,7 @@ src/pointCloud_visualize.i: src/pointCloud_visualize.cpp.i
 
 # target to preprocess a source file
 src/pointCloud_visualize.cpp.i:
-	cd /home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/build && $(MAKE) -f ascam_visual/CMakeFiles/pointCloud_visualize.dir/build.make ascam_visual/CMakeFiles/pointCloud_visualize.dir/src/pointCloud_visualize.cpp.i
+	cd /home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/build && $(MAKE) -f ascam_visual/CMakeFiles/pointCloud_visualize.dir/build.make ascam_visual/CMakeFiles/pointCloud_visualize.dir/src/pointCloud_visualize.cpp.i
 .PHONY : src/pointCloud_visualize.cpp.i
 
 src/pointCloud_visualize.s: src/pointCloud_visualize.cpp.s
@@ -749,7 +749,7 @@ src/pointCloud_visualize.s: src/pointCloud_visualize.cpp.s
 
 # target to generate assembly for a file
 src/pointCloud_visualize.cpp.s:
-	cd /home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/build && $(MAKE) -f ascam_visual/CMakeFiles/pointCloud_visualize.dir/build.make ascam_visual/CMakeFiles/pointCloud_visualize.dir/src/pointCloud_visualize.cpp.s
+	cd /home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/build && $(MAKE) -f ascam_visual/CMakeFiles/pointCloud_visualize.dir/build.make ascam_visual/CMakeFiles/pointCloud_visualize.dir/src/pointCloud_visualize.cpp.s
 .PHONY : src/pointCloud_visualize.cpp.s
 
 # Help Target
@@ -821,6 +821,6 @@ help:
 # No rule that depends on this can have commands that come from listfiles
 # because they might be regenerated.
 cmake_check_build_system:
-	cd /home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/build && $(CMAKE_COMMAND) -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 0
+	cd /home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/build && $(CMAKE_COMMAND) -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 0
 .PHONY : cmake_check_build_system
 

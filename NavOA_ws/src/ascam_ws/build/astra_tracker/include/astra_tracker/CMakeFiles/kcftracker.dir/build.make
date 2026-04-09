@@ -43,10 +43,10 @@ RM = /usr/bin/cmake -E remove -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/src
+CMAKE_SOURCE_DIR = /home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/src
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/build
+CMAKE_BINARY_DIR = /home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/build
 
 # Include any dependencies generated for this target.
 include astra_tracker/include/astra_tracker/CMakeFiles/kcftracker.dir/depend.make
@@ -58,43 +58,43 @@ include astra_tracker/include/astra_tracker/CMakeFiles/kcftracker.dir/progress.m
 include astra_tracker/include/astra_tracker/CMakeFiles/kcftracker.dir/flags.make
 
 astra_tracker/include/astra_tracker/CMakeFiles/kcftracker.dir/PID.cpp.o: astra_tracker/include/astra_tracker/CMakeFiles/kcftracker.dir/flags.make
-astra_tracker/include/astra_tracker/CMakeFiles/kcftracker.dir/PID.cpp.o: /home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/src/astra_tracker/include/astra_tracker/PID.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object astra_tracker/include/astra_tracker/CMakeFiles/kcftracker.dir/PID.cpp.o"
-	cd /home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/build/astra_tracker/include/astra_tracker && /usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/kcftracker.dir/PID.cpp.o -c /home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/src/astra_tracker/include/astra_tracker/PID.cpp
+astra_tracker/include/astra_tracker/CMakeFiles/kcftracker.dir/PID.cpp.o: /home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/src/astra_tracker/include/astra_tracker/PID.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object astra_tracker/include/astra_tracker/CMakeFiles/kcftracker.dir/PID.cpp.o"
+	cd /home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/build/astra_tracker/include/astra_tracker && /usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/kcftracker.dir/PID.cpp.o -c /home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/src/astra_tracker/include/astra_tracker/PID.cpp
 
 astra_tracker/include/astra_tracker/CMakeFiles/kcftracker.dir/PID.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/kcftracker.dir/PID.cpp.i"
-	cd /home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/build/astra_tracker/include/astra_tracker && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/src/astra_tracker/include/astra_tracker/PID.cpp > CMakeFiles/kcftracker.dir/PID.cpp.i
+	cd /home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/build/astra_tracker/include/astra_tracker && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/src/astra_tracker/include/astra_tracker/PID.cpp > CMakeFiles/kcftracker.dir/PID.cpp.i
 
 astra_tracker/include/astra_tracker/CMakeFiles/kcftracker.dir/PID.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/kcftracker.dir/PID.cpp.s"
-	cd /home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/build/astra_tracker/include/astra_tracker && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/src/astra_tracker/include/astra_tracker/PID.cpp -o CMakeFiles/kcftracker.dir/PID.cpp.s
+	cd /home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/build/astra_tracker/include/astra_tracker && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/src/astra_tracker/include/astra_tracker/PID.cpp -o CMakeFiles/kcftracker.dir/PID.cpp.s
 
 astra_tracker/include/astra_tracker/CMakeFiles/kcftracker.dir/fhog.cpp.o: astra_tracker/include/astra_tracker/CMakeFiles/kcftracker.dir/flags.make
-astra_tracker/include/astra_tracker/CMakeFiles/kcftracker.dir/fhog.cpp.o: /home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/src/astra_tracker/include/astra_tracker/fhog.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object astra_tracker/include/astra_tracker/CMakeFiles/kcftracker.dir/fhog.cpp.o"
-	cd /home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/build/astra_tracker/include/astra_tracker && /usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/kcftracker.dir/fhog.cpp.o -c /home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/src/astra_tracker/include/astra_tracker/fhog.cpp
+astra_tracker/include/astra_tracker/CMakeFiles/kcftracker.dir/fhog.cpp.o: /home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/src/astra_tracker/include/astra_tracker/fhog.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object astra_tracker/include/astra_tracker/CMakeFiles/kcftracker.dir/fhog.cpp.o"
+	cd /home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/build/astra_tracker/include/astra_tracker && /usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/kcftracker.dir/fhog.cpp.o -c /home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/src/astra_tracker/include/astra_tracker/fhog.cpp
 
 astra_tracker/include/astra_tracker/CMakeFiles/kcftracker.dir/fhog.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/kcftracker.dir/fhog.cpp.i"
-	cd /home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/build/astra_tracker/include/astra_tracker && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/src/astra_tracker/include/astra_tracker/fhog.cpp > CMakeFiles/kcftracker.dir/fhog.cpp.i
+	cd /home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/build/astra_tracker/include/astra_tracker && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/src/astra_tracker/include/astra_tracker/fhog.cpp > CMakeFiles/kcftracker.dir/fhog.cpp.i
 
 astra_tracker/include/astra_tracker/CMakeFiles/kcftracker.dir/fhog.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/kcftracker.dir/fhog.cpp.s"
-	cd /home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/build/astra_tracker/include/astra_tracker && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/src/astra_tracker/include/astra_tracker/fhog.cpp -o CMakeFiles/kcftracker.dir/fhog.cpp.s
+	cd /home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/build/astra_tracker/include/astra_tracker && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/src/astra_tracker/include/astra_tracker/fhog.cpp -o CMakeFiles/kcftracker.dir/fhog.cpp.s
 
 astra_tracker/include/astra_tracker/CMakeFiles/kcftracker.dir/kcftracker.cpp.o: astra_tracker/include/astra_tracker/CMakeFiles/kcftracker.dir/flags.make
-astra_tracker/include/astra_tracker/CMakeFiles/kcftracker.dir/kcftracker.cpp.o: /home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/src/astra_tracker/include/astra_tracker/kcftracker.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building CXX object astra_tracker/include/astra_tracker/CMakeFiles/kcftracker.dir/kcftracker.cpp.o"
-	cd /home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/build/astra_tracker/include/astra_tracker && /usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/kcftracker.dir/kcftracker.cpp.o -c /home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/src/astra_tracker/include/astra_tracker/kcftracker.cpp
+astra_tracker/include/astra_tracker/CMakeFiles/kcftracker.dir/kcftracker.cpp.o: /home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/src/astra_tracker/include/astra_tracker/kcftracker.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building CXX object astra_tracker/include/astra_tracker/CMakeFiles/kcftracker.dir/kcftracker.cpp.o"
+	cd /home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/build/astra_tracker/include/astra_tracker && /usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/kcftracker.dir/kcftracker.cpp.o -c /home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/src/astra_tracker/include/astra_tracker/kcftracker.cpp
 
 astra_tracker/include/astra_tracker/CMakeFiles/kcftracker.dir/kcftracker.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/kcftracker.dir/kcftracker.cpp.i"
-	cd /home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/build/astra_tracker/include/astra_tracker && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/src/astra_tracker/include/astra_tracker/kcftracker.cpp > CMakeFiles/kcftracker.dir/kcftracker.cpp.i
+	cd /home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/build/astra_tracker/include/astra_tracker && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/src/astra_tracker/include/astra_tracker/kcftracker.cpp > CMakeFiles/kcftracker.dir/kcftracker.cpp.i
 
 astra_tracker/include/astra_tracker/CMakeFiles/kcftracker.dir/kcftracker.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/kcftracker.dir/kcftracker.cpp.s"
-	cd /home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/build/astra_tracker/include/astra_tracker && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/src/astra_tracker/include/astra_tracker/kcftracker.cpp -o CMakeFiles/kcftracker.dir/kcftracker.cpp.s
+	cd /home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/build/astra_tracker/include/astra_tracker && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/src/astra_tracker/include/astra_tracker/kcftracker.cpp -o CMakeFiles/kcftracker.dir/kcftracker.cpp.s
 
 # Object files for target kcftracker
 kcftracker_OBJECTS = \
@@ -105,101 +105,101 @@ kcftracker_OBJECTS = \
 # External object files for target kcftracker
 kcftracker_EXTERNAL_OBJECTS =
 
-/home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/devel/lib/libkcftracker.so: astra_tracker/include/astra_tracker/CMakeFiles/kcftracker.dir/PID.cpp.o
-/home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/devel/lib/libkcftracker.so: astra_tracker/include/astra_tracker/CMakeFiles/kcftracker.dir/fhog.cpp.o
-/home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/devel/lib/libkcftracker.so: astra_tracker/include/astra_tracker/CMakeFiles/kcftracker.dir/kcftracker.cpp.o
-/home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/devel/lib/libkcftracker.so: astra_tracker/include/astra_tracker/CMakeFiles/kcftracker.dir/build.make
-/home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/devel/lib/libkcftracker.so: /opt/ros/noetic/lib/libcv_bridge.so
-/home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/devel/lib/libkcftracker.so: /usr/lib/x86_64-linux-gnu/libopencv_calib3d.so.4.2.0
-/home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/devel/lib/libkcftracker.so: /usr/lib/x86_64-linux-gnu/libopencv_dnn.so.4.2.0
-/home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/devel/lib/libkcftracker.so: /usr/lib/x86_64-linux-gnu/libopencv_features2d.so.4.2.0
-/home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/devel/lib/libkcftracker.so: /usr/lib/x86_64-linux-gnu/libopencv_flann.so.4.2.0
-/home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/devel/lib/libkcftracker.so: /usr/lib/x86_64-linux-gnu/libopencv_highgui.so.4.2.0
-/home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/devel/lib/libkcftracker.so: /usr/lib/x86_64-linux-gnu/libopencv_ml.so.4.2.0
-/home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/devel/lib/libkcftracker.so: /usr/lib/x86_64-linux-gnu/libopencv_objdetect.so.4.2.0
-/home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/devel/lib/libkcftracker.so: /usr/lib/x86_64-linux-gnu/libopencv_photo.so.4.2.0
-/home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/devel/lib/libkcftracker.so: /usr/lib/x86_64-linux-gnu/libopencv_stitching.so.4.2.0
-/home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/devel/lib/libkcftracker.so: /usr/lib/x86_64-linux-gnu/libopencv_video.so.4.2.0
-/home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/devel/lib/libkcftracker.so: /usr/lib/x86_64-linux-gnu/libopencv_videoio.so.4.2.0
-/home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/devel/lib/libkcftracker.so: /usr/lib/x86_64-linux-gnu/libopencv_aruco.so.4.2.0
-/home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/devel/lib/libkcftracker.so: /usr/lib/x86_64-linux-gnu/libopencv_bgsegm.so.4.2.0
-/home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/devel/lib/libkcftracker.so: /usr/lib/x86_64-linux-gnu/libopencv_bioinspired.so.4.2.0
-/home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/devel/lib/libkcftracker.so: /usr/lib/x86_64-linux-gnu/libopencv_ccalib.so.4.2.0
-/home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/devel/lib/libkcftracker.so: /usr/lib/x86_64-linux-gnu/libopencv_datasets.so.4.2.0
-/home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/devel/lib/libkcftracker.so: /usr/lib/x86_64-linux-gnu/libopencv_dnn_objdetect.so.4.2.0
-/home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/devel/lib/libkcftracker.so: /usr/lib/x86_64-linux-gnu/libopencv_dnn_superres.so.4.2.0
-/home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/devel/lib/libkcftracker.so: /usr/lib/x86_64-linux-gnu/libopencv_dpm.so.4.2.0
-/home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/devel/lib/libkcftracker.so: /usr/lib/x86_64-linux-gnu/libopencv_face.so.4.2.0
-/home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/devel/lib/libkcftracker.so: /usr/lib/x86_64-linux-gnu/libopencv_freetype.so.4.2.0
-/home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/devel/lib/libkcftracker.so: /usr/lib/x86_64-linux-gnu/libopencv_fuzzy.so.4.2.0
-/home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/devel/lib/libkcftracker.so: /usr/lib/x86_64-linux-gnu/libopencv_hdf.so.4.2.0
-/home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/devel/lib/libkcftracker.so: /usr/lib/x86_64-linux-gnu/libopencv_hfs.so.4.2.0
-/home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/devel/lib/libkcftracker.so: /usr/lib/x86_64-linux-gnu/libopencv_img_hash.so.4.2.0
-/home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/devel/lib/libkcftracker.so: /usr/lib/x86_64-linux-gnu/libopencv_line_descriptor.so.4.2.0
-/home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/devel/lib/libkcftracker.so: /usr/lib/x86_64-linux-gnu/libopencv_optflow.so.4.2.0
-/home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/devel/lib/libkcftracker.so: /usr/lib/x86_64-linux-gnu/libopencv_phase_unwrapping.so.4.2.0
-/home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/devel/lib/libkcftracker.so: /usr/lib/x86_64-linux-gnu/libopencv_plot.so.4.2.0
-/home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/devel/lib/libkcftracker.so: /usr/lib/x86_64-linux-gnu/libopencv_quality.so.4.2.0
-/home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/devel/lib/libkcftracker.so: /usr/lib/x86_64-linux-gnu/libopencv_reg.so.4.2.0
-/home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/devel/lib/libkcftracker.so: /usr/lib/x86_64-linux-gnu/libopencv_rgbd.so.4.2.0
-/home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/devel/lib/libkcftracker.so: /usr/lib/x86_64-linux-gnu/libopencv_saliency.so.4.2.0
-/home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/devel/lib/libkcftracker.so: /usr/lib/x86_64-linux-gnu/libopencv_shape.so.4.2.0
-/home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/devel/lib/libkcftracker.so: /usr/lib/x86_64-linux-gnu/libopencv_stereo.so.4.2.0
-/home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/devel/lib/libkcftracker.so: /usr/lib/x86_64-linux-gnu/libopencv_structured_light.so.4.2.0
-/home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/devel/lib/libkcftracker.so: /usr/lib/x86_64-linux-gnu/libopencv_superres.so.4.2.0
-/home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/devel/lib/libkcftracker.so: /usr/lib/x86_64-linux-gnu/libopencv_surface_matching.so.4.2.0
-/home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/devel/lib/libkcftracker.so: /usr/lib/x86_64-linux-gnu/libopencv_text.so.4.2.0
-/home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/devel/lib/libkcftracker.so: /usr/lib/x86_64-linux-gnu/libopencv_tracking.so.4.2.0
-/home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/devel/lib/libkcftracker.so: /usr/lib/x86_64-linux-gnu/libopencv_videostab.so.4.2.0
-/home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/devel/lib/libkcftracker.so: /usr/lib/x86_64-linux-gnu/libopencv_viz.so.4.2.0
-/home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/devel/lib/libkcftracker.so: /usr/lib/x86_64-linux-gnu/libopencv_ximgproc.so.4.2.0
-/home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/devel/lib/libkcftracker.so: /usr/lib/x86_64-linux-gnu/libopencv_xobjdetect.so.4.2.0
-/home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/devel/lib/libkcftracker.so: /usr/lib/x86_64-linux-gnu/libopencv_xphoto.so.4.2.0
-/home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/devel/lib/libkcftracker.so: /usr/lib/x86_64-linux-gnu/libopencv_core.so.4.2.0
-/home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/devel/lib/libkcftracker.so: /usr/lib/x86_64-linux-gnu/libopencv_imgproc.so.4.2.0
-/home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/devel/lib/libkcftracker.so: /usr/lib/x86_64-linux-gnu/libopencv_imgcodecs.so.4.2.0
-/home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/devel/lib/libkcftracker.so: /opt/ros/noetic/lib/libimage_transport.so
-/home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/devel/lib/libkcftracker.so: /opt/ros/noetic/lib/libmessage_filters.so
-/home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/devel/lib/libkcftracker.so: /opt/ros/noetic/lib/libclass_loader.so
-/home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/devel/lib/libkcftracker.so: /usr/lib/x86_64-linux-gnu/libPocoFoundation.so
-/home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/devel/lib/libkcftracker.so: /usr/lib/x86_64-linux-gnu/libdl.so
-/home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/devel/lib/libkcftracker.so: /opt/ros/noetic/lib/libroscpp.so
-/home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/devel/lib/libkcftracker.so: /usr/lib/x86_64-linux-gnu/libpthread.so
-/home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/devel/lib/libkcftracker.so: /usr/lib/x86_64-linux-gnu/libboost_chrono.so.1.71.0
-/home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/devel/lib/libkcftracker.so: /opt/ros/noetic/lib/librosconsole.so
-/home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/devel/lib/libkcftracker.so: /opt/ros/noetic/lib/librosconsole_log4cxx.so
-/home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/devel/lib/libkcftracker.so: /opt/ros/noetic/lib/librosconsole_backend_interface.so
-/home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/devel/lib/libkcftracker.so: /usr/lib/x86_64-linux-gnu/liblog4cxx.so
-/home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/devel/lib/libkcftracker.so: /usr/lib/x86_64-linux-gnu/libboost_regex.so.1.71.0
-/home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/devel/lib/libkcftracker.so: /opt/ros/noetic/lib/libxmlrpcpp.so
-/home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/devel/lib/libkcftracker.so: /opt/ros/noetic/lib/libroslib.so
-/home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/devel/lib/libkcftracker.so: /opt/ros/noetic/lib/librospack.so
-/home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/devel/lib/libkcftracker.so: /usr/lib/x86_64-linux-gnu/libpython3.8.so
-/home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/devel/lib/libkcftracker.so: /usr/lib/x86_64-linux-gnu/libboost_filesystem.so.1.71.0
-/home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/devel/lib/libkcftracker.so: /usr/lib/x86_64-linux-gnu/libboost_program_options.so.1.71.0
-/home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/devel/lib/libkcftracker.so: /usr/lib/x86_64-linux-gnu/libtinyxml2.so
-/home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/devel/lib/libkcftracker.so: /opt/ros/noetic/lib/libdynamic_reconfigure_config_init_mutex.so
-/home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/devel/lib/libkcftracker.so: /opt/ros/noetic/lib/libroscpp_serialization.so
-/home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/devel/lib/libkcftracker.so: /opt/ros/noetic/lib/librostime.so
-/home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/devel/lib/libkcftracker.so: /usr/lib/x86_64-linux-gnu/libboost_date_time.so.1.71.0
-/home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/devel/lib/libkcftracker.so: /opt/ros/noetic/lib/libcpp_common.so
-/home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/devel/lib/libkcftracker.so: /usr/lib/x86_64-linux-gnu/libboost_system.so.1.71.0
-/home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/devel/lib/libkcftracker.so: /usr/lib/x86_64-linux-gnu/libboost_thread.so.1.71.0
-/home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/devel/lib/libkcftracker.so: /usr/lib/x86_64-linux-gnu/libconsole_bridge.so.0.4
-/home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/devel/lib/libkcftracker.so: astra_tracker/include/astra_tracker/CMakeFiles/kcftracker.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Linking CXX shared library /home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/devel/lib/libkcftracker.so"
-	cd /home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/build/astra_tracker/include/astra_tracker && $(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/kcftracker.dir/link.txt --verbose=$(VERBOSE)
+/home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/devel/lib/libkcftracker.so: astra_tracker/include/astra_tracker/CMakeFiles/kcftracker.dir/PID.cpp.o
+/home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/devel/lib/libkcftracker.so: astra_tracker/include/astra_tracker/CMakeFiles/kcftracker.dir/fhog.cpp.o
+/home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/devel/lib/libkcftracker.so: astra_tracker/include/astra_tracker/CMakeFiles/kcftracker.dir/kcftracker.cpp.o
+/home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/devel/lib/libkcftracker.so: astra_tracker/include/astra_tracker/CMakeFiles/kcftracker.dir/build.make
+/home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/devel/lib/libkcftracker.so: /opt/ros/noetic/lib/libcv_bridge.so
+/home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/devel/lib/libkcftracker.so: /usr/lib/x86_64-linux-gnu/libopencv_calib3d.so.4.2.0
+/home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/devel/lib/libkcftracker.so: /usr/lib/x86_64-linux-gnu/libopencv_dnn.so.4.2.0
+/home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/devel/lib/libkcftracker.so: /usr/lib/x86_64-linux-gnu/libopencv_features2d.so.4.2.0
+/home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/devel/lib/libkcftracker.so: /usr/lib/x86_64-linux-gnu/libopencv_flann.so.4.2.0
+/home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/devel/lib/libkcftracker.so: /usr/lib/x86_64-linux-gnu/libopencv_highgui.so.4.2.0
+/home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/devel/lib/libkcftracker.so: /usr/lib/x86_64-linux-gnu/libopencv_ml.so.4.2.0
+/home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/devel/lib/libkcftracker.so: /usr/lib/x86_64-linux-gnu/libopencv_objdetect.so.4.2.0
+/home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/devel/lib/libkcftracker.so: /usr/lib/x86_64-linux-gnu/libopencv_photo.so.4.2.0
+/home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/devel/lib/libkcftracker.so: /usr/lib/x86_64-linux-gnu/libopencv_stitching.so.4.2.0
+/home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/devel/lib/libkcftracker.so: /usr/lib/x86_64-linux-gnu/libopencv_video.so.4.2.0
+/home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/devel/lib/libkcftracker.so: /usr/lib/x86_64-linux-gnu/libopencv_videoio.so.4.2.0
+/home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/devel/lib/libkcftracker.so: /usr/lib/x86_64-linux-gnu/libopencv_aruco.so.4.2.0
+/home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/devel/lib/libkcftracker.so: /usr/lib/x86_64-linux-gnu/libopencv_bgsegm.so.4.2.0
+/home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/devel/lib/libkcftracker.so: /usr/lib/x86_64-linux-gnu/libopencv_bioinspired.so.4.2.0
+/home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/devel/lib/libkcftracker.so: /usr/lib/x86_64-linux-gnu/libopencv_ccalib.so.4.2.0
+/home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/devel/lib/libkcftracker.so: /usr/lib/x86_64-linux-gnu/libopencv_datasets.so.4.2.0
+/home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/devel/lib/libkcftracker.so: /usr/lib/x86_64-linux-gnu/libopencv_dnn_objdetect.so.4.2.0
+/home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/devel/lib/libkcftracker.so: /usr/lib/x86_64-linux-gnu/libopencv_dnn_superres.so.4.2.0
+/home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/devel/lib/libkcftracker.so: /usr/lib/x86_64-linux-gnu/libopencv_dpm.so.4.2.0
+/home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/devel/lib/libkcftracker.so: /usr/lib/x86_64-linux-gnu/libopencv_face.so.4.2.0
+/home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/devel/lib/libkcftracker.so: /usr/lib/x86_64-linux-gnu/libopencv_freetype.so.4.2.0
+/home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/devel/lib/libkcftracker.so: /usr/lib/x86_64-linux-gnu/libopencv_fuzzy.so.4.2.0
+/home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/devel/lib/libkcftracker.so: /usr/lib/x86_64-linux-gnu/libopencv_hdf.so.4.2.0
+/home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/devel/lib/libkcftracker.so: /usr/lib/x86_64-linux-gnu/libopencv_hfs.so.4.2.0
+/home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/devel/lib/libkcftracker.so: /usr/lib/x86_64-linux-gnu/libopencv_img_hash.so.4.2.0
+/home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/devel/lib/libkcftracker.so: /usr/lib/x86_64-linux-gnu/libopencv_line_descriptor.so.4.2.0
+/home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/devel/lib/libkcftracker.so: /usr/lib/x86_64-linux-gnu/libopencv_optflow.so.4.2.0
+/home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/devel/lib/libkcftracker.so: /usr/lib/x86_64-linux-gnu/libopencv_phase_unwrapping.so.4.2.0
+/home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/devel/lib/libkcftracker.so: /usr/lib/x86_64-linux-gnu/libopencv_plot.so.4.2.0
+/home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/devel/lib/libkcftracker.so: /usr/lib/x86_64-linux-gnu/libopencv_quality.so.4.2.0
+/home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/devel/lib/libkcftracker.so: /usr/lib/x86_64-linux-gnu/libopencv_reg.so.4.2.0
+/home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/devel/lib/libkcftracker.so: /usr/lib/x86_64-linux-gnu/libopencv_rgbd.so.4.2.0
+/home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/devel/lib/libkcftracker.so: /usr/lib/x86_64-linux-gnu/libopencv_saliency.so.4.2.0
+/home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/devel/lib/libkcftracker.so: /usr/lib/x86_64-linux-gnu/libopencv_shape.so.4.2.0
+/home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/devel/lib/libkcftracker.so: /usr/lib/x86_64-linux-gnu/libopencv_stereo.so.4.2.0
+/home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/devel/lib/libkcftracker.so: /usr/lib/x86_64-linux-gnu/libopencv_structured_light.so.4.2.0
+/home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/devel/lib/libkcftracker.so: /usr/lib/x86_64-linux-gnu/libopencv_superres.so.4.2.0
+/home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/devel/lib/libkcftracker.so: /usr/lib/x86_64-linux-gnu/libopencv_surface_matching.so.4.2.0
+/home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/devel/lib/libkcftracker.so: /usr/lib/x86_64-linux-gnu/libopencv_text.so.4.2.0
+/home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/devel/lib/libkcftracker.so: /usr/lib/x86_64-linux-gnu/libopencv_tracking.so.4.2.0
+/home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/devel/lib/libkcftracker.so: /usr/lib/x86_64-linux-gnu/libopencv_videostab.so.4.2.0
+/home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/devel/lib/libkcftracker.so: /usr/lib/x86_64-linux-gnu/libopencv_viz.so.4.2.0
+/home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/devel/lib/libkcftracker.so: /usr/lib/x86_64-linux-gnu/libopencv_ximgproc.so.4.2.0
+/home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/devel/lib/libkcftracker.so: /usr/lib/x86_64-linux-gnu/libopencv_xobjdetect.so.4.2.0
+/home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/devel/lib/libkcftracker.so: /usr/lib/x86_64-linux-gnu/libopencv_xphoto.so.4.2.0
+/home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/devel/lib/libkcftracker.so: /usr/lib/x86_64-linux-gnu/libopencv_core.so.4.2.0
+/home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/devel/lib/libkcftracker.so: /usr/lib/x86_64-linux-gnu/libopencv_imgproc.so.4.2.0
+/home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/devel/lib/libkcftracker.so: /usr/lib/x86_64-linux-gnu/libopencv_imgcodecs.so.4.2.0
+/home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/devel/lib/libkcftracker.so: /opt/ros/noetic/lib/libimage_transport.so
+/home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/devel/lib/libkcftracker.so: /opt/ros/noetic/lib/libmessage_filters.so
+/home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/devel/lib/libkcftracker.so: /opt/ros/noetic/lib/libclass_loader.so
+/home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/devel/lib/libkcftracker.so: /usr/lib/x86_64-linux-gnu/libPocoFoundation.so
+/home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/devel/lib/libkcftracker.so: /usr/lib/x86_64-linux-gnu/libdl.so
+/home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/devel/lib/libkcftracker.so: /opt/ros/noetic/lib/libroscpp.so
+/home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/devel/lib/libkcftracker.so: /usr/lib/x86_64-linux-gnu/libpthread.so
+/home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/devel/lib/libkcftracker.so: /usr/lib/x86_64-linux-gnu/libboost_chrono.so.1.71.0
+/home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/devel/lib/libkcftracker.so: /opt/ros/noetic/lib/librosconsole.so
+/home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/devel/lib/libkcftracker.so: /opt/ros/noetic/lib/librosconsole_log4cxx.so
+/home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/devel/lib/libkcftracker.so: /opt/ros/noetic/lib/librosconsole_backend_interface.so
+/home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/devel/lib/libkcftracker.so: /usr/lib/x86_64-linux-gnu/liblog4cxx.so
+/home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/devel/lib/libkcftracker.so: /usr/lib/x86_64-linux-gnu/libboost_regex.so.1.71.0
+/home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/devel/lib/libkcftracker.so: /opt/ros/noetic/lib/libxmlrpcpp.so
+/home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/devel/lib/libkcftracker.so: /opt/ros/noetic/lib/libroslib.so
+/home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/devel/lib/libkcftracker.so: /opt/ros/noetic/lib/librospack.so
+/home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/devel/lib/libkcftracker.so: /usr/lib/x86_64-linux-gnu/libpython3.8.so
+/home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/devel/lib/libkcftracker.so: /usr/lib/x86_64-linux-gnu/libboost_filesystem.so.1.71.0
+/home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/devel/lib/libkcftracker.so: /usr/lib/x86_64-linux-gnu/libboost_program_options.so.1.71.0
+/home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/devel/lib/libkcftracker.so: /usr/lib/x86_64-linux-gnu/libtinyxml2.so
+/home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/devel/lib/libkcftracker.so: /opt/ros/noetic/lib/libdynamic_reconfigure_config_init_mutex.so
+/home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/devel/lib/libkcftracker.so: /opt/ros/noetic/lib/libroscpp_serialization.so
+/home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/devel/lib/libkcftracker.so: /opt/ros/noetic/lib/librostime.so
+/home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/devel/lib/libkcftracker.so: /usr/lib/x86_64-linux-gnu/libboost_date_time.so.1.71.0
+/home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/devel/lib/libkcftracker.so: /opt/ros/noetic/lib/libcpp_common.so
+/home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/devel/lib/libkcftracker.so: /usr/lib/x86_64-linux-gnu/libboost_system.so.1.71.0
+/home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/devel/lib/libkcftracker.so: /usr/lib/x86_64-linux-gnu/libboost_thread.so.1.71.0
+/home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/devel/lib/libkcftracker.so: /usr/lib/x86_64-linux-gnu/libconsole_bridge.so.0.4
+/home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/devel/lib/libkcftracker.so: astra_tracker/include/astra_tracker/CMakeFiles/kcftracker.dir/link.txt
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Linking CXX shared library /home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/devel/lib/libkcftracker.so"
+	cd /home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/build/astra_tracker/include/astra_tracker && $(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/kcftracker.dir/link.txt --verbose=$(VERBOSE)
 
 # Rule to build all files generated by this target.
-astra_tracker/include/astra_tracker/CMakeFiles/kcftracker.dir/build: /home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/devel/lib/libkcftracker.so
+astra_tracker/include/astra_tracker/CMakeFiles/kcftracker.dir/build: /home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/devel/lib/libkcftracker.so
 
 .PHONY : astra_tracker/include/astra_tracker/CMakeFiles/kcftracker.dir/build
 
 astra_tracker/include/astra_tracker/CMakeFiles/kcftracker.dir/clean:
-	cd /home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/build/astra_tracker/include/astra_tracker && $(CMAKE_COMMAND) -P CMakeFiles/kcftracker.dir/cmake_clean.cmake
+	cd /home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/build/astra_tracker/include/astra_tracker && $(CMAKE_COMMAND) -P CMakeFiles/kcftracker.dir/cmake_clean.cmake
 .PHONY : astra_tracker/include/astra_tracker/CMakeFiles/kcftracker.dir/clean
 
 astra_tracker/include/astra_tracker/CMakeFiles/kcftracker.dir/depend:
-	cd /home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/build && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/src /home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/src/astra_tracker/include/astra_tracker /home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/build /home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/build/astra_tracker/include/astra_tracker /home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/build/astra_tracker/include/astra_tracker/CMakeFiles/kcftracker.dir/DependInfo.cmake --color=$(COLOR)
+	cd /home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/build && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/src /home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/src/astra_tracker/include/astra_tracker /home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/build /home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/build/astra_tracker/include/astra_tracker /home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/build/astra_tracker/include/astra_tracker/CMakeFiles/kcftracker.dir/DependInfo.cmake --color=$(COLOR)
 .PHONY : astra_tracker/include/astra_tracker/CMakeFiles/kcftracker.dir/depend
 

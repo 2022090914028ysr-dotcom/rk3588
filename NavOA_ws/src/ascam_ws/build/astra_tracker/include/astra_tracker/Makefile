@@ -48,10 +48,10 @@ RM = /usr/bin/cmake -E remove -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/src
+CMAKE_SOURCE_DIR = /home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/src
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/build
+CMAKE_BINARY_DIR = /home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/build
 
 #=============================================================================
 # Targets provided globally by CMake.
@@ -137,14 +137,14 @@ test/fast: test
 
 # The main all target
 all: cmake_check_build_system
-	cd /home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/build && $(CMAKE_COMMAND) -E cmake_progress_start /home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/build/CMakeFiles /home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/build/astra_tracker/include/astra_tracker/CMakeFiles/progress.marks
-	cd /home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/build && $(MAKE) -f CMakeFiles/Makefile2 astra_tracker/include/astra_tracker/all
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/build/CMakeFiles 0
+	cd /home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/build && $(CMAKE_COMMAND) -E cmake_progress_start /home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/build/CMakeFiles /home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/build/astra_tracker/include/astra_tracker/CMakeFiles/progress.marks
+	cd /home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/build && $(MAKE) -f CMakeFiles/Makefile2 astra_tracker/include/astra_tracker/all
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/build/CMakeFiles 0
 .PHONY : all
 
 # The main clean target
 clean:
-	cd /home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/build && $(MAKE) -f CMakeFiles/Makefile2 astra_tracker/include/astra_tracker/clean
+	cd /home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/build && $(MAKE) -f CMakeFiles/Makefile2 astra_tracker/include/astra_tracker/clean
 .PHONY : clean
 
 # The main clean target
@@ -154,22 +154,22 @@ clean/fast: clean
 
 # Prepare targets for installation.
 preinstall: all
-	cd /home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/build && $(MAKE) -f CMakeFiles/Makefile2 astra_tracker/include/astra_tracker/preinstall
+	cd /home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/build && $(MAKE) -f CMakeFiles/Makefile2 astra_tracker/include/astra_tracker/preinstall
 .PHONY : preinstall
 
 # Prepare targets for installation.
 preinstall/fast:
-	cd /home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/build && $(MAKE) -f CMakeFiles/Makefile2 astra_tracker/include/astra_tracker/preinstall
+	cd /home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/build && $(MAKE) -f CMakeFiles/Makefile2 astra_tracker/include/astra_tracker/preinstall
 .PHONY : preinstall/fast
 
 # clear depends
 depend:
-	cd /home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/build && $(CMAKE_COMMAND) -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 1
+	cd /home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/build && $(CMAKE_COMMAND) -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 1
 .PHONY : depend
 
 # Convenience name for target.
 astra_tracker/include/astra_tracker/CMakeFiles/kcftracker.dir/rule:
-	cd /home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/build && $(MAKE) -f CMakeFiles/Makefile2 astra_tracker/include/astra_tracker/CMakeFiles/kcftracker.dir/rule
+	cd /home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/build && $(MAKE) -f CMakeFiles/Makefile2 astra_tracker/include/astra_tracker/CMakeFiles/kcftracker.dir/rule
 .PHONY : astra_tracker/include/astra_tracker/CMakeFiles/kcftracker.dir/rule
 
 # Convenience name for target.
@@ -179,7 +179,7 @@ kcftracker: astra_tracker/include/astra_tracker/CMakeFiles/kcftracker.dir/rule
 
 # fast build rule for target.
 kcftracker/fast:
-	cd /home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/build && $(MAKE) -f astra_tracker/include/astra_tracker/CMakeFiles/kcftracker.dir/build.make astra_tracker/include/astra_tracker/CMakeFiles/kcftracker.dir/build
+	cd /home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/build && $(MAKE) -f astra_tracker/include/astra_tracker/CMakeFiles/kcftracker.dir/build.make astra_tracker/include/astra_tracker/CMakeFiles/kcftracker.dir/build
 .PHONY : kcftracker/fast
 
 PID.o: PID.cpp.o
@@ -188,7 +188,7 @@ PID.o: PID.cpp.o
 
 # target to build an object file
 PID.cpp.o:
-	cd /home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/build && $(MAKE) -f astra_tracker/include/astra_tracker/CMakeFiles/kcftracker.dir/build.make astra_tracker/include/astra_tracker/CMakeFiles/kcftracker.dir/PID.cpp.o
+	cd /home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/build && $(MAKE) -f astra_tracker/include/astra_tracker/CMakeFiles/kcftracker.dir/build.make astra_tracker/include/astra_tracker/CMakeFiles/kcftracker.dir/PID.cpp.o
 .PHONY : PID.cpp.o
 
 PID.i: PID.cpp.i
@@ -197,7 +197,7 @@ PID.i: PID.cpp.i
 
 # target to preprocess a source file
 PID.cpp.i:
-	cd /home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/build && $(MAKE) -f astra_tracker/include/astra_tracker/CMakeFiles/kcftracker.dir/build.make astra_tracker/include/astra_tracker/CMakeFiles/kcftracker.dir/PID.cpp.i
+	cd /home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/build && $(MAKE) -f astra_tracker/include/astra_tracker/CMakeFiles/kcftracker.dir/build.make astra_tracker/include/astra_tracker/CMakeFiles/kcftracker.dir/PID.cpp.i
 .PHONY : PID.cpp.i
 
 PID.s: PID.cpp.s
@@ -206,7 +206,7 @@ PID.s: PID.cpp.s
 
 # target to generate assembly for a file
 PID.cpp.s:
-	cd /home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/build && $(MAKE) -f astra_tracker/include/astra_tracker/CMakeFiles/kcftracker.dir/build.make astra_tracker/include/astra_tracker/CMakeFiles/kcftracker.dir/PID.cpp.s
+	cd /home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/build && $(MAKE) -f astra_tracker/include/astra_tracker/CMakeFiles/kcftracker.dir/build.make astra_tracker/include/astra_tracker/CMakeFiles/kcftracker.dir/PID.cpp.s
 .PHONY : PID.cpp.s
 
 fhog.o: fhog.cpp.o
@@ -215,7 +215,7 @@ fhog.o: fhog.cpp.o
 
 # target to build an object file
 fhog.cpp.o:
-	cd /home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/build && $(MAKE) -f astra_tracker/include/astra_tracker/CMakeFiles/kcftracker.dir/build.make astra_tracker/include/astra_tracker/CMakeFiles/kcftracker.dir/fhog.cpp.o
+	cd /home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/build && $(MAKE) -f astra_tracker/include/astra_tracker/CMakeFiles/kcftracker.dir/build.make astra_tracker/include/astra_tracker/CMakeFiles/kcftracker.dir/fhog.cpp.o
 .PHONY : fhog.cpp.o
 
 fhog.i: fhog.cpp.i
@@ -224,7 +224,7 @@ fhog.i: fhog.cpp.i
 
 # target to preprocess a source file
 fhog.cpp.i:
-	cd /home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/build && $(MAKE) -f astra_tracker/include/astra_tracker/CMakeFiles/kcftracker.dir/build.make astra_tracker/include/astra_tracker/CMakeFiles/kcftracker.dir/fhog.cpp.i
+	cd /home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/build && $(MAKE) -f astra_tracker/include/astra_tracker/CMakeFiles/kcftracker.dir/build.make astra_tracker/include/astra_tracker/CMakeFiles/kcftracker.dir/fhog.cpp.i
 .PHONY : fhog.cpp.i
 
 fhog.s: fhog.cpp.s
@@ -233,7 +233,7 @@ fhog.s: fhog.cpp.s
 
 # target to generate assembly for a file
 fhog.cpp.s:
-	cd /home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/build && $(MAKE) -f astra_tracker/include/astra_tracker/CMakeFiles/kcftracker.dir/build.make astra_tracker/include/astra_tracker/CMakeFiles/kcftracker.dir/fhog.cpp.s
+	cd /home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/build && $(MAKE) -f astra_tracker/include/astra_tracker/CMakeFiles/kcftracker.dir/build.make astra_tracker/include/astra_tracker/CMakeFiles/kcftracker.dir/fhog.cpp.s
 .PHONY : fhog.cpp.s
 
 kcftracker.o: kcftracker.cpp.o
@@ -242,7 +242,7 @@ kcftracker.o: kcftracker.cpp.o
 
 # target to build an object file
 kcftracker.cpp.o:
-	cd /home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/build && $(MAKE) -f astra_tracker/include/astra_tracker/CMakeFiles/kcftracker.dir/build.make astra_tracker/include/astra_tracker/CMakeFiles/kcftracker.dir/kcftracker.cpp.o
+	cd /home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/build && $(MAKE) -f astra_tracker/include/astra_tracker/CMakeFiles/kcftracker.dir/build.make astra_tracker/include/astra_tracker/CMakeFiles/kcftracker.dir/kcftracker.cpp.o
 .PHONY : kcftracker.cpp.o
 
 kcftracker.i: kcftracker.cpp.i
@@ -251,7 +251,7 @@ kcftracker.i: kcftracker.cpp.i
 
 # target to preprocess a source file
 kcftracker.cpp.i:
-	cd /home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/build && $(MAKE) -f astra_tracker/include/astra_tracker/CMakeFiles/kcftracker.dir/build.make astra_tracker/include/astra_tracker/CMakeFiles/kcftracker.dir/kcftracker.cpp.i
+	cd /home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/build && $(MAKE) -f astra_tracker/include/astra_tracker/CMakeFiles/kcftracker.dir/build.make astra_tracker/include/astra_tracker/CMakeFiles/kcftracker.dir/kcftracker.cpp.i
 .PHONY : kcftracker.cpp.i
 
 kcftracker.s: kcftracker.cpp.s
@@ -260,7 +260,7 @@ kcftracker.s: kcftracker.cpp.s
 
 # target to generate assembly for a file
 kcftracker.cpp.s:
-	cd /home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/build && $(MAKE) -f astra_tracker/include/astra_tracker/CMakeFiles/kcftracker.dir/build.make astra_tracker/include/astra_tracker/CMakeFiles/kcftracker.dir/kcftracker.cpp.s
+	cd /home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/build && $(MAKE) -f astra_tracker/include/astra_tracker/CMakeFiles/kcftracker.dir/build.make astra_tracker/include/astra_tracker/CMakeFiles/kcftracker.dir/kcftracker.cpp.s
 .PHONY : kcftracker.cpp.s
 
 # Help Target
@@ -297,6 +297,6 @@ help:
 # No rule that depends on this can have commands that come from listfiles
 # because they might be regenerated.
 cmake_check_build_system:
-	cd /home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/build && $(CMAKE_COMMAND) -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 0
+	cd /home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/build && $(CMAKE_COMMAND) -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 0
 .PHONY : cmake_check_build_system
 

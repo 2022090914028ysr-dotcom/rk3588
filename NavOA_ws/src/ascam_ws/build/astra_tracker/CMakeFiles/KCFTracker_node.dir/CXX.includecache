@@ -6,7 +6,7 @@
 
 #IncludeRegexTransform: 
 
-/home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/src/astra_tracker/include/astra_tracker/KCF_Tracker.h
+/home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/src/astra_tracker/include/astra_tracker/KCF_Tracker.h
 iostream
 -
 algorithm
@@ -22,39 +22,39 @@ cv_bridge/cv_bridge.h
 sensor_msgs/image_encodings.h
 -
 geometry_msgs/Twist.h
-/home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/src/astra_tracker/include/astra_tracker/geometry_msgs/Twist.h
+/home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/src/astra_tracker/include/astra_tracker/geometry_msgs/Twist.h
 opencv2/core/core.hpp
 -
 opencv2/highgui/highgui.hpp
 -
 kcftracker.h
-/home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/src/astra_tracker/include/astra_tracker/kcftracker.h
+/home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/src/astra_tracker/include/astra_tracker/kcftracker.h
 dynamic_reconfigure/server.h
 -
 time.h
 -
 
-/home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/src/astra_tracker/include/astra_tracker/kcftracker.h
+/home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/src/astra_tracker/include/astra_tracker/kcftracker.h
 tracker.h
-/home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/src/astra_tracker/include/astra_tracker/tracker.h
+/home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/src/astra_tracker/include/astra_tracker/tracker.h
 
-/home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/src/astra_tracker/include/astra_tracker/tracker.h
+/home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/src/astra_tracker/include/astra_tracker/tracker.h
 opencv2/opencv.hpp
 -
 string
 -
 
-/home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/src/astra_tracker/src/KCF_Tracker.cpp
+/home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/src/astra_tracker/src/KCF_Tracker.cpp
 KCF_Tracker.h
-/home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/src/astra_tracker/src/KCF_Tracker.h
+/home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/src/astra_tracker/src/KCF_Tracker.h
 
-/home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/src/astra_tracker/src/KCF_Tracker_main.cpp
+/home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/src/astra_tracker/src/KCF_Tracker_main.cpp
 iostream
 -
 ros/ros.h
 -
 KCF_Tracker.h
-/home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/src/astra_tracker/src/KCF_Tracker.h
+/home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/src/astra_tracker/src/KCF_Tracker.h
 
 /opt/ros/noetic/include/cv_bridge/cv_bridge.h
 sensor_msgs/Image.h

@@ -43,10 +43,10 @@ RM = /usr/bin/cmake -E remove -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/src
+CMAKE_SOURCE_DIR = /home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/src
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/build
+CMAKE_BINARY_DIR = /home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/build
 
 # Utility rule file for yahboomcar_msgs_genlisp.
 
@@ -63,10 +63,10 @@ yahboomcar_msgs/CMakeFiles/yahboomcar_msgs_genlisp.dir/build: yahboomcar_msgs_ge
 .PHONY : yahboomcar_msgs/CMakeFiles/yahboomcar_msgs_genlisp.dir/build
 
 yahboomcar_msgs/CMakeFiles/yahboomcar_msgs_genlisp.dir/clean:
-	cd /home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/build/yahboomcar_msgs && $(CMAKE_COMMAND) -P CMakeFiles/yahboomcar_msgs_genlisp.dir/cmake_clean.cmake
+	cd /home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/build/yahboomcar_msgs && $(CMAKE_COMMAND) -P CMakeFiles/yahboomcar_msgs_genlisp.dir/cmake_clean.cmake
 .PHONY : yahboomcar_msgs/CMakeFiles/yahboomcar_msgs_genlisp.dir/clean
 
 yahboomcar_msgs/CMakeFiles/yahboomcar_msgs_genlisp.dir/depend:
-	cd /home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/build && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/src /home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/src/yahboomcar_msgs /home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/build /home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/build/yahboomcar_msgs /home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/build/yahboomcar_msgs/CMakeFiles/yahboomcar_msgs_genlisp.dir/DependInfo.cmake --color=$(COLOR)
+	cd /home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/build && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/src /home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/src/yahboomcar_msgs /home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/build /home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/build/yahboomcar_msgs /home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/build/yahboomcar_msgs/CMakeFiles/yahboomcar_msgs_genlisp.dir/DependInfo.cmake --color=$(COLOR)
 .PHONY : yahboomcar_msgs/CMakeFiles/yahboomcar_msgs_genlisp.dir/depend
 

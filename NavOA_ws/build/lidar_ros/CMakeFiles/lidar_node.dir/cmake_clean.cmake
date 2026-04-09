@@ -1,6 +1,6 @@
 file(REMOVE_RECURSE
-  "/home/rana/Robit_SlamNav/NavOA_ws/devel/.private/lidar_ros/lib/lidar_ros/lidar_node"
-  "/home/rana/Robit_SlamNav/NavOA_ws/devel/.private/lidar_ros/lib/lidar_ros/lidar_node.pdb"
+  "/home/ubuntu/Robit_SlamNav/NavOA_ws/devel/.private/lidar_ros/lib/lidar_ros/lidar_node"
+  "/home/ubuntu/Robit_SlamNav/NavOA_ws/devel/.private/lidar_ros/lib/lidar_ros/lidar_node.pdb"
   "CMakeFiles/lidar_node.dir/ros/src/ros_convert.cpp.o"
   "CMakeFiles/lidar_node.dir/ros/src/ros_node.cpp.o"
   "CMakeFiles/lidar_node.dir/sdk/src/interface/console/interface_console.cpp.o"

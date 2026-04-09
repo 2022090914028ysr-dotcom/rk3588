@@ -7,10 +7,11 @@
 # new environment variables
 
 # modified environment variables
-export CMAKE_PREFIX_PATH="/home/rana/Robit_SlamNav/NavOA_ws/devel_isolated/NavOA_ros:$CMAKE_PREFIX_PATH"
-export LD_LIBRARY_PATH="/home/rana/Robit_SlamNav/NavOA_ws/devel_isolated/NavOA_ros/lib:$LD_LIBRARY_PATH"
-export PKG_CONFIG_PATH="/home/rana/Robit_SlamNav/NavOA_ws/devel_isolated/NavOA_ros/lib/pkgconfig:$PKG_CONFIG_PATH"
-export PWD='/home/rana/Robit_SlamNav/NavOA_ws/build_isolated/NavOA_ros'
-export PYTHONPATH="/home/rana/Robit_SlamNav/NavOA_ws/devel_isolated/NavOA_ros/lib/python3/dist-packages:$PYTHONPATH"
-export ROSLISP_PACKAGE_DIRECTORIES='/home/rana/Robit_SlamNav/NavOA_ws/devel_isolated/NavOA_ros/share/common-lisp'
-export ROS_PACKAGE_PATH="/home/rana/Robit_SlamNav/NavOA_ws/src/NavOA_ros:$ROS_PACKAGE_PATH"
+export CMAKE_PREFIX_PATH='/home/ubuntu/Robit_SlamNav/NavOA_ws/devel_isolated/NavOA_ros:/opt/ros/noetic'
+export LD_LIBRARY_PATH='/opt/ros/noetic/lib'
+export PATH='/opt/ros/noetic/bin:/home/ubuntu/miniconda3/envs/control/bin:/home/ubuntu/miniconda3/condabin:/home/ubuntu/.vscode-server/data/User/globalStorage/github.copilot-chat/debugCommand:/home/ubuntu/.vscode-server/data/User/globalStorage/github.copilot-chat/copilotCli:/home/ubuntu/.vscode-server/cli/servers/Stable-cfbea10c5ffb233ea9177d34726e6056e89913dc/server/bin/remote-cli:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin'
+export PKG_CONFIG_PATH='/opt/ros/noetic/lib/pkgconfig'
+export PWD='/home/ubuntu/Robit_SlamNav/NavOA_ws/build_isolated/NavOA_ros'
+export PYTHONPATH='/opt/ros/noetic/lib/python3/dist-packages'
+export ROSLISP_PACKAGE_DIRECTORIES='/home/ubuntu/Robit_SlamNav/NavOA_ws/devel_isolated/NavOA_ros/share/common-lisp'
+export ROS_PACKAGE_PATH='/home/ubuntu/Robit_SlamNav/NavOA_ws/src/NavOA_ros:/opt/ros/noetic/share'

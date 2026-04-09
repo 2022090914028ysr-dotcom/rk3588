@@ -19,5 +19,5 @@ examples/CMakeFiles/tea_test.dir/tea_test.cpp.o
  ../src/filters/FilterInterface.h
  ../src/filters/NoiseFilter.h
  ../src/filters/StrongLightFilter.h
- /home/rana/Robit_SlamNav/NavOA_ws/src/ydlidar_sdk/examples/tea_test.cpp
+ /home/ubuntu/Robit_SlamNav/NavOA_ws/src/ydlidar_sdk/examples/tea_test.cpp
  ydlidar_config.h

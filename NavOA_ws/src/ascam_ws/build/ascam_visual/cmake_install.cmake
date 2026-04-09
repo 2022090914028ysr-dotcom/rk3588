@@ -1,8 +1,8 @@
-# Install script for directory: /home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/src/ascam_visual
+# Install script for directory: /home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/src/ascam_visual
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
-  set(CMAKE_INSTALL_PREFIX "/home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/install")
+  set(CMAKE_INSTALL_PREFIX "/home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/install")
 endif()
 string(REGEX REPLACE "/$" "" CMAKE_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}")
 
@@ -38,17 +38,17 @@ if(NOT DEFINED CMAKE_CROSSCOMPILING)
 endif()
 
 if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
-  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib/pkgconfig" TYPE FILE FILES "/home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/build/ascam_visual/catkin_generated/installspace/ascam_visual.pc")
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib/pkgconfig" TYPE FILE FILES "/home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/build/ascam_visual/catkin_generated/installspace/ascam_visual.pc")
 endif()
 
 if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
   file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/ascam_visual/cmake" TYPE FILE FILES
-    "/home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/build/ascam_visual/catkin_generated/installspace/ascam_visualConfig.cmake"
-    "/home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/build/ascam_visual/catkin_generated/installspace/ascam_visualConfig-version.cmake"
+    "/home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/build/ascam_visual/catkin_generated/installspace/ascam_visualConfig.cmake"
+    "/home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/build/ascam_visual/catkin_generated/installspace/ascam_visualConfig-version.cmake"
     )
 endif()
 
 if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
-  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/ascam_visual" TYPE FILE FILES "/home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/src/ascam_visual/package.xml")
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/ascam_visual" TYPE FILE FILES "/home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/src/ascam_visual/package.xml")
 endif()
 

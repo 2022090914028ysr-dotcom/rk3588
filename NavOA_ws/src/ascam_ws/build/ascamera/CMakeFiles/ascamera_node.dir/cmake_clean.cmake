@@ -1,6 +1,6 @@
 file(REMOVE_RECURSE
-  "/home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/devel/lib/ascamera/ascamera_node"
-  "/home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/devel/lib/ascamera/ascamera_node.pdb"
+  "/home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/devel/lib/ascamera/ascamera_node"
+  "/home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/devel/lib/ascamera/ascamera_node.pdb"
   "CMakeFiles/ascamera_node.dir/src/Camera.cpp.o"
   "CMakeFiles/ascamera_node.dir/src/CameraPublisher.cpp.o"
   "CMakeFiles/ascamera_node.dir/src/CameraSrv.cpp.o"

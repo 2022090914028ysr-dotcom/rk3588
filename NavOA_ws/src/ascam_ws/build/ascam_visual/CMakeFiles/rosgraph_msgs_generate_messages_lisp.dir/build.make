@@ -43,10 +43,10 @@ RM = /usr/bin/cmake -E remove -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/src
+CMAKE_SOURCE_DIR = /home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/src
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/build
+CMAKE_BINARY_DIR = /home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/build
 
 # Utility rule file for rosgraph_msgs_generate_messages_lisp.
 
@@ -63,10 +63,10 @@ ascam_visual/CMakeFiles/rosgraph_msgs_generate_messages_lisp.dir/build: rosgraph
 .PHONY : ascam_visual/CMakeFiles/rosgraph_msgs_generate_messages_lisp.dir/build
 
 ascam_visual/CMakeFiles/rosgraph_msgs_generate_messages_lisp.dir/clean:
-	cd /home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/build/ascam_visual && $(CMAKE_COMMAND) -P CMakeFiles/rosgraph_msgs_generate_messages_lisp.dir/cmake_clean.cmake
+	cd /home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/build/ascam_visual && $(CMAKE_COMMAND) -P CMakeFiles/rosgraph_msgs_generate_messages_lisp.dir/cmake_clean.cmake
 .PHONY : ascam_visual/CMakeFiles/rosgraph_msgs_generate_messages_lisp.dir/clean
 
 ascam_visual/CMakeFiles/rosgraph_msgs_generate_messages_lisp.dir/depend:
-	cd /home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/build && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/src /home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/src/ascam_visual /home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/build /home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/build/ascam_visual /home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/build/ascam_visual/CMakeFiles/rosgraph_msgs_generate_messages_lisp.dir/DependInfo.cmake --color=$(COLOR)
+	cd /home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/build && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/src /home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/src/ascam_visual /home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/build /home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/build/ascam_visual /home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/build/ascam_visual/CMakeFiles/rosgraph_msgs_generate_messages_lisp.dir/DependInfo.cmake --color=$(COLOR)
 .PHONY : ascam_visual/CMakeFiles/rosgraph_msgs_generate_messages_lisp.dir/depend
 

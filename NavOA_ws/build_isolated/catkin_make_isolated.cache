@@ -1,2 +1,2 @@
-NavOA_ros:ascam_ws/src/ascam_visual:ascam_ws/src/ascamera:ascam_ws/src/astra_tracker:ascam_ws/src/yahboomcar_mediapipe:ascam_ws/src/yahboomcar_msgs:cartographer:cartographer_ros/cartographer_ros:cartographer_ros/cartographer_ros_msgs:cartographer_ros/cartographer_rviz:lidar_ros:rf2o_laser_odometry:ydlidar_ros_driver
--G Ninja -DCATKIN_DEVEL_PREFIX=/home/rana/Robit_SlamNav/NavOA_ws/devel_isolated -DCMAKE_INSTALL_PREFIX=/home/rana/Robit_SlamNav/NavOA_ws/install_isolated
+NavOA_ros:ascam_ws/src/ascam_visual:ascam_ws/src/ascamera:ascam_ws/src/astra_tracker:ascam_ws/src/yahboomcar_mediapipe:ascam_ws/src/yahboomcar_msgs:cartographer:cartographer_ros/cartographer_ros:cartographer_ros/cartographer_ros_msgs:cartographer_ros/cartographer_rviz:lidar_ros:rf2o_laser_odometry
+-G Ninja -DCATKIN_DEVEL_PREFIX=/home/ubuntu/Robit_SlamNav/NavOA_ws/devel_isolated -DCMAKE_INSTALL_PREFIX=/home/ubuntu/Robit_SlamNav/NavOA_ws/install_isolated

@@ -67,14 +67,14 @@ set(lidar_ros_CONFIG_INCLUDED TRUE)
 
 # set variables for source/devel/install prefixes
 if("FALSE" STREQUAL "TRUE")
-  set(lidar_ros_SOURCE_PREFIX /home/rana/Robit_SlamNav/NavOA_ws/src/lidar_ros)
-  set(lidar_ros_DEVEL_PREFIX /home/rana/Robit_SlamNav/NavOA_ws/devel/.private/lidar_ros)
+  set(lidar_ros_SOURCE_PREFIX /home/ubuntu/Robit_SlamNav/NavOA_ws/src/lidar_ros)
+  set(lidar_ros_DEVEL_PREFIX /home/ubuntu/Robit_SlamNav/NavOA_ws/devel/.private/lidar_ros)
   set(lidar_ros_INSTALL_PREFIX "")
   set(lidar_ros_PREFIX ${lidar_ros_DEVEL_PREFIX})
 else()
   set(lidar_ros_SOURCE_PREFIX "")
   set(lidar_ros_DEVEL_PREFIX "")
-  set(lidar_ros_INSTALL_PREFIX /home/rana/Robit_SlamNav/NavOA_ws/install)
+  set(lidar_ros_INSTALL_PREFIX /home/ubuntu/Robit_SlamNav/NavOA_ws/install)
   set(lidar_ros_PREFIX ${lidar_ros_INSTALL_PREFIX})
 endif()
 
@@ -156,7 +156,7 @@ foreach(library ${libraries})
     set(lib_path "")
     set(lib "${library}-NOTFOUND")
     # since the path where the library is found is returned we have to iterate over the paths manually
-    foreach(path /home/rana/Robit_SlamNav/NavOA_ws/install/lib;/home/rana/Robit_SlamNav/NavOA_ws/devel/lib;/opt/ros/noetic/lib)
+    foreach(path /home/ubuntu/Robit_SlamNav/NavOA_ws/install/lib;/home/ubuntu/Robit_SlamNav/NavOA_ws/devel/lib;/opt/ros/noetic/lib)
       find_library(lib ${library}
         PATHS ${path}
         NO_DEFAULT_PATH NO_CMAKE_FIND_ROOT_PATH)

@@ -6,5 +6,5 @@ CXX_FLAGS = -fPIC
 
 CXX_DEFINES = -DROSCONSOLE_BACKEND_LOG4CXX -DROS_BUILD_SHARED_LIBS=1 -DROS_PACKAGE_NAME=\"astra_tracker\" -Dkcftracker_EXPORTS
 
-CXX_INCLUDES = -I/home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/devel/include -I/home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/src/astra_tracker/include/astra_tracker -I/usr/include/opencv4 -I/opt/ros/noetic/include -I/opt/ros/noetic/share/xmlrpcpp/cmake/../../../include/xmlrpcpp 
+CXX_INCLUDES = -I/home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/devel/include -I/home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/src/astra_tracker/include/astra_tracker -I/usr/include/opencv4 -I/opt/ros/noetic/include -I/opt/ros/noetic/share/xmlrpcpp/cmake/../../../include/xmlrpcpp 
 

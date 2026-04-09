@@ -43,10 +43,10 @@ RM = /usr/bin/cmake -E remove -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/src
+CMAKE_SOURCE_DIR = /home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/src
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/build
+CMAKE_BINARY_DIR = /home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/build
 
 # Utility rule file for pcl_msgs_generate_messages_py.
 
@@ -63,10 +63,10 @@ ascamera/CMakeFiles/pcl_msgs_generate_messages_py.dir/build: pcl_msgs_generate_m
 .PHONY : ascamera/CMakeFiles/pcl_msgs_generate_messages_py.dir/build
 
 ascamera/CMakeFiles/pcl_msgs_generate_messages_py.dir/clean:
-	cd /home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/build/ascamera && $(CMAKE_COMMAND) -P CMakeFiles/pcl_msgs_generate_messages_py.dir/cmake_clean.cmake
+	cd /home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/build/ascamera && $(CMAKE_COMMAND) -P CMakeFiles/pcl_msgs_generate_messages_py.dir/cmake_clean.cmake
 .PHONY : ascamera/CMakeFiles/pcl_msgs_generate_messages_py.dir/clean
 
 ascamera/CMakeFiles/pcl_msgs_generate_messages_py.dir/depend:
-	cd /home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/build && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/src /home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/src/ascamera /home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/build /home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/build/ascamera /home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/build/ascamera/CMakeFiles/pcl_msgs_generate_messages_py.dir/DependInfo.cmake --color=$(COLOR)
+	cd /home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/build && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/src /home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/src/ascamera /home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/build /home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/build/ascamera /home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/build/ascamera/CMakeFiles/pcl_msgs_generate_messages_py.dir/DependInfo.cmake --color=$(COLOR)
 .PHONY : ascamera/CMakeFiles/pcl_msgs_generate_messages_py.dir/depend
 

@@ -1,9 +1,9 @@
-#!/home/rana/miniconda3/envs/Nav/bin/python3
+#!/home/ubuntu/miniconda3/envs/control/bin/python3
 # -*- coding: utf-8 -*-
 # generated from catkin/cmake/template/script.py.in
 # creates a relay to a python script source file, acting as that file.
 # The purpose is that of a symlink
-python_script = '/home/rana/Robit_SlamNav/NavOA_ws/src/NavOA_ros/scripts/data_logger.py'
+python_script = '/home/ubuntu/Robit_SlamNav/NavOA_ws/src/NavOA_ros/scripts/data_logger.py'
 with open(python_script, 'r') as fh:
     context = {
         '__builtins__': __builtins__,

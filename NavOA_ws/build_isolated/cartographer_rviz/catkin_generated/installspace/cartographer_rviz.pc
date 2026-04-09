@@ -1,4 +1,4 @@
-prefix=/home/rana/Robit_SlamNav/NavOA_ws/install_isolated
+prefix=/home/ubuntu/Robit_SlamNav/NavOA_ws/install_isolated
 
 Name: cartographer_rviz
 Description: Description of cartographer_rviz

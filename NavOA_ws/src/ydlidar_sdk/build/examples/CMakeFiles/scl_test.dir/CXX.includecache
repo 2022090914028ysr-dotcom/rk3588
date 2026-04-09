@@ -200,9 +200,9 @@ core/common/ydlidar_protocol.h
 FilterInterface.h
 ../src/filters/FilterInterface.h
 
-/home/rana/Robit_SlamNav/NavOA_ws/src/ydlidar_sdk/examples/scl_test.cpp
+/home/ubuntu/Robit_SlamNav/NavOA_ws/src/ydlidar_sdk/examples/scl_test.cpp
 CYdLidar.h
-/home/rana/Robit_SlamNav/NavOA_ws/src/ydlidar_sdk/examples/CYdLidar.h
+/home/ubuntu/Robit_SlamNav/NavOA_ws/src/ydlidar_sdk/examples/CYdLidar.h
 iostream
 -
 string
@@ -216,7 +216,7 @@ core/base/timer.h
 core/common/ydlidar_help.h
 -
 filters/StrongLightFilter.h
-/home/rana/Robit_SlamNav/NavOA_ws/src/ydlidar_sdk/examples/filters/StrongLightFilter.h
+/home/ubuntu/Robit_SlamNav/NavOA_ws/src/ydlidar_sdk/examples/filters/StrongLightFilter.h
 
 ydlidar_config.h
 

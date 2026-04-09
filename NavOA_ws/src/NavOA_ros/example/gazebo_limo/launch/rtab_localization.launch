@@ -1,41 +1,61 @@
 <launch>
     <!-- 
         RTAB-Map Localization Launch File
-        Camera + lidar localization using the existing database.
-        ICP enabled for better scan matching.
+        Uses external odometry by default.
+        RGB-D visual odometry can be re-enabled explicitly after the camera-side
+        registration issue is fixed.
     -->
     
-    <arg name="database_path" default="/home/rana/.ros/rtabmap.db"/>
+    <arg name="database_path" default="/home/ubuntu/.ros/rtabmap.db"/>
     <arg name="use_sim_time" default="false"/>
     <arg name="frame_id" default="base_footprint"/>
-    <arg name="subscribe_scan" default="true"/>
+    <arg name="imu_topic" default="/imu_mux"/>
+    <arg name="odom_topic" default="/odom"/>
+    <arg name="odom_frame_id" default="odom"/>
+    <arg name="visual_odometry" default="false"/>
+    <arg name="wait_imu_to_init" default="true"/>
+    <arg name="subscribe_scan" default="false"/>
+    <arg name="approx_sync_max_interval" default="0.08"/>
+    <arg name="wait_for_transform" default="0.2"/>
+    <arg name="topic_queue_size" default="2"/>
+    <arg name="sync_queue_size" default="8"/>
+    <arg name="rgbd_decimation" default="1"/>
     <arg name="rtabmap_viz" default="true"/>
     <arg name="rviz" default="true"/>
     
-    <!-- ICP parameters loaded before rtabmap node starts -->
-    <rosparam command="load" file="$(find NavOA_ros)/example/gazebo_limo/config/rtabmap_icp.yaml" ns="rtabmap"/>
+    <rosparam command="load" file="$(find NavOA_ros)/example/gazebo_limo/config/rtabmap_visual_3dof.yaml" ns="rtabmap/rtabmap"/>
+    <rosparam if="$(arg visual_odometry)" command="load" file="$(find NavOA_ros)/example/gazebo_limo/config/rtabmap_rgbd_imu_odometry.yaml" ns="rtabmap/rgbd_odometry"/>
     
     <include file="$(find rtabmap_launch)/launch/rtabmap.launch">
         <arg name="use_sim_time"            value="$(arg use_sim_time)"/>
         <arg name="database_path"           value="$(arg database_path)"/>
         <arg name="frame_id"                value="$(arg frame_id)"/>
         <arg name="map_frame_id"            value="map"/>
-        <arg name="odom_frame_id"           value="odom"/>
+        <arg name="odom_frame_id"           value="$(arg odom_frame_id)"/>
         <arg name="localization"            value="true"/>
-        <arg name="visual_odometry"         value="false"/>
+        <arg name="visual_odometry"         value="$(arg visual_odometry)"/>
         <arg name="publish_tf_map"          value="true"/>
+        <arg name="publish_tf_odom"         value="false"/>
         <arg name="rgb_topic"               value="/ascamera_hp60c/rgb0/image"/>
         <arg name="depth_topic"             value="/ascamera_hp60c/depth0/image_raw"/>
-        <arg name="camera_info_topic"       value="/ascamera_hp60c/rgb0/camera_info"/>
+           <!-- The depth stream must already be registered into the RGB optical frame.
+               The live HP60C stack currently publishes unregistered depth on
+               ascamera_hp60c_depth_0, so camera-side registration must be fixed for
+               stable RGB-D odometry. -->
+           <arg name="camera_info_topic"       value="/ascamera_hp60c/rgb0/camera_info"/>
         <arg name="scan_topic"              value="/merged_scan"/>
-        <arg name="odom_topic"              value="/odom"/>
+        <arg name="odom_topic"              value="$(arg odom_topic)"/>
+        <arg name="vo_frame_id"             value="$(arg odom_frame_id)"/>
+        <arg name="imu_topic"               value="$(arg imu_topic)"/>
+        <arg name="wait_imu_to_init"        value="$(arg wait_imu_to_init)"/>
         <arg name="approx_sync"             value="true"/>
-        <arg name="approx_sync_max_interval"    value="0.5"/>
+        <arg name="approx_sync_max_interval"    value="$(arg approx_sync_max_interval)"/>
         <arg name="depth_scale"                 value="0.001"/>
+        <arg name="rgbd_decimation"             value="$(arg rgbd_decimation)"/>
         <arg name="subscribe_scan"             value="$(arg subscribe_scan)"/>
-        <arg name="wait_for_transform"         value="0.4"/>
-        <arg name="topic_queue_size"           value="10"/>
-        <arg name="sync_queue_size"            value="30"/>
+        <arg name="wait_for_transform"         value="$(arg wait_for_transform)"/>
+        <arg name="topic_queue_size"           value="$(arg topic_queue_size)"/>
+        <arg name="sync_queue_size"            value="$(arg sync_queue_size)"/>
 
         <arg name="rviz"                   value="$(arg rviz)"/>
         <arg name="rtabmap_viz"            value="$(arg rtabmap_viz)"/>

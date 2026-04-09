@@ -1,6 +1,6 @@
 file(REMOVE_RECURSE
-  "/home/rana/Robit_SlamNav/NavOA_ws/devel/.private/lidar_ros/lib/lidar_ros/lidar_client"
-  "/home/rana/Robit_SlamNav/NavOA_ws/devel/.private/lidar_ros/lib/lidar_ros/lidar_client.pdb"
+  "/home/ubuntu/Robit_SlamNav/NavOA_ws/devel/.private/lidar_ros/lib/lidar_ros/lidar_client"
+  "/home/ubuntu/Robit_SlamNav/NavOA_ws/devel/.private/lidar_ros/lib/lidar_ros/lidar_client.pdb"
   "CMakeFiles/lidar_client.dir/ros/src/ros_client.cpp.o"
 )
 

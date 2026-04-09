@@ -43,10 +43,10 @@ RM = /usr/bin/cmake -E remove -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/src
+CMAKE_SOURCE_DIR = /home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/src
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/build
+CMAKE_BINARY_DIR = /home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/build
 
 # Utility rule file for _yahboomcar_msgs_generate_messages_check_deps_PointArray.
 
@@ -54,7 +54,7 @@ CMAKE_BINARY_DIR = /home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/build
 include yahboomcar_msgs/CMakeFiles/_yahboomcar_msgs_generate_messages_check_deps_PointArray.dir/progress.make
 
 yahboomcar_msgs/CMakeFiles/_yahboomcar_msgs_generate_messages_check_deps_PointArray:
-	cd /home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/build/yahboomcar_msgs && ../catkin_generated/env_cached.sh /home/rana/miniconda3/bin/python3 /opt/ros/noetic/share/genmsg/cmake/../../../lib/genmsg/genmsg_check_deps.py yahboomcar_msgs /home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/src/yahboomcar_msgs/msg/PointArray.msg geometry_msgs/Point
+	cd /home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/build/yahboomcar_msgs && ../catkin_generated/env_cached.sh /home/ubuntu/miniconda3/bin/python3 /opt/ros/noetic/share/genmsg/cmake/../../../lib/genmsg/genmsg_check_deps.py yahboomcar_msgs /home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/src/yahboomcar_msgs/msg/PointArray.msg geometry_msgs/Point
 
 _yahboomcar_msgs_generate_messages_check_deps_PointArray: yahboomcar_msgs/CMakeFiles/_yahboomcar_msgs_generate_messages_check_deps_PointArray
 _yahboomcar_msgs_generate_messages_check_deps_PointArray: yahboomcar_msgs/CMakeFiles/_yahboomcar_msgs_generate_messages_check_deps_PointArray.dir/build.make
@@ -67,10 +67,10 @@ yahboomcar_msgs/CMakeFiles/_yahboomcar_msgs_generate_messages_check_deps_PointAr
 .PHONY : yahboomcar_msgs/CMakeFiles/_yahboomcar_msgs_generate_messages_check_deps_PointArray.dir/build
 
 yahboomcar_msgs/CMakeFiles/_yahboomcar_msgs_generate_messages_check_deps_PointArray.dir/clean:
-	cd /home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/build/yahboomcar_msgs && $(CMAKE_COMMAND) -P CMakeFiles/_yahboomcar_msgs_generate_messages_check_deps_PointArray.dir/cmake_clean.cmake
+	cd /home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/build/yahboomcar_msgs && $(CMAKE_COMMAND) -P CMakeFiles/_yahboomcar_msgs_generate_messages_check_deps_PointArray.dir/cmake_clean.cmake
 .PHONY : yahboomcar_msgs/CMakeFiles/_yahboomcar_msgs_generate_messages_check_deps_PointArray.dir/clean
 
 yahboomcar_msgs/CMakeFiles/_yahboomcar_msgs_generate_messages_check_deps_PointArray.dir/depend:
-	cd /home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/build && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/src /home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/src/yahboomcar_msgs /home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/build /home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/build/yahboomcar_msgs /home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/build/yahboomcar_msgs/CMakeFiles/_yahboomcar_msgs_generate_messages_check_deps_PointArray.dir/DependInfo.cmake --color=$(COLOR)
+	cd /home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/build && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/src /home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/src/yahboomcar_msgs /home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/build /home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/build/yahboomcar_msgs /home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/build/yahboomcar_msgs/CMakeFiles/_yahboomcar_msgs_generate_messages_check_deps_PointArray.dir/DependInfo.cmake --color=$(COLOR)
 .PHONY : yahboomcar_msgs/CMakeFiles/_yahboomcar_msgs_generate_messages_check_deps_PointArray.dir/depend
 

@@ -4,7 +4,7 @@ set(CMAKE_DEPENDS_LANGUAGES
   )
 # The set of files for implicit dependencies of each language:
 set(CMAKE_DEPENDS_CHECK_C
-  "/home/rana/Robit_SlamNav/NavOA_ws/src/ydlidar_sdk/examples/lidar_c_api_test.c" "/home/rana/Robit_SlamNav/NavOA_ws/src/ydlidar_sdk/build/examples/CMakeFiles/lidar_c_api_test.dir/lidar_c_api_test.c.o"
+  "/home/ubuntu/Robit_SlamNav/NavOA_ws/src/ydlidar_sdk/examples/lidar_c_api_test.c" "/home/ubuntu/Robit_SlamNav/NavOA_ws/src/ydlidar_sdk/build/examples/CMakeFiles/lidar_c_api_test.dir/lidar_c_api_test.c.o"
   )
 set(CMAKE_C_COMPILER_ID "GNU")
 
@@ -21,7 +21,7 @@ set(CMAKE_C_TARGET_INCLUDE_PATH
 
 # Targets to which this target links.
 set(CMAKE_TARGET_LINKED_INFO_FILES
-  "/home/rana/Robit_SlamNav/NavOA_ws/src/ydlidar_sdk/build/CMakeFiles/ydlidar_sdk.dir/DependInfo.cmake"
+  "/home/ubuntu/Robit_SlamNav/NavOA_ws/src/ydlidar_sdk/build/CMakeFiles/ydlidar_sdk.dir/DependInfo.cmake"
   )
 
 # Fortran module output directory.

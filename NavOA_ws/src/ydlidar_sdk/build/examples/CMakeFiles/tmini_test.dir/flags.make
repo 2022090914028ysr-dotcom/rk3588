@@ -6,5 +6,5 @@ CXX_FLAGS =  -std=c++11   -fPIC -std=c++11
 
 CXX_DEFINES = 
 
-CXX_INCLUDES = -I/home/rana/Robit_SlamNav/NavOA_ws/src/ydlidar_sdk/. -I/home/rana/Robit_SlamNav/NavOA_ws/src/ydlidar_sdk/core -I/home/rana/Robit_SlamNav/NavOA_ws/src/ydlidar_sdk/src -I/home/rana/Robit_SlamNav/NavOA_ws/src/ydlidar_sdk -I/home/rana/Robit_SlamNav/NavOA_ws/src/ydlidar_sdk/.. -I/home/rana/Robit_SlamNav/NavOA_ws/src/ydlidar_sdk/build/examples -I/home/rana/Robit_SlamNav/NavOA_ws/src/ydlidar_sdk/build 
+CXX_INCLUDES = -I/home/ubuntu/Robit_SlamNav/NavOA_ws/src/ydlidar_sdk/. -I/home/ubuntu/Robit_SlamNav/NavOA_ws/src/ydlidar_sdk/core -I/home/ubuntu/Robit_SlamNav/NavOA_ws/src/ydlidar_sdk/src -I/home/ubuntu/Robit_SlamNav/NavOA_ws/src/ydlidar_sdk -I/home/ubuntu/Robit_SlamNav/NavOA_ws/src/ydlidar_sdk/.. -I/home/ubuntu/Robit_SlamNav/NavOA_ws/src/ydlidar_sdk/build/examples -I/home/ubuntu/Robit_SlamNav/NavOA_ws/src/ydlidar_sdk/build 
 

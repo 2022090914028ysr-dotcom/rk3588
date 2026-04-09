@@ -14,7 +14,7 @@
 
   <!-- Add move_base global planning based on a map (map_file arg forwarded) -->
 
-  <!-- <arg name="map_file" default="/home/rana/Robit_SlamNav/NavOA_ws/src/NavOA_ros/example/gazebo_limo/maps/limo_carto.yaml" />
+  <!-- <arg name="map_file" default="/home/ubuntu/Robit_SlamNav/NavOA_ws/src/NavOA_ros/example/gazebo_limo/maps/limo_carto.yaml" />
   <include file="$(find NavOA_ros)/example/gazebo_limo/launch/global_planner.launch">
     <arg name="map_file" value="$(arg map_file)" />
   </include> -->

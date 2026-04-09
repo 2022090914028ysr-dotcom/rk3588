@@ -4,8 +4,8 @@ set(CMAKE_DEPENDS_LANGUAGES
   )
 # The set of files for implicit dependencies of each language:
 set(CMAKE_DEPENDS_CHECK_CXX
-  "/home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/src/astra_tracker/src/KCF_Tracker.cpp" "/home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/build/astra_tracker/CMakeFiles/KCFTracker_node.dir/src/KCF_Tracker.cpp.o"
-  "/home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/src/astra_tracker/src/KCF_Tracker_main.cpp" "/home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/build/astra_tracker/CMakeFiles/KCFTracker_node.dir/src/KCF_Tracker_main.cpp.o"
+  "/home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/src/astra_tracker/src/KCF_Tracker.cpp" "/home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/build/astra_tracker/CMakeFiles/KCFTracker_node.dir/src/KCF_Tracker.cpp.o"
+  "/home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/src/astra_tracker/src/KCF_Tracker_main.cpp" "/home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/build/astra_tracker/CMakeFiles/KCFTracker_node.dir/src/KCF_Tracker_main.cpp.o"
   )
 set(CMAKE_CXX_COMPILER_ID "GNU")
 
@@ -18,8 +18,8 @@ set(CMAKE_TARGET_DEFINITIONS_CXX
 
 # The include file search paths:
 set(CMAKE_CXX_TARGET_INCLUDE_PATH
-  "/home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/devel/include"
-  "/home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/src/astra_tracker/include/astra_tracker"
+  "/home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/devel/include"
+  "/home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/src/astra_tracker/include/astra_tracker"
   "/opt/ros/noetic/include"
   "/opt/ros/noetic/share/xmlrpcpp/cmake/../../../include/xmlrpcpp"
   "/usr/include/opencv4"
@@ -27,7 +27,7 @@ set(CMAKE_CXX_TARGET_INCLUDE_PATH
 
 # Targets to which this target links.
 set(CMAKE_TARGET_LINKED_INFO_FILES
-  "/home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/build/astra_tracker/include/astra_tracker/CMakeFiles/kcftracker.dir/DependInfo.cmake"
+  "/home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/build/astra_tracker/include/astra_tracker/CMakeFiles/kcftracker.dir/DependInfo.cmake"
   )
 
 # Fortran module output directory.

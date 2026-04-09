@@ -1,8 +1,8 @@
-# Install script for directory: /home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/src/yahboomcar_msgs
+# Install script for directory: /home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/src/yahboomcar_msgs
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
-  set(CMAKE_INSTALL_PREFIX "/home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/install")
+  set(CMAKE_INSTALL_PREFIX "/home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/install")
 endif()
 string(REGEX REPLACE "/$" "" CMAKE_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}")
 
@@ -38,53 +38,53 @@ if(NOT DEFINED CMAKE_CROSSCOMPILING)
 endif()
 
 if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
-  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/yahboomcar_msgs/msg" TYPE FILE FILES "/home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/src/yahboomcar_msgs/msg/PointArray.msg")
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/yahboomcar_msgs/msg" TYPE FILE FILES "/home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/src/yahboomcar_msgs/msg/PointArray.msg")
 endif()
 
 if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
-  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/yahboomcar_msgs/cmake" TYPE FILE FILES "/home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/build/yahboomcar_msgs/catkin_generated/installspace/yahboomcar_msgs-msg-paths.cmake")
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/yahboomcar_msgs/cmake" TYPE FILE FILES "/home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/build/yahboomcar_msgs/catkin_generated/installspace/yahboomcar_msgs-msg-paths.cmake")
 endif()
 
 if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
-  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/include" TYPE DIRECTORY FILES "/home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/devel/include/yahboomcar_msgs")
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/include" TYPE DIRECTORY FILES "/home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/devel/include/yahboomcar_msgs")
 endif()
 
 if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
-  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/roseus/ros" TYPE DIRECTORY FILES "/home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/devel/share/roseus/ros/yahboomcar_msgs")
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/roseus/ros" TYPE DIRECTORY FILES "/home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/devel/share/roseus/ros/yahboomcar_msgs")
 endif()
 
 if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
-  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/common-lisp/ros" TYPE DIRECTORY FILES "/home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/devel/share/common-lisp/ros/yahboomcar_msgs")
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/common-lisp/ros" TYPE DIRECTORY FILES "/home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/devel/share/common-lisp/ros/yahboomcar_msgs")
 endif()
 
 if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
-  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/gennodejs/ros" TYPE DIRECTORY FILES "/home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/devel/share/gennodejs/ros/yahboomcar_msgs")
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/gennodejs/ros" TYPE DIRECTORY FILES "/home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/devel/share/gennodejs/ros/yahboomcar_msgs")
 endif()
 
 if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
-  execute_process(COMMAND "/home/rana/miniconda3/bin/python3" -m compileall "/home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/devel/lib/python3/dist-packages/yahboomcar_msgs")
+  execute_process(COMMAND "/home/ubuntu/miniconda3/bin/python3" -m compileall "/home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/devel/lib/python3/dist-packages/yahboomcar_msgs")
 endif()
 
 if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
-  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib/python3/dist-packages" TYPE DIRECTORY FILES "/home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/devel/lib/python3/dist-packages/yahboomcar_msgs")
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib/python3/dist-packages" TYPE DIRECTORY FILES "/home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/devel/lib/python3/dist-packages/yahboomcar_msgs")
 endif()
 
 if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
-  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib/pkgconfig" TYPE FILE FILES "/home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/build/yahboomcar_msgs/catkin_generated/installspace/yahboomcar_msgs.pc")
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib/pkgconfig" TYPE FILE FILES "/home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/build/yahboomcar_msgs/catkin_generated/installspace/yahboomcar_msgs.pc")
 endif()
 
 if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
-  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/yahboomcar_msgs/cmake" TYPE FILE FILES "/home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/build/yahboomcar_msgs/catkin_generated/installspace/yahboomcar_msgs-msg-extras.cmake")
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/yahboomcar_msgs/cmake" TYPE FILE FILES "/home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/build/yahboomcar_msgs/catkin_generated/installspace/yahboomcar_msgs-msg-extras.cmake")
 endif()
 
 if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
   file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/yahboomcar_msgs/cmake" TYPE FILE FILES
-    "/home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/build/yahboomcar_msgs/catkin_generated/installspace/yahboomcar_msgsConfig.cmake"
-    "/home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/build/yahboomcar_msgs/catkin_generated/installspace/yahboomcar_msgsConfig-version.cmake"
+    "/home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/build/yahboomcar_msgs/catkin_generated/installspace/yahboomcar_msgsConfig.cmake"
+    "/home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/build/yahboomcar_msgs/catkin_generated/installspace/yahboomcar_msgsConfig-version.cmake"
     )
 endif()
 
 if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
-  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/yahboomcar_msgs" TYPE FILE FILES "/home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/src/yahboomcar_msgs/package.xml")
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/yahboomcar_msgs" TYPE FILE FILES "/home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/src/yahboomcar_msgs/package.xml")
 endif()
 

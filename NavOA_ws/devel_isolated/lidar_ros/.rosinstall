@@ -1,2 +1,2 @@
 - setup-file:
-    local-name: /home/rana/Robit_SlamNav/NavOA_ws/devel_isolated/lidar_ros/setup.sh
+    local-name: /home/ubuntu/Robit_SlamNav/NavOA_ws/devel_isolated/lidar_ros/setup.sh

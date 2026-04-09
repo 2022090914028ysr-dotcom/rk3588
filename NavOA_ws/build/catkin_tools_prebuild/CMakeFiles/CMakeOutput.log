@@ -10,7 +10,7 @@ The output was:
 
 Compilation of the C compiler identification source "CMakeCCompilerId.c" produced "a.out"
 
-The C compiler identification is GNU, found in "/home/rana/Robit_SlamNav/NavOA_ws/build/catkin_tools_prebuild/CMakeFiles/3.16.3/CompilerIdC/a.out"
+The C compiler identification is GNU, found in "/home/ubuntu/Robit_SlamNav/NavOA_ws/build/catkin_tools_prebuild/CMakeFiles/3.16.3/CompilerIdC/a.out"
 
 Compiling the CXX compiler identification source file "CMakeCXXCompilerId.cpp" succeeded.
 Compiler: /usr/bin/c++ 
@@ -23,27 +23,27 @@ The output was:
 
 Compilation of the CXX compiler identification source "CMakeCXXCompilerId.cpp" produced "a.out"
 
-The CXX compiler identification is GNU, found in "/home/rana/Robit_SlamNav/NavOA_ws/build/catkin_tools_prebuild/CMakeFiles/3.16.3/CompilerIdCXX/a.out"
+The CXX compiler identification is GNU, found in "/home/ubuntu/Robit_SlamNav/NavOA_ws/build/catkin_tools_prebuild/CMakeFiles/3.16.3/CompilerIdCXX/a.out"
 
 Determining if the C compiler works passed with the following output:
-Change Dir: /home/rana/Robit_SlamNav/NavOA_ws/build/catkin_tools_prebuild/CMakeFiles/CMakeTmp
+Change Dir: /home/ubuntu/Robit_SlamNav/NavOA_ws/build/catkin_tools_prebuild/CMakeFiles/CMakeTmp
 
 Run Build Command(s):/usr/bin/make cmTC_7fa7e/fast && /usr/bin/make -f CMakeFiles/cmTC_7fa7e.dir/build.make CMakeFiles/cmTC_7fa7e.dir/build
-make[1]: Entering directory '/home/rana/Robit_SlamNav/NavOA_ws/build/catkin_tools_prebuild/CMakeFiles/CMakeTmp'
+make[1]: Entering directory '/home/ubuntu/Robit_SlamNav/NavOA_ws/build/catkin_tools_prebuild/CMakeFiles/CMakeTmp'
 Building C object CMakeFiles/cmTC_7fa7e.dir/testCCompiler.c.o
-/usr/bin/cc    -o CMakeFiles/cmTC_7fa7e.dir/testCCompiler.c.o   -c /home/rana/Robit_SlamNav/NavOA_ws/build/catkin_tools_prebuild/CMakeFiles/CMakeTmp/testCCompiler.c
+/usr/bin/cc    -o CMakeFiles/cmTC_7fa7e.dir/testCCompiler.c.o   -c /home/ubuntu/Robit_SlamNav/NavOA_ws/build/catkin_tools_prebuild/CMakeFiles/CMakeTmp/testCCompiler.c
 Linking C executable cmTC_7fa7e
 /usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_7fa7e.dir/link.txt --verbose=1
 /usr/bin/cc      CMakeFiles/cmTC_7fa7e.dir/testCCompiler.c.o  -o cmTC_7fa7e 
-make[1]: Leaving directory '/home/rana/Robit_SlamNav/NavOA_ws/build/catkin_tools_prebuild/CMakeFiles/CMakeTmp'
+make[1]: Leaving directory '/home/ubuntu/Robit_SlamNav/NavOA_ws/build/catkin_tools_prebuild/CMakeFiles/CMakeTmp'
 
 
 
 Detecting C compiler ABI info compiled with the following output:
-Change Dir: /home/rana/Robit_SlamNav/NavOA_ws/build/catkin_tools_prebuild/CMakeFiles/CMakeTmp
+Change Dir: /home/ubuntu/Robit_SlamNav/NavOA_ws/build/catkin_tools_prebuild/CMakeFiles/CMakeTmp
 
 Run Build Command(s):/usr/bin/make cmTC_ebccf/fast && /usr/bin/make -f CMakeFiles/cmTC_ebccf.dir/build.make CMakeFiles/cmTC_ebccf.dir/build
-make[1]: Entering directory '/home/rana/Robit_SlamNav/NavOA_ws/build/catkin_tools_prebuild/CMakeFiles/CMakeTmp'
+make[1]: Entering directory '/home/ubuntu/Robit_SlamNav/NavOA_ws/build/catkin_tools_prebuild/CMakeFiles/CMakeTmp'
 Building C object CMakeFiles/cmTC_ebccf.dir/CMakeCCompilerABI.c.o
 /usr/bin/cc   -v -o CMakeFiles/cmTC_ebccf.dir/CMakeCCompilerABI.c.o   -c /usr/share/cmake-3.16/Modules/CMakeCCompilerABI.c
 Using built-in specs.
@@ -100,7 +100,7 @@ LIBRARY_PATH=/usr/lib/gcc/x86_64-linux-gnu/11/:/usr/lib/gcc/x86_64-linux-gnu/11/
 COLLECT_GCC_OPTIONS='-v' '-o' 'cmTC_ebccf' '-mtune=generic' '-march=x86-64' '-dumpdir' 'cmTC_ebccf.'
  /usr/lib/gcc/x86_64-linux-gnu/11/collect2 -plugin /usr/lib/gcc/x86_64-linux-gnu/11/liblto_plugin.so -plugin-opt=/usr/lib/gcc/x86_64-linux-gnu/11/lto-wrapper -plugin-opt=-fresolution=/tmp/cc2lFxtr.res -plugin-opt=-pass-through=-lgcc -plugin-opt=-pass-through=-lgcc_s -plugin-opt=-pass-through=-lc -plugin-opt=-pass-through=-lgcc -plugin-opt=-pass-through=-lgcc_s --build-id --eh-frame-hdr -m elf_x86_64 --hash-style=gnu --as-needed -dynamic-linker /lib64/ld-linux-x86-64.so.2 -pie -z now -z relro -o cmTC_ebccf /usr/lib/gcc/x86_64-linux-gnu/11/../../../x86_64-linux-gnu/Scrt1.o /usr/lib/gcc/x86_64-linux-gnu/11/../../../x86_64-linux-gnu/crti.o /usr/lib/gcc/x86_64-linux-gnu/11/crtbeginS.o -L/usr/lib/gcc/x86_64-linux-gnu/11 -L/usr/lib/gcc/x86_64-linux-gnu/11/../../../x86_64-linux-gnu -L/usr/lib/gcc/x86_64-linux-gnu/11/../../../../lib -L/lib/x86_64-linux-gnu -L/lib/../lib -L/usr/lib/x86_64-linux-gnu -L/usr/lib/../lib -L/usr/lib/gcc/x86_64-linux-gnu/11/../../.. CMakeFiles/cmTC_ebccf.dir/CMakeCCompilerABI.c.o -lgcc --push-state --as-needed -lgcc_s --pop-state -lc -lgcc --push-state --as-needed -lgcc_s --pop-state /usr/lib/gcc/x86_64-linux-gnu/11/crtendS.o /usr/lib/gcc/x86_64-linux-gnu/11/../../../x86_64-linux-gnu/crtn.o
 COLLECT_GCC_OPTIONS='-v' '-o' 'cmTC_ebccf' '-mtune=generic' '-march=x86-64' '-dumpdir' 'cmTC_ebccf.'
-make[1]: Leaving directory '/home/rana/Robit_SlamNav/NavOA_ws/build/catkin_tools_prebuild/CMakeFiles/CMakeTmp'
+make[1]: Leaving directory '/home/ubuntu/Robit_SlamNav/NavOA_ws/build/catkin_tools_prebuild/CMakeFiles/CMakeTmp'
 
 
 
@@ -121,10 +121,10 @@ Parsed C implicit include dir info from above output: rv=done
 
 Parsed C implicit link information from above output:
   link line regex: [^( *|.*[/\])(ld|CMAKE_LINK_STARTFILE-NOTFOUND|([^/\]+-)?ld|collect2)[^/\]*( |$)]
-  ignore line: [Change Dir: /home/rana/Robit_SlamNav/NavOA_ws/build/catkin_tools_prebuild/CMakeFiles/CMakeTmp]
+  ignore line: [Change Dir: /home/ubuntu/Robit_SlamNav/NavOA_ws/build/catkin_tools_prebuild/CMakeFiles/CMakeTmp]
   ignore line: []
   ignore line: [Run Build Command(s):/usr/bin/make cmTC_ebccf/fast && /usr/bin/make -f CMakeFiles/cmTC_ebccf.dir/build.make CMakeFiles/cmTC_ebccf.dir/build]
-  ignore line: [make[1]: Entering directory '/home/rana/Robit_SlamNav/NavOA_ws/build/catkin_tools_prebuild/CMakeFiles/CMakeTmp']
+  ignore line: [make[1]: Entering directory '/home/ubuntu/Robit_SlamNav/NavOA_ws/build/catkin_tools_prebuild/CMakeFiles/CMakeTmp']
   ignore line: [Building C object CMakeFiles/cmTC_ebccf.dir/CMakeCCompilerABI.c.o]
   ignore line: [/usr/bin/cc   -v -o CMakeFiles/cmTC_ebccf.dir/CMakeCCompilerABI.c.o   -c /usr/share/cmake-3.16/Modules/CMakeCCompilerABI.c]
   ignore line: [Using built-in specs.]
@@ -242,24 +242,24 @@ Parsed C implicit link information from above output:
 
 
 Determining if the CXX compiler works passed with the following output:
-Change Dir: /home/rana/Robit_SlamNav/NavOA_ws/build/catkin_tools_prebuild/CMakeFiles/CMakeTmp
+Change Dir: /home/ubuntu/Robit_SlamNav/NavOA_ws/build/catkin_tools_prebuild/CMakeFiles/CMakeTmp
 
 Run Build Command(s):/usr/bin/make cmTC_96e17/fast && /usr/bin/make -f CMakeFiles/cmTC_96e17.dir/build.make CMakeFiles/cmTC_96e17.dir/build
-make[1]: Entering directory '/home/rana/Robit_SlamNav/NavOA_ws/build/catkin_tools_prebuild/CMakeFiles/CMakeTmp'
+make[1]: Entering directory '/home/ubuntu/Robit_SlamNav/NavOA_ws/build/catkin_tools_prebuild/CMakeFiles/CMakeTmp'
 Building CXX object CMakeFiles/cmTC_96e17.dir/testCXXCompiler.cxx.o
-/usr/bin/c++     -o CMakeFiles/cmTC_96e17.dir/testCXXCompiler.cxx.o -c /home/rana/Robit_SlamNav/NavOA_ws/build/catkin_tools_prebuild/CMakeFiles/CMakeTmp/testCXXCompiler.cxx
+/usr/bin/c++     -o CMakeFiles/cmTC_96e17.dir/testCXXCompiler.cxx.o -c /home/ubuntu/Robit_SlamNav/NavOA_ws/build/catkin_tools_prebuild/CMakeFiles/CMakeTmp/testCXXCompiler.cxx
 Linking CXX executable cmTC_96e17
 /usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_96e17.dir/link.txt --verbose=1
 /usr/bin/c++       CMakeFiles/cmTC_96e17.dir/testCXXCompiler.cxx.o  -o cmTC_96e17 
-make[1]: Leaving directory '/home/rana/Robit_SlamNav/NavOA_ws/build/catkin_tools_prebuild/CMakeFiles/CMakeTmp'
+make[1]: Leaving directory '/home/ubuntu/Robit_SlamNav/NavOA_ws/build/catkin_tools_prebuild/CMakeFiles/CMakeTmp'
 
 
 
 Detecting CXX compiler ABI info compiled with the following output:
-Change Dir: /home/rana/Robit_SlamNav/NavOA_ws/build/catkin_tools_prebuild/CMakeFiles/CMakeTmp
+Change Dir: /home/ubuntu/Robit_SlamNav/NavOA_ws/build/catkin_tools_prebuild/CMakeFiles/CMakeTmp
 
 Run Build Command(s):/usr/bin/make cmTC_7ba6a/fast && /usr/bin/make -f CMakeFiles/cmTC_7ba6a.dir/build.make CMakeFiles/cmTC_7ba6a.dir/build
-make[1]: Entering directory '/home/rana/Robit_SlamNav/NavOA_ws/build/catkin_tools_prebuild/CMakeFiles/CMakeTmp'
+make[1]: Entering directory '/home/ubuntu/Robit_SlamNav/NavOA_ws/build/catkin_tools_prebuild/CMakeFiles/CMakeTmp'
 Building CXX object CMakeFiles/cmTC_7ba6a.dir/CMakeCXXCompilerABI.cpp.o
 /usr/bin/c++    -v -o CMakeFiles/cmTC_7ba6a.dir/CMakeCXXCompilerABI.cpp.o -c /usr/share/cmake-3.16/Modules/CMakeCXXCompilerABI.cpp
 Using built-in specs.
@@ -320,7 +320,7 @@ LIBRARY_PATH=/usr/lib/gcc/x86_64-linux-gnu/11/:/usr/lib/gcc/x86_64-linux-gnu/11/
 COLLECT_GCC_OPTIONS='-v' '-o' 'cmTC_7ba6a' '-shared-libgcc' '-mtune=generic' '-march=x86-64' '-dumpdir' 'cmTC_7ba6a.'
  /usr/lib/gcc/x86_64-linux-gnu/11/collect2 -plugin /usr/lib/gcc/x86_64-linux-gnu/11/liblto_plugin.so -plugin-opt=/usr/lib/gcc/x86_64-linux-gnu/11/lto-wrapper -plugin-opt=-fresolution=/tmp/ccQdWFhq.res -plugin-opt=-pass-through=-lgcc_s -plugin-opt=-pass-through=-lgcc -plugin-opt=-pass-through=-lc -plugin-opt=-pass-through=-lgcc_s -plugin-opt=-pass-through=-lgcc --build-id --eh-frame-hdr -m elf_x86_64 --hash-style=gnu --as-needed -dynamic-linker /lib64/ld-linux-x86-64.so.2 -pie -z now -z relro -o cmTC_7ba6a /usr/lib/gcc/x86_64-linux-gnu/11/../../../x86_64-linux-gnu/Scrt1.o /usr/lib/gcc/x86_64-linux-gnu/11/../../../x86_64-linux-gnu/crti.o /usr/lib/gcc/x86_64-linux-gnu/11/crtbeginS.o -L/usr/lib/gcc/x86_64-linux-gnu/11 -L/usr/lib/gcc/x86_64-linux-gnu/11/../../../x86_64-linux-gnu -L/usr/lib/gcc/x86_64-linux-gnu/11/../../../../lib -L/lib/x86_64-linux-gnu -L/lib/../lib -L/usr/lib/x86_64-linux-gnu -L/usr/lib/../lib -L/usr/lib/gcc/x86_64-linux-gnu/11/../../.. CMakeFiles/cmTC_7ba6a.dir/CMakeCXXCompilerABI.cpp.o -lstdc++ -lm -lgcc_s -lgcc -lc -lgcc_s -lgcc /usr/lib/gcc/x86_64-linux-gnu/11/crtendS.o /usr/lib/gcc/x86_64-linux-gnu/11/../../../x86_64-linux-gnu/crtn.o
 COLLECT_GCC_OPTIONS='-v' '-o' 'cmTC_7ba6a' '-shared-libgcc' '-mtune=generic' '-march=x86-64' '-dumpdir' 'cmTC_7ba6a.'
-make[1]: Leaving directory '/home/rana/Robit_SlamNav/NavOA_ws/build/catkin_tools_prebuild/CMakeFiles/CMakeTmp'
+make[1]: Leaving directory '/home/ubuntu/Robit_SlamNav/NavOA_ws/build/catkin_tools_prebuild/CMakeFiles/CMakeTmp'
 
 
 
@@ -347,10 +347,10 @@ Parsed CXX implicit include dir info from above output: rv=done
 
 Parsed CXX implicit link information from above output:
   link line regex: [^( *|.*[/\])(ld|CMAKE_LINK_STARTFILE-NOTFOUND|([^/\]+-)?ld|collect2)[^/\]*( |$)]
-  ignore line: [Change Dir: /home/rana/Robit_SlamNav/NavOA_ws/build/catkin_tools_prebuild/CMakeFiles/CMakeTmp]
+  ignore line: [Change Dir: /home/ubuntu/Robit_SlamNav/NavOA_ws/build/catkin_tools_prebuild/CMakeFiles/CMakeTmp]
   ignore line: []
   ignore line: [Run Build Command(s):/usr/bin/make cmTC_7ba6a/fast && /usr/bin/make -f CMakeFiles/cmTC_7ba6a.dir/build.make CMakeFiles/cmTC_7ba6a.dir/build]
-  ignore line: [make[1]: Entering directory '/home/rana/Robit_SlamNav/NavOA_ws/build/catkin_tools_prebuild/CMakeFiles/CMakeTmp']
+  ignore line: [make[1]: Entering directory '/home/ubuntu/Robit_SlamNav/NavOA_ws/build/catkin_tools_prebuild/CMakeFiles/CMakeTmp']
   ignore line: [Building CXX object CMakeFiles/cmTC_7ba6a.dir/CMakeCXXCompilerABI.cpp.o]
   ignore line: [/usr/bin/c++    -v -o CMakeFiles/cmTC_7ba6a.dir/CMakeCXXCompilerABI.cpp.o -c /usr/share/cmake-3.16/Modules/CMakeCXXCompilerABI.cpp]
   ignore line: [Using built-in specs.]
@@ -468,30 +468,30 @@ Parsed CXX implicit link information from above output:
 
 
 Determining if the include file pthread.h exists passed with the following output:
-Change Dir: /home/rana/Robit_SlamNav/NavOA_ws/build/catkin_tools_prebuild/CMakeFiles/CMakeTmp
+Change Dir: /home/ubuntu/Robit_SlamNav/NavOA_ws/build/catkin_tools_prebuild/CMakeFiles/CMakeTmp
 
 Run Build Command(s):/usr/bin/make cmTC_4f769/fast && /usr/bin/make -f CMakeFiles/cmTC_4f769.dir/build.make CMakeFiles/cmTC_4f769.dir/build
-make[1]: Entering directory '/home/rana/Robit_SlamNav/NavOA_ws/build/catkin_tools_prebuild/CMakeFiles/CMakeTmp'
+make[1]: Entering directory '/home/ubuntu/Robit_SlamNav/NavOA_ws/build/catkin_tools_prebuild/CMakeFiles/CMakeTmp'
 Building C object CMakeFiles/cmTC_4f769.dir/CheckIncludeFile.c.o
-/usr/bin/cc    -o CMakeFiles/cmTC_4f769.dir/CheckIncludeFile.c.o   -c /home/rana/Robit_SlamNav/NavOA_ws/build/catkin_tools_prebuild/CMakeFiles/CMakeTmp/CheckIncludeFile.c
+/usr/bin/cc    -o CMakeFiles/cmTC_4f769.dir/CheckIncludeFile.c.o   -c /home/ubuntu/Robit_SlamNav/NavOA_ws/build/catkin_tools_prebuild/CMakeFiles/CMakeTmp/CheckIncludeFile.c
 Linking C executable cmTC_4f769
 /usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_4f769.dir/link.txt --verbose=1
 /usr/bin/cc      CMakeFiles/cmTC_4f769.dir/CheckIncludeFile.c.o  -o cmTC_4f769 
-make[1]: Leaving directory '/home/rana/Robit_SlamNav/NavOA_ws/build/catkin_tools_prebuild/CMakeFiles/CMakeTmp'
+make[1]: Leaving directory '/home/ubuntu/Robit_SlamNav/NavOA_ws/build/catkin_tools_prebuild/CMakeFiles/CMakeTmp'
 
 
 
 Determining if the function pthread_create exists in the pthread passed with the following output:
-Change Dir: /home/rana/Robit_SlamNav/NavOA_ws/build/catkin_tools_prebuild/CMakeFiles/CMakeTmp
+Change Dir: /home/ubuntu/Robit_SlamNav/NavOA_ws/build/catkin_tools_prebuild/CMakeFiles/CMakeTmp
 
 Run Build Command(s):/usr/bin/make cmTC_4b503/fast && /usr/bin/make -f CMakeFiles/cmTC_4b503.dir/build.make CMakeFiles/cmTC_4b503.dir/build
-make[1]: Entering directory '/home/rana/Robit_SlamNav/NavOA_ws/build/catkin_tools_prebuild/CMakeFiles/CMakeTmp'
+make[1]: Entering directory '/home/ubuntu/Robit_SlamNav/NavOA_ws/build/catkin_tools_prebuild/CMakeFiles/CMakeTmp'
 Building C object CMakeFiles/cmTC_4b503.dir/CheckFunctionExists.c.o
 /usr/bin/cc   -DCHECK_FUNCTION_EXISTS=pthread_create   -o CMakeFiles/cmTC_4b503.dir/CheckFunctionExists.c.o   -c /usr/share/cmake-3.16/Modules/CheckFunctionExists.c
 Linking C executable cmTC_4b503
 /usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_4b503.dir/link.txt --verbose=1
 /usr/bin/cc  -DCHECK_FUNCTION_EXISTS=pthread_create    CMakeFiles/cmTC_4b503.dir/CheckFunctionExists.c.o  -o cmTC_4b503  -lpthread 
-make[1]: Leaving directory '/home/rana/Robit_SlamNav/NavOA_ws/build/catkin_tools_prebuild/CMakeFiles/CMakeTmp'
+make[1]: Leaving directory '/home/ubuntu/Robit_SlamNav/NavOA_ws/build/catkin_tools_prebuild/CMakeFiles/CMakeTmp'
 
 
 

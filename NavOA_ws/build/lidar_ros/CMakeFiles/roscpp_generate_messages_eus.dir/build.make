@@ -43,10 +43,10 @@ RM = /usr/bin/cmake -E remove -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/rana/Robit_SlamNav/NavOA_ws/src/lidar_ros
+CMAKE_SOURCE_DIR = /home/ubuntu/Robit_SlamNav/NavOA_ws/src/lidar_ros
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/rana/Robit_SlamNav/NavOA_ws/build/lidar_ros
+CMAKE_BINARY_DIR = /home/ubuntu/Robit_SlamNav/NavOA_ws/build/lidar_ros
 
 # Utility rule file for roscpp_generate_messages_eus.
 
@@ -67,6 +67,6 @@ CMakeFiles/roscpp_generate_messages_eus.dir/clean:
 .PHONY : CMakeFiles/roscpp_generate_messages_eus.dir/clean
 
 CMakeFiles/roscpp_generate_messages_eus.dir/depend:
-	cd /home/rana/Robit_SlamNav/NavOA_ws/build/lidar_ros && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/rana/Robit_SlamNav/NavOA_ws/src/lidar_ros /home/rana/Robit_SlamNav/NavOA_ws/src/lidar_ros /home/rana/Robit_SlamNav/NavOA_ws/build/lidar_ros /home/rana/Robit_SlamNav/NavOA_ws/build/lidar_ros /home/rana/Robit_SlamNav/NavOA_ws/build/lidar_ros/CMakeFiles/roscpp_generate_messages_eus.dir/DependInfo.cmake --color=$(COLOR)
+	cd /home/ubuntu/Robit_SlamNav/NavOA_ws/build/lidar_ros && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/ubuntu/Robit_SlamNav/NavOA_ws/src/lidar_ros /home/ubuntu/Robit_SlamNav/NavOA_ws/src/lidar_ros /home/ubuntu/Robit_SlamNav/NavOA_ws/build/lidar_ros /home/ubuntu/Robit_SlamNav/NavOA_ws/build/lidar_ros /home/ubuntu/Robit_SlamNav/NavOA_ws/build/lidar_ros/CMakeFiles/roscpp_generate_messages_eus.dir/DependInfo.cmake --color=$(COLOR)
 .PHONY : CMakeFiles/roscpp_generate_messages_eus.dir/depend
 

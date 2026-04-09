@@ -6,7 +6,7 @@
 
 #IncludeRegexTransform: 
 
-/home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/src/ascam_visual/src/pointCloud_visualize.cpp
+/home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/src/ascam_visual/src/pointCloud_visualize.cpp
 iostream
 -
 ros/ros.h

@@ -6,7 +6,7 @@ library_paths = [
     '/usr/lib',
     '/usr/lib64',
     '/usr/local/lib',
-    '/home/rana/miniforge/envs/control/lib',
+    '/home/ubuntu/miniforge/envs/control/lib',
 ]
 
 for path in library_paths:
@@ -25,7 +25,7 @@ rknn = RKNNLite()
 print("RKNNLite instance created")
 
 # Load model
-model_path = '/home/rana/Robit_SlamNav/NavOA_ws/src/NavOA_ros/example/gazebo_limo/pretrain_limo/model_5000_quant.rknn'
+model_path = '/home/ubuntu/Robit_SlamNav/NavOA_ws/src/NavOA_ros/example/gazebo_limo/pretrain_limo/model_5000_quant.rknn'
 ret = rknn.load_rknn(model_path)
 print(f"load_rknn returned: {ret}")
 

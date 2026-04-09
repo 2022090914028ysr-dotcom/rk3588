@@ -6,5 +6,5 @@ CXX_FLAGS =   -std=gnu++11
 
 CXX_DEFINES = -DROSCONSOLE_BACKEND_LOG4CXX -DROS_BUILD_SHARED_LIBS=1 -DROS_PACKAGE_NAME=\"lidar_ros\"
 
-CXX_INCLUDES = -I/opt/ros/noetic/include -I/opt/ros/noetic/share/xmlrpcpp/cmake/../../../include/xmlrpcpp -I/home/rana/Robit_SlamNav/NavOA_ws/src/lidar_ros/sdk/include -I/home/rana/Robit_SlamNav/NavOA_ws/src/lidar_ros/ros/include 
+CXX_INCLUDES = -I/opt/ros/noetic/include -I/opt/ros/noetic/share/xmlrpcpp/cmake/../../../include/xmlrpcpp -I/home/ubuntu/Robit_SlamNav/NavOA_ws/src/lidar_ros/sdk/include -I/home/ubuntu/Robit_SlamNav/NavOA_ws/src/lidar_ros/ros/include 
 

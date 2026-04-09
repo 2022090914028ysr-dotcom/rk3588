@@ -16,5 +16,5 @@ examples/CMakeFiles/gs_ota.dir/gs_ota.cpp.o
  ../core/common/ydlidar_help.h
  ../core/common/ydlidar_protocol.h
  ../src/CYdLidar.h
- /home/rana/Robit_SlamNav/NavOA_ws/src/ydlidar_sdk/examples/gs_ota.cpp
+ /home/ubuntu/Robit_SlamNav/NavOA_ws/src/ydlidar_sdk/examples/gs_ota.cpp
  ydlidar_config.h

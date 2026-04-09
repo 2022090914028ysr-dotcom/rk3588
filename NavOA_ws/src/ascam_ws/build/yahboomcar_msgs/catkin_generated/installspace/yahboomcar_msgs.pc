@@ -1,4 +1,4 @@
-prefix=/home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/install
+prefix=/home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/install
 
 Name: yahboomcar_msgs
 Description: Description of yahboomcar_msgs

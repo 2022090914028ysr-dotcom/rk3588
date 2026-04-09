@@ -1,8 +1,8 @@
-# Install script for directory: /home/rana/Robit_SlamNav/NavOA_ws/src/lidar_ros
+# Install script for directory: /home/ubuntu/Robit_SlamNav/NavOA_ws/src/lidar_ros
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
-  set(CMAKE_INSTALL_PREFIX "/home/rana/Robit_SlamNav/NavOA_ws/install")
+  set(CMAKE_INSTALL_PREFIX "/home/ubuntu/Robit_SlamNav/NavOA_ws/install")
 endif()
 string(REGEX REPLACE "/$" "" CMAKE_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}")
 
@@ -49,113 +49,113 @@ endif()
 
 if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
   list(APPEND CMAKE_ABSOLUTE_DESTINATION_FILES
-   "/home/rana/Robit_SlamNav/NavOA_ws/install/_setup_util.py")
+   "/home/ubuntu/Robit_SlamNav/NavOA_ws/install/_setup_util.py")
   if(CMAKE_WARN_ON_ABSOLUTE_INSTALL_DESTINATION)
     message(WARNING "ABSOLUTE path INSTALL DESTINATION : ${CMAKE_ABSOLUTE_DESTINATION_FILES}")
   endif()
   if(CMAKE_ERROR_ON_ABSOLUTE_INSTALL_DESTINATION)
     message(FATAL_ERROR "ABSOLUTE path INSTALL DESTINATION forbidden (by caller): ${CMAKE_ABSOLUTE_DESTINATION_FILES}")
   endif()
-file(INSTALL DESTINATION "/home/rana/Robit_SlamNav/NavOA_ws/install" TYPE PROGRAM FILES "/home/rana/Robit_SlamNav/NavOA_ws/build/lidar_ros/catkin_generated/installspace/_setup_util.py")
+file(INSTALL DESTINATION "/home/ubuntu/Robit_SlamNav/NavOA_ws/install" TYPE PROGRAM FILES "/home/ubuntu/Robit_SlamNav/NavOA_ws/build/lidar_ros/catkin_generated/installspace/_setup_util.py")
 endif()
 
 if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
   list(APPEND CMAKE_ABSOLUTE_DESTINATION_FILES
-   "/home/rana/Robit_SlamNav/NavOA_ws/install/env.sh")
+   "/home/ubuntu/Robit_SlamNav/NavOA_ws/install/env.sh")
   if(CMAKE_WARN_ON_ABSOLUTE_INSTALL_DESTINATION)
     message(WARNING "ABSOLUTE path INSTALL DESTINATION : ${CMAKE_ABSOLUTE_DESTINATION_FILES}")
   endif()
   if(CMAKE_ERROR_ON_ABSOLUTE_INSTALL_DESTINATION)
     message(FATAL_ERROR "ABSOLUTE path INSTALL DESTINATION forbidden (by caller): ${CMAKE_ABSOLUTE_DESTINATION_FILES}")
   endif()
-file(INSTALL DESTINATION "/home/rana/Robit_SlamNav/NavOA_ws/install" TYPE PROGRAM FILES "/home/rana/Robit_SlamNav/NavOA_ws/build/lidar_ros/catkin_generated/installspace/env.sh")
+file(INSTALL DESTINATION "/home/ubuntu/Robit_SlamNav/NavOA_ws/install" TYPE PROGRAM FILES "/home/ubuntu/Robit_SlamNav/NavOA_ws/build/lidar_ros/catkin_generated/installspace/env.sh")
 endif()
 
 if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
   list(APPEND CMAKE_ABSOLUTE_DESTINATION_FILES
-   "/home/rana/Robit_SlamNav/NavOA_ws/install/setup.bash;/home/rana/Robit_SlamNav/NavOA_ws/install/local_setup.bash")
+   "/home/ubuntu/Robit_SlamNav/NavOA_ws/install/setup.bash;/home/ubuntu/Robit_SlamNav/NavOA_ws/install/local_setup.bash")
   if(CMAKE_WARN_ON_ABSOLUTE_INSTALL_DESTINATION)
     message(WARNING "ABSOLUTE path INSTALL DESTINATION : ${CMAKE_ABSOLUTE_DESTINATION_FILES}")
   endif()
   if(CMAKE_ERROR_ON_ABSOLUTE_INSTALL_DESTINATION)
     message(FATAL_ERROR "ABSOLUTE path INSTALL DESTINATION forbidden (by caller): ${CMAKE_ABSOLUTE_DESTINATION_FILES}")
   endif()
-file(INSTALL DESTINATION "/home/rana/Robit_SlamNav/NavOA_ws/install" TYPE FILE FILES
-    "/home/rana/Robit_SlamNav/NavOA_ws/build/lidar_ros/catkin_generated/installspace/setup.bash"
-    "/home/rana/Robit_SlamNav/NavOA_ws/build/lidar_ros/catkin_generated/installspace/local_setup.bash"
+file(INSTALL DESTINATION "/home/ubuntu/Robit_SlamNav/NavOA_ws/install" TYPE FILE FILES
+    "/home/ubuntu/Robit_SlamNav/NavOA_ws/build/lidar_ros/catkin_generated/installspace/setup.bash"
+    "/home/ubuntu/Robit_SlamNav/NavOA_ws/build/lidar_ros/catkin_generated/installspace/local_setup.bash"
     )
 endif()
 
 if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
   list(APPEND CMAKE_ABSOLUTE_DESTINATION_FILES
-   "/home/rana/Robit_SlamNav/NavOA_ws/install/setup.sh;/home/rana/Robit_SlamNav/NavOA_ws/install/local_setup.sh")
+   "/home/ubuntu/Robit_SlamNav/NavOA_ws/install/setup.sh;/home/ubuntu/Robit_SlamNav/NavOA_ws/install/local_setup.sh")
   if(CMAKE_WARN_ON_ABSOLUTE_INSTALL_DESTINATION)
     message(WARNING "ABSOLUTE path INSTALL DESTINATION : ${CMAKE_ABSOLUTE_DESTINATION_FILES}")
   endif()
   if(CMAKE_ERROR_ON_ABSOLUTE_INSTALL_DESTINATION)
     message(FATAL_ERROR "ABSOLUTE path INSTALL DESTINATION forbidden (by caller): ${CMAKE_ABSOLUTE_DESTINATION_FILES}")
   endif()
-file(INSTALL DESTINATION "/home/rana/Robit_SlamNav/NavOA_ws/install" TYPE FILE FILES
-    "/home/rana/Robit_SlamNav/NavOA_ws/build/lidar_ros/catkin_generated/installspace/setup.sh"
-    "/home/rana/Robit_SlamNav/NavOA_ws/build/lidar_ros/catkin_generated/installspace/local_setup.sh"
+file(INSTALL DESTINATION "/home/ubuntu/Robit_SlamNav/NavOA_ws/install" TYPE FILE FILES
+    "/home/ubuntu/Robit_SlamNav/NavOA_ws/build/lidar_ros/catkin_generated/installspace/setup.sh"
+    "/home/ubuntu/Robit_SlamNav/NavOA_ws/build/lidar_ros/catkin_generated/installspace/local_setup.sh"
     )
 endif()
 
 if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
   list(APPEND CMAKE_ABSOLUTE_DESTINATION_FILES
-   "/home/rana/Robit_SlamNav/NavOA_ws/install/setup.zsh;/home/rana/Robit_SlamNav/NavOA_ws/install/local_setup.zsh")
+   "/home/ubuntu/Robit_SlamNav/NavOA_ws/install/setup.zsh;/home/ubuntu/Robit_SlamNav/NavOA_ws/install/local_setup.zsh")
   if(CMAKE_WARN_ON_ABSOLUTE_INSTALL_DESTINATION)
     message(WARNING "ABSOLUTE path INSTALL DESTINATION : ${CMAKE_ABSOLUTE_DESTINATION_FILES}")
   endif()
   if(CMAKE_ERROR_ON_ABSOLUTE_INSTALL_DESTINATION)
     message(FATAL_ERROR "ABSOLUTE path INSTALL DESTINATION forbidden (by caller): ${CMAKE_ABSOLUTE_DESTINATION_FILES}")
   endif()
-file(INSTALL DESTINATION "/home/rana/Robit_SlamNav/NavOA_ws/install" TYPE FILE FILES
-    "/home/rana/Robit_SlamNav/NavOA_ws/build/lidar_ros/catkin_generated/installspace/setup.zsh"
-    "/home/rana/Robit_SlamNav/NavOA_ws/build/lidar_ros/catkin_generated/installspace/local_setup.zsh"
+file(INSTALL DESTINATION "/home/ubuntu/Robit_SlamNav/NavOA_ws/install" TYPE FILE FILES
+    "/home/ubuntu/Robit_SlamNav/NavOA_ws/build/lidar_ros/catkin_generated/installspace/setup.zsh"
+    "/home/ubuntu/Robit_SlamNav/NavOA_ws/build/lidar_ros/catkin_generated/installspace/local_setup.zsh"
     )
 endif()
 
 if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
   list(APPEND CMAKE_ABSOLUTE_DESTINATION_FILES
-   "/home/rana/Robit_SlamNav/NavOA_ws/install/setup.fish;/home/rana/Robit_SlamNav/NavOA_ws/install/local_setup.fish")
+   "/home/ubuntu/Robit_SlamNav/NavOA_ws/install/setup.fish;/home/ubuntu/Robit_SlamNav/NavOA_ws/install/local_setup.fish")
   if(CMAKE_WARN_ON_ABSOLUTE_INSTALL_DESTINATION)
     message(WARNING "ABSOLUTE path INSTALL DESTINATION : ${CMAKE_ABSOLUTE_DESTINATION_FILES}")
   endif()
   if(CMAKE_ERROR_ON_ABSOLUTE_INSTALL_DESTINATION)
     message(FATAL_ERROR "ABSOLUTE path INSTALL DESTINATION forbidden (by caller): ${CMAKE_ABSOLUTE_DESTINATION_FILES}")
   endif()
-file(INSTALL DESTINATION "/home/rana/Robit_SlamNav/NavOA_ws/install" TYPE FILE FILES
-    "/home/rana/Robit_SlamNav/NavOA_ws/build/lidar_ros/catkin_generated/installspace/setup.fish"
-    "/home/rana/Robit_SlamNav/NavOA_ws/build/lidar_ros/catkin_generated/installspace/local_setup.fish"
+file(INSTALL DESTINATION "/home/ubuntu/Robit_SlamNav/NavOA_ws/install" TYPE FILE FILES
+    "/home/ubuntu/Robit_SlamNav/NavOA_ws/build/lidar_ros/catkin_generated/installspace/setup.fish"
+    "/home/ubuntu/Robit_SlamNav/NavOA_ws/build/lidar_ros/catkin_generated/installspace/local_setup.fish"
     )
 endif()
 
 if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
   list(APPEND CMAKE_ABSOLUTE_DESTINATION_FILES
-   "/home/rana/Robit_SlamNav/NavOA_ws/install/.rosinstall")
+   "/home/ubuntu/Robit_SlamNav/NavOA_ws/install/.rosinstall")
   if(CMAKE_WARN_ON_ABSOLUTE_INSTALL_DESTINATION)
     message(WARNING "ABSOLUTE path INSTALL DESTINATION : ${CMAKE_ABSOLUTE_DESTINATION_FILES}")
   endif()
   if(CMAKE_ERROR_ON_ABSOLUTE_INSTALL_DESTINATION)
     message(FATAL_ERROR "ABSOLUTE path INSTALL DESTINATION forbidden (by caller): ${CMAKE_ABSOLUTE_DESTINATION_FILES}")
   endif()
-file(INSTALL DESTINATION "/home/rana/Robit_SlamNav/NavOA_ws/install" TYPE FILE FILES "/home/rana/Robit_SlamNav/NavOA_ws/build/lidar_ros/catkin_generated/installspace/.rosinstall")
+file(INSTALL DESTINATION "/home/ubuntu/Robit_SlamNav/NavOA_ws/install" TYPE FILE FILES "/home/ubuntu/Robit_SlamNav/NavOA_ws/build/lidar_ros/catkin_generated/installspace/.rosinstall")
 endif()
 
 if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
-  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib/pkgconfig" TYPE FILE FILES "/home/rana/Robit_SlamNav/NavOA_ws/build/lidar_ros/catkin_generated/installspace/lidar_ros.pc")
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib/pkgconfig" TYPE FILE FILES "/home/ubuntu/Robit_SlamNav/NavOA_ws/build/lidar_ros/catkin_generated/installspace/lidar_ros.pc")
 endif()
 
 if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
   file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/lidar_ros/cmake" TYPE FILE FILES
-    "/home/rana/Robit_SlamNav/NavOA_ws/build/lidar_ros/catkin_generated/installspace/lidar_rosConfig.cmake"
-    "/home/rana/Robit_SlamNav/NavOA_ws/build/lidar_ros/catkin_generated/installspace/lidar_rosConfig-version.cmake"
+    "/home/ubuntu/Robit_SlamNav/NavOA_ws/build/lidar_ros/catkin_generated/installspace/lidar_rosConfig.cmake"
+    "/home/ubuntu/Robit_SlamNav/NavOA_ws/build/lidar_ros/catkin_generated/installspace/lidar_rosConfig-version.cmake"
     )
 endif()
 
 if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
-  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/lidar_ros" TYPE FILE FILES "/home/rana/Robit_SlamNav/NavOA_ws/src/lidar_ros/package.xml")
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/lidar_ros" TYPE FILE FILES "/home/ubuntu/Robit_SlamNav/NavOA_ws/src/lidar_ros/package.xml")
 endif()
 
 if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
@@ -165,7 +165,7 @@ if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_
          FILE "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/lib/lidar_ros/lidar_node"
          RPATH "")
   endif()
-  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib/lidar_ros" TYPE EXECUTABLE FILES "/home/rana/Robit_SlamNav/NavOA_ws/devel/.private/lidar_ros/lib/lidar_ros/lidar_node")
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib/lidar_ros" TYPE EXECUTABLE FILES "/home/ubuntu/Robit_SlamNav/NavOA_ws/devel/.private/lidar_ros/lib/lidar_ros/lidar_node")
   if(EXISTS "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/lib/lidar_ros/lidar_node" AND
      NOT IS_SYMLINK "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/lib/lidar_ros/lidar_node")
     file(RPATH_CHANGE
@@ -185,7 +185,7 @@ if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_
          FILE "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/lib/lidar_ros/lidar_client"
          RPATH "")
   endif()
-  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib/lidar_ros" TYPE EXECUTABLE FILES "/home/rana/Robit_SlamNav/NavOA_ws/devel/.private/lidar_ros/lib/lidar_ros/lidar_client")
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib/lidar_ros" TYPE EXECUTABLE FILES "/home/ubuntu/Robit_SlamNav/NavOA_ws/devel/.private/lidar_ros/lib/lidar_ros/lidar_client")
   if(EXISTS "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/lib/lidar_ros/lidar_client" AND
      NOT IS_SYMLINK "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/lib/lidar_ros/lidar_client")
     file(RPATH_CHANGE
@@ -200,15 +200,15 @@ endif()
 
 if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
   file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/lidar_ros" TYPE DIRECTORY FILES
-    "/home/rana/Robit_SlamNav/NavOA_ws/src/lidar_ros/launch"
-    "/home/rana/Robit_SlamNav/NavOA_ws/src/lidar_ros/rules"
-    "/home/rana/Robit_SlamNav/NavOA_ws/src/lidar_ros/rviz"
+    "/home/ubuntu/Robit_SlamNav/NavOA_ws/src/lidar_ros/launch"
+    "/home/ubuntu/Robit_SlamNav/NavOA_ws/src/lidar_ros/rules"
+    "/home/ubuntu/Robit_SlamNav/NavOA_ws/src/lidar_ros/rviz"
     USE_SOURCE_PERMISSIONS)
 endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for each subdirectory.
-  include("/home/rana/Robit_SlamNav/NavOA_ws/build/lidar_ros/gtest/cmake_install.cmake")
+  include("/home/ubuntu/Robit_SlamNav/NavOA_ws/build/lidar_ros/gtest/cmake_install.cmake")
 
 endif()
 
@@ -220,5 +220,5 @@ endif()
 
 string(REPLACE ";" "\n" CMAKE_INSTALL_MANIFEST_CONTENT
        "${CMAKE_INSTALL_MANIFEST_FILES}")
-file(WRITE "/home/rana/Robit_SlamNav/NavOA_ws/build/lidar_ros/${CMAKE_INSTALL_MANIFEST}"
+file(WRITE "/home/ubuntu/Robit_SlamNav/NavOA_ws/build/lidar_ros/${CMAKE_INSTALL_MANIFEST}"
      "${CMAKE_INSTALL_MANIFEST_CONTENT}")

@@ -1,6 +1,6 @@
 # CMake generated Testfile for 
 # Source directory: /usr/src/googletest/googletest
-# Build directory: /home/rana/Robit_SlamNav/NavOA_ws/build_isolated/rf2o_laser_odometry/gtest/googletest
+# Build directory: /home/ubuntu/Robit_SlamNav/NavOA_ws/build_isolated/rf2o_laser_odometry/gtest/googletest
 # 
 # This file includes the relevant testing commands required for 
 # testing this directory and lists subdirectories to be tested as well.

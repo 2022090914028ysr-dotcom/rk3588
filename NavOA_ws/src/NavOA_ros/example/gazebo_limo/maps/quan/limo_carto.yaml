@@ -1,4 +1,4 @@
-image: /home/rana/Robit_SlamNav/NavOA_ws/src/NavOA_ros/example/gazebo_limo/maps/quan/limo_carto.pgm
+image: /home/ubuntu/Robit_SlamNav/NavOA_ws/src/NavOA_ros/example/gazebo_limo/maps/quan/limo_carto.pgm
 resolution: 0.050000
 origin: [-10.260975, -13.759094, 0.000000]
 negate: 0

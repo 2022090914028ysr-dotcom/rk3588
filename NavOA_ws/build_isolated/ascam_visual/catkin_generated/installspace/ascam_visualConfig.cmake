@@ -67,14 +67,14 @@ set(ascam_visual_CONFIG_INCLUDED TRUE)
 
 # set variables for source/devel/install prefixes
 if("FALSE" STREQUAL "TRUE")
-  set(ascam_visual_SOURCE_PREFIX /home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/src/ascam_visual)
-  set(ascam_visual_DEVEL_PREFIX /home/rana/Robit_SlamNav/NavOA_ws/devel_isolated/ascam_visual)
+  set(ascam_visual_SOURCE_PREFIX /home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/src/ascam_visual)
+  set(ascam_visual_DEVEL_PREFIX /home/ubuntu/Robit_SlamNav/NavOA_ws/devel_isolated/ascam_visual)
   set(ascam_visual_INSTALL_PREFIX "")
   set(ascam_visual_PREFIX ${ascam_visual_DEVEL_PREFIX})
 else()
   set(ascam_visual_SOURCE_PREFIX "")
   set(ascam_visual_DEVEL_PREFIX "")
-  set(ascam_visual_INSTALL_PREFIX /home/rana/Robit_SlamNav/NavOA_ws/install_isolated)
+  set(ascam_visual_INSTALL_PREFIX /home/ubuntu/Robit_SlamNav/NavOA_ws/install_isolated)
   set(ascam_visual_PREFIX ${ascam_visual_INSTALL_PREFIX})
 endif()
 
@@ -156,7 +156,7 @@ foreach(library ${libraries})
     set(lib_path "")
     set(lib "${library}-NOTFOUND")
     # since the path where the library is found is returned we have to iterate over the paths manually
-    foreach(path /home/rana/Robit_SlamNav/NavOA_ws/install_isolated/lib;/home/rana/Robit_SlamNav/NavOA_ws/devel_isolated/NavOA_ros/lib;/opt/ros/noetic/lib)
+    foreach(path /home/ubuntu/Robit_SlamNav/NavOA_ws/install_isolated/lib;/home/ubuntu/Robit_SlamNav/NavOA_ws/devel_isolated/NavOA_ros/lib;/opt/ros/noetic/lib)
       find_library(lib ${library}
         PATHS ${path}
         NO_DEFAULT_PATH NO_CMAKE_FIND_ROOT_PATH)

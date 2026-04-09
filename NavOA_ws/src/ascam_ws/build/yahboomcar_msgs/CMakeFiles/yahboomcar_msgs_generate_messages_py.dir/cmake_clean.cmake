@@ -1,6 +1,6 @@
 file(REMOVE_RECURSE
-  "/home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/devel/lib/python3/dist-packages/yahboomcar_msgs/msg/_PointArray.py"
-  "/home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/devel/lib/python3/dist-packages/yahboomcar_msgs/msg/__init__.py"
+  "/home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/devel/lib/python3/dist-packages/yahboomcar_msgs/msg/_PointArray.py"
+  "/home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/devel/lib/python3/dist-packages/yahboomcar_msgs/msg/__init__.py"
   "CMakeFiles/yahboomcar_msgs_generate_messages_py"
 )
 

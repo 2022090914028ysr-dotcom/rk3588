@@ -15,5 +15,5 @@ examples/CMakeFiles/tri_and_gs_test.dir/tri_and_gs_test.cpp.o
  ../core/common/ydlidar_def.h
  ../core/common/ydlidar_protocol.h
  ../src/CYdLidar.h
- /home/rana/Robit_SlamNav/NavOA_ws/src/ydlidar_sdk/examples/tri_and_gs_test.cpp
+ /home/ubuntu/Robit_SlamNav/NavOA_ws/src/ydlidar_sdk/examples/tri_and_gs_test.cpp
  ydlidar_config.h

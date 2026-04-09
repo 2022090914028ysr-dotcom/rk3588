@@ -34,7 +34,7 @@ odom0_pose_covariance_diagonal: [0.01, 0.01, 0.001, 0.001, 0.001, 0.02]  # Yaw �
 # ==============================
 # 输入2: 普通商用 IMU（无磁力计！）
 # ==============================
-imu0: /imu
+imu0: /imu_mux
 imu0_config: [false, false, false,
               false, false, false,    # ❌ 绝不使用 IMU 航向（会漂！）
               false, false, false,

@@ -1,6 +1,6 @@
 file(REMOVE_RECURSE
-  "/home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/devel/lib/ascam_visual/pointCloud_pub"
-  "/home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/devel/lib/ascam_visual/pointCloud_pub.pdb"
+  "/home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/devel/lib/ascam_visual/pointCloud_pub"
+  "/home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/devel/lib/ascam_visual/pointCloud_pub.pdb"
   "CMakeFiles/pointCloud_pub.dir/src/pointCloud_pub.cpp.o"
 )
 

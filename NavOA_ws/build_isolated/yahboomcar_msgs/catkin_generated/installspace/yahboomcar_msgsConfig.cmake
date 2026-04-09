@@ -67,14 +67,14 @@ set(yahboomcar_msgs_CONFIG_INCLUDED TRUE)
 
 # set variables for source/devel/install prefixes
 if("FALSE" STREQUAL "TRUE")
-  set(yahboomcar_msgs_SOURCE_PREFIX /home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/src/yahboomcar_msgs)
-  set(yahboomcar_msgs_DEVEL_PREFIX /home/rana/Robit_SlamNav/NavOA_ws/devel_isolated/yahboomcar_msgs)
+  set(yahboomcar_msgs_SOURCE_PREFIX /home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/src/yahboomcar_msgs)
+  set(yahboomcar_msgs_DEVEL_PREFIX /home/ubuntu/Robit_SlamNav/NavOA_ws/devel_isolated/yahboomcar_msgs)
   set(yahboomcar_msgs_INSTALL_PREFIX "")
   set(yahboomcar_msgs_PREFIX ${yahboomcar_msgs_DEVEL_PREFIX})
 else()
   set(yahboomcar_msgs_SOURCE_PREFIX "")
   set(yahboomcar_msgs_DEVEL_PREFIX "")
-  set(yahboomcar_msgs_INSTALL_PREFIX /home/rana/Robit_SlamNav/NavOA_ws/install_isolated)
+  set(yahboomcar_msgs_INSTALL_PREFIX /home/ubuntu/Robit_SlamNav/NavOA_ws/install_isolated)
   set(yahboomcar_msgs_PREFIX ${yahboomcar_msgs_INSTALL_PREFIX})
 endif()
 
@@ -156,7 +156,7 @@ foreach(library ${libraries})
     set(lib_path "")
     set(lib "${library}-NOTFOUND")
     # since the path where the library is found is returned we have to iterate over the paths manually
-    foreach(path /home/rana/Robit_SlamNav/NavOA_ws/install_isolated/lib;/home/rana/Robit_SlamNav/NavOA_ws/devel_isolated/rf2o_laser_odometry/lib;/home/rana/Robit_SlamNav/NavOA_ws/devel_isolated/lidar_ros/lib;/home/rana/Robit_SlamNav/NavOA_ws/devel_isolated/cartographer_rviz/lib;/home/rana/Robit_SlamNav/NavOA_ws/devel_isolated/cartographer_ros/lib;/home/rana/Robit_SlamNav/NavOA_ws/devel_isolated/cartographer_ros_msgs/lib;/home/rana/Robit_SlamNav/NavOA_ws/devel_isolated/astra_tracker/lib;/home/rana/Robit_SlamNav/NavOA_ws/devel_isolated/ascamera/lib;/home/rana/Robit_SlamNav/NavOA_ws/devel_isolated/ascam_visual/lib;/home/rana/Robit_SlamNav/NavOA_ws/devel_isolated/NavOA_ros/lib;/opt/ros/noetic/lib)
+    foreach(path /home/ubuntu/Robit_SlamNav/NavOA_ws/install_isolated/lib;/home/ubuntu/Robit_SlamNav/NavOA_ws/devel_isolated/rf2o_laser_odometry/lib;/home/ubuntu/Robit_SlamNav/NavOA_ws/devel_isolated/lidar_ros/lib;/home/ubuntu/Robit_SlamNav/NavOA_ws/devel_isolated/cartographer_rviz/lib;/home/ubuntu/Robit_SlamNav/NavOA_ws/devel_isolated/cartographer_ros/lib;/home/ubuntu/Robit_SlamNav/NavOA_ws/devel_isolated/cartographer_ros_msgs/lib;/home/ubuntu/Robit_SlamNav/NavOA_ws/devel_isolated/astra_tracker/lib;/home/ubuntu/Robit_SlamNav/NavOA_ws/devel_isolated/ascamera/lib;/home/ubuntu/Robit_SlamNav/NavOA_ws/devel_isolated/ascam_visual/lib;/home/ubuntu/Robit_SlamNav/NavOA_ws/devel_isolated/NavOA_ros/lib;/opt/ros/noetic/lib)
       find_library(lib ${library}
         PATHS ${path}
         NO_DEFAULT_PATH NO_CMAKE_FIND_ROOT_PATH)

@@ -43,10 +43,10 @@ RM = /usr/bin/cmake -E remove -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/src
+CMAKE_SOURCE_DIR = /home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/src
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/build
+CMAKE_BINARY_DIR = /home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/build
 
 # Utility rule file for topic_tools_generate_messages_lisp.
 
@@ -63,10 +63,10 @@ ascamera/CMakeFiles/topic_tools_generate_messages_lisp.dir/build: topic_tools_ge
 .PHONY : ascamera/CMakeFiles/topic_tools_generate_messages_lisp.dir/build
 
 ascamera/CMakeFiles/topic_tools_generate_messages_lisp.dir/clean:
-	cd /home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/build/ascamera && $(CMAKE_COMMAND) -P CMakeFiles/topic_tools_generate_messages_lisp.dir/cmake_clean.cmake
+	cd /home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/build/ascamera && $(CMAKE_COMMAND) -P CMakeFiles/topic_tools_generate_messages_lisp.dir/cmake_clean.cmake
 .PHONY : ascamera/CMakeFiles/topic_tools_generate_messages_lisp.dir/clean
 
 ascamera/CMakeFiles/topic_tools_generate_messages_lisp.dir/depend:
-	cd /home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/build && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/src /home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/src/ascamera /home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/build /home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/build/ascamera /home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/build/ascamera/CMakeFiles/topic_tools_generate_messages_lisp.dir/DependInfo.cmake --color=$(COLOR)
+	cd /home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/build && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/src /home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/src/ascamera /home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/build /home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/build/ascamera /home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/build/ascamera/CMakeFiles/topic_tools_generate_messages_lisp.dir/DependInfo.cmake --color=$(COLOR)
 .PHONY : ascamera/CMakeFiles/topic_tools_generate_messages_lisp.dir/depend
 

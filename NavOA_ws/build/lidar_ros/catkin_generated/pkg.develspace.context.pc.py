@@ -4,5 +4,5 @@ PROJECT_PKG_CONFIG_INCLUDE_DIRS = "".split(';') if "" != "" else []
 PROJECT_CATKIN_DEPENDS = "".replace(';', ' ')
 PKG_CONFIG_LIBRARIES_WITH_PREFIX = "".split(';') if "" != "" else []
 PROJECT_NAME = "lidar_ros"
-PROJECT_SPACE_DIR = "/home/rana/Robit_SlamNav/NavOA_ws/devel/.private/lidar_ros"
+PROJECT_SPACE_DIR = "/home/ubuntu/Robit_SlamNav/NavOA_ws/devel/.private/lidar_ros"
 PROJECT_VERSION = "1.0.0"

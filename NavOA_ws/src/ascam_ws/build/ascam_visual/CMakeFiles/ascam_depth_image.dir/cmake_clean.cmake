@@ -1,6 +1,6 @@
 file(REMOVE_RECURSE
-  "/home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/devel/lib/ascam_visual/ascam_depth_image"
-  "/home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/devel/lib/ascam_visual/ascam_depth_image.pdb"
+  "/home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/devel/lib/ascam_visual/ascam_depth_image"
+  "/home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/devel/lib/ascam_visual/ascam_depth_image.pdb"
   "CMakeFiles/ascam_depth_image.dir/src/ascam_depth_image.cpp.o"
 )
 

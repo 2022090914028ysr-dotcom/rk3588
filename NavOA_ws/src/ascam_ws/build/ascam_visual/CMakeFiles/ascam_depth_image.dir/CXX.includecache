@@ -6,9 +6,9 @@
 
 #IncludeRegexTransform: 
 
-/home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/src/ascam_visual/src/ascam_depth_image.cpp
+/home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/src/ascam_visual/src/ascam_depth_image.cpp
 ros/ros.h
-/home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/src/ascam_visual/src/ros/ros.h
+/home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/src/ascam_visual/src/ros/ros.h
 sensor_msgs/Image.h
 -
 cv_bridge/cv_bridge.h

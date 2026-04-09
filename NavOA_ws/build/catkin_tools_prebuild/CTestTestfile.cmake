@@ -1,6 +1,6 @@
 # CMake generated Testfile for 
-# Source directory: /home/rana/Robit_SlamNav/NavOA_ws/build/catkin_tools_prebuild
-# Build directory: /home/rana/Robit_SlamNav/NavOA_ws/build/catkin_tools_prebuild
+# Source directory: /home/ubuntu/Robit_SlamNav/NavOA_ws/build/catkin_tools_prebuild
+# Build directory: /home/ubuntu/Robit_SlamNav/NavOA_ws/build/catkin_tools_prebuild
 # 
 # This file includes the relevant testing commands required for 
 # testing this directory and lists subdirectories to be tested as well.

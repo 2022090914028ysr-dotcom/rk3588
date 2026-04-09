@@ -6,13 +6,13 @@
 
 #IncludeRegexTransform: 
 
-/home/rana/Robit_SlamNav/NavOA_ws/src/lidar_ros/ros/src/ros_client.cpp
+/home/ubuntu/Robit_SlamNav/NavOA_ws/src/lidar_ros/ros/src/ros_client.cpp
 ros/init.h
-/home/rana/Robit_SlamNav/NavOA_ws/src/lidar_ros/ros/src/ros/init.h
+/home/ubuntu/Robit_SlamNav/NavOA_ws/src/lidar_ros/ros/src/ros/init.h
 ros/ros.h
-/home/rana/Robit_SlamNav/NavOA_ws/src/lidar_ros/ros/src/ros/ros.h
+/home/ubuntu/Robit_SlamNav/NavOA_ws/src/lidar_ros/ros/src/ros/ros.h
 sensor_msgs/LaserScan.h
-/home/rana/Robit_SlamNav/NavOA_ws/src/lidar_ros/ros/src/sensor_msgs/LaserScan.h
+/home/ubuntu/Robit_SlamNav/NavOA_ws/src/lidar_ros/ros/src/sensor_msgs/LaserScan.h
 
 /opt/ros/noetic/include/ros/advertise_options.h
 ros/forwards.h

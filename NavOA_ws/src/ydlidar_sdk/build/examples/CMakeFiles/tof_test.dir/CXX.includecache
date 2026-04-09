@@ -200,7 +200,7 @@ core/common/ydlidar_protocol.h
 FilterInterface.h
 ../src/filters/FilterInterface.h
 
-/home/rana/Robit_SlamNav/NavOA_ws/src/ydlidar_sdk/examples/tof_test.cpp
+/home/ubuntu/Robit_SlamNav/NavOA_ws/src/ydlidar_sdk/examples/tof_test.cpp
 iostream
 -
 string
@@ -210,11 +210,11 @@ algorithm
 cctype
 -
 CYdLidar.h
-/home/rana/Robit_SlamNav/NavOA_ws/src/ydlidar_sdk/examples/CYdLidar.h
+/home/ubuntu/Robit_SlamNav/NavOA_ws/src/ydlidar_sdk/examples/CYdLidar.h
 filters/NoiseFilter.h
-/home/rana/Robit_SlamNav/NavOA_ws/src/ydlidar_sdk/examples/filters/NoiseFilter.h
+/home/ubuntu/Robit_SlamNav/NavOA_ws/src/ydlidar_sdk/examples/filters/NoiseFilter.h
 core/common/ydlidar_help.h
-/home/rana/Robit_SlamNav/NavOA_ws/src/ydlidar_sdk/examples/core/common/ydlidar_help.h
+/home/ubuntu/Robit_SlamNav/NavOA_ws/src/ydlidar_sdk/examples/core/common/ydlidar_help.h
 
 ydlidar_config.h
 

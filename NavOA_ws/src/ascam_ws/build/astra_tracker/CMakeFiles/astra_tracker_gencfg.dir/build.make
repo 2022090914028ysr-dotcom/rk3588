@@ -43,44 +43,44 @@ RM = /usr/bin/cmake -E remove -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/src
+CMAKE_SOURCE_DIR = /home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/src
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/build
+CMAKE_BINARY_DIR = /home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/build
 
 # Utility rule file for astra_tracker_gencfg.
 
 # Include the progress variables for this target.
 include astra_tracker/CMakeFiles/astra_tracker_gencfg.dir/progress.make
 
-astra_tracker/CMakeFiles/astra_tracker_gencfg: /home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/devel/include/astra_tracker/AstraColorHSVConfig.h
-astra_tracker/CMakeFiles/astra_tracker_gencfg: /home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/devel/lib/python3/dist-packages/astra_tracker/cfg/AstraColorHSVConfig.py
+astra_tracker/CMakeFiles/astra_tracker_gencfg: /home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/devel/include/astra_tracker/AstraColorHSVConfig.h
+astra_tracker/CMakeFiles/astra_tracker_gencfg: /home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/devel/lib/python3/dist-packages/astra_tracker/cfg/AstraColorHSVConfig.py
 
 
-/home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/devel/include/astra_tracker/AstraColorHSVConfig.h: /home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/src/astra_tracker/cfg/AstraColorHSV.cfg
-/home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/devel/include/astra_tracker/AstraColorHSVConfig.h: /opt/ros/noetic/share/dynamic_reconfigure/templates/ConfigType.py.template
-/home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/devel/include/astra_tracker/AstraColorHSVConfig.h: /opt/ros/noetic/share/dynamic_reconfigure/templates/ConfigType.h.template
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --blue --bold --progress-dir=/home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Generating dynamic reconfigure files from cfg/AstraColorHSV.cfg: /home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/devel/include/astra_tracker/AstraColorHSVConfig.h /home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/devel/lib/python3/dist-packages/astra_tracker/cfg/AstraColorHSVConfig.py"
-	cd /home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/build/astra_tracker && ../catkin_generated/env_cached.sh /home/rana/miniconda3/bin/python3 /home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/src/astra_tracker/cfg/AstraColorHSV.cfg /opt/ros/noetic/share/dynamic_reconfigure/cmake/.. /home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/devel/share/astra_tracker /home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/devel/include/astra_tracker /home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/devel/lib/python3/dist-packages/astra_tracker
+/home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/devel/include/astra_tracker/AstraColorHSVConfig.h: /home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/src/astra_tracker/cfg/AstraColorHSV.cfg
+/home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/devel/include/astra_tracker/AstraColorHSVConfig.h: /opt/ros/noetic/share/dynamic_reconfigure/templates/ConfigType.py.template
+/home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/devel/include/astra_tracker/AstraColorHSVConfig.h: /opt/ros/noetic/share/dynamic_reconfigure/templates/ConfigType.h.template
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --blue --bold --progress-dir=/home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Generating dynamic reconfigure files from cfg/AstraColorHSV.cfg: /home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/devel/include/astra_tracker/AstraColorHSVConfig.h /home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/devel/lib/python3/dist-packages/astra_tracker/cfg/AstraColorHSVConfig.py"
+	cd /home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/build/astra_tracker && ../catkin_generated/env_cached.sh /home/ubuntu/miniconda3/bin/python3 /home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/src/astra_tracker/cfg/AstraColorHSV.cfg /opt/ros/noetic/share/dynamic_reconfigure/cmake/.. /home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/devel/share/astra_tracker /home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/devel/include/astra_tracker /home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/devel/lib/python3/dist-packages/astra_tracker
 
-/home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/devel/share/astra_tracker/docs/AstraColorHSVConfig.dox: /home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/devel/include/astra_tracker/AstraColorHSVConfig.h
-	@$(CMAKE_COMMAND) -E touch_nocreate /home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/devel/share/astra_tracker/docs/AstraColorHSVConfig.dox
+/home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/devel/share/astra_tracker/docs/AstraColorHSVConfig.dox: /home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/devel/include/astra_tracker/AstraColorHSVConfig.h
+	@$(CMAKE_COMMAND) -E touch_nocreate /home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/devel/share/astra_tracker/docs/AstraColorHSVConfig.dox
 
-/home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/devel/share/astra_tracker/docs/AstraColorHSVConfig-usage.dox: /home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/devel/include/astra_tracker/AstraColorHSVConfig.h
-	@$(CMAKE_COMMAND) -E touch_nocreate /home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/devel/share/astra_tracker/docs/AstraColorHSVConfig-usage.dox
+/home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/devel/share/astra_tracker/docs/AstraColorHSVConfig-usage.dox: /home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/devel/include/astra_tracker/AstraColorHSVConfig.h
+	@$(CMAKE_COMMAND) -E touch_nocreate /home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/devel/share/astra_tracker/docs/AstraColorHSVConfig-usage.dox
 
-/home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/devel/lib/python3/dist-packages/astra_tracker/cfg/AstraColorHSVConfig.py: /home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/devel/include/astra_tracker/AstraColorHSVConfig.h
-	@$(CMAKE_COMMAND) -E touch_nocreate /home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/devel/lib/python3/dist-packages/astra_tracker/cfg/AstraColorHSVConfig.py
+/home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/devel/lib/python3/dist-packages/astra_tracker/cfg/AstraColorHSVConfig.py: /home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/devel/include/astra_tracker/AstraColorHSVConfig.h
+	@$(CMAKE_COMMAND) -E touch_nocreate /home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/devel/lib/python3/dist-packages/astra_tracker/cfg/AstraColorHSVConfig.py
 
-/home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/devel/share/astra_tracker/docs/AstraColorHSVConfig.wikidoc: /home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/devel/include/astra_tracker/AstraColorHSVConfig.h
-	@$(CMAKE_COMMAND) -E touch_nocreate /home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/devel/share/astra_tracker/docs/AstraColorHSVConfig.wikidoc
+/home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/devel/share/astra_tracker/docs/AstraColorHSVConfig.wikidoc: /home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/devel/include/astra_tracker/AstraColorHSVConfig.h
+	@$(CMAKE_COMMAND) -E touch_nocreate /home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/devel/share/astra_tracker/docs/AstraColorHSVConfig.wikidoc
 
 astra_tracker_gencfg: astra_tracker/CMakeFiles/astra_tracker_gencfg
-astra_tracker_gencfg: /home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/devel/include/astra_tracker/AstraColorHSVConfig.h
-astra_tracker_gencfg: /home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/devel/share/astra_tracker/docs/AstraColorHSVConfig.dox
-astra_tracker_gencfg: /home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/devel/share/astra_tracker/docs/AstraColorHSVConfig-usage.dox
-astra_tracker_gencfg: /home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/devel/lib/python3/dist-packages/astra_tracker/cfg/AstraColorHSVConfig.py
-astra_tracker_gencfg: /home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/devel/share/astra_tracker/docs/AstraColorHSVConfig.wikidoc
+astra_tracker_gencfg: /home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/devel/include/astra_tracker/AstraColorHSVConfig.h
+astra_tracker_gencfg: /home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/devel/share/astra_tracker/docs/AstraColorHSVConfig.dox
+astra_tracker_gencfg: /home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/devel/share/astra_tracker/docs/AstraColorHSVConfig-usage.dox
+astra_tracker_gencfg: /home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/devel/lib/python3/dist-packages/astra_tracker/cfg/AstraColorHSVConfig.py
+astra_tracker_gencfg: /home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/devel/share/astra_tracker/docs/AstraColorHSVConfig.wikidoc
 astra_tracker_gencfg: astra_tracker/CMakeFiles/astra_tracker_gencfg.dir/build.make
 
 .PHONY : astra_tracker_gencfg
@@ -91,10 +91,10 @@ astra_tracker/CMakeFiles/astra_tracker_gencfg.dir/build: astra_tracker_gencfg
 .PHONY : astra_tracker/CMakeFiles/astra_tracker_gencfg.dir/build
 
 astra_tracker/CMakeFiles/astra_tracker_gencfg.dir/clean:
-	cd /home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/build/astra_tracker && $(CMAKE_COMMAND) -P CMakeFiles/astra_tracker_gencfg.dir/cmake_clean.cmake
+	cd /home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/build/astra_tracker && $(CMAKE_COMMAND) -P CMakeFiles/astra_tracker_gencfg.dir/cmake_clean.cmake
 .PHONY : astra_tracker/CMakeFiles/astra_tracker_gencfg.dir/clean
 
 astra_tracker/CMakeFiles/astra_tracker_gencfg.dir/depend:
-	cd /home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/build && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/src /home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/src/astra_tracker /home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/build /home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/build/astra_tracker /home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/build/astra_tracker/CMakeFiles/astra_tracker_gencfg.dir/DependInfo.cmake --color=$(COLOR)
+	cd /home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/build && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/src /home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/src/astra_tracker /home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/build /home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/build/astra_tracker /home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/build/astra_tracker/CMakeFiles/astra_tracker_gencfg.dir/DependInfo.cmake --color=$(COLOR)
 .PHONY : astra_tracker/CMakeFiles/astra_tracker_gencfg.dir/depend
 

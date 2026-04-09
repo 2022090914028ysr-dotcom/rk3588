@@ -1,5 +1,5 @@
 file(REMOVE_RECURSE
-  "/home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/devel/include/yahboomcar_msgs/PointArray.h"
+  "/home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/devel/include/yahboomcar_msgs/PointArray.h"
   "CMakeFiles/yahboomcar_msgs_generate_messages_cpp"
 )
 

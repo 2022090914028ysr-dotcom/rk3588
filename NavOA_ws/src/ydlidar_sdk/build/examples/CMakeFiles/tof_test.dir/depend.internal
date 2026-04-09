@@ -18,5 +18,5 @@ examples/CMakeFiles/tof_test.dir/tof_test.cpp.o
  ../src/CYdLidar.h
  ../src/filters/FilterInterface.h
  ../src/filters/NoiseFilter.h
- /home/rana/Robit_SlamNav/NavOA_ws/src/ydlidar_sdk/examples/tof_test.cpp
+ /home/ubuntu/Robit_SlamNav/NavOA_ws/src/ydlidar_sdk/examples/tof_test.cpp
  ydlidar_config.h

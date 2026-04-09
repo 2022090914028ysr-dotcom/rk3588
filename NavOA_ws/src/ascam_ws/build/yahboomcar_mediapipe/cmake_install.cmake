@@ -1,8 +1,8 @@
-# Install script for directory: /home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/src/yahboomcar_mediapipe
+# Install script for directory: /home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/src/yahboomcar_mediapipe
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
-  set(CMAKE_INSTALL_PREFIX "/home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/install")
+  set(CMAKE_INSTALL_PREFIX "/home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/install")
 endif()
 string(REGEX REPLACE "/$" "" CMAKE_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}")
 
@@ -38,17 +38,17 @@ if(NOT DEFINED CMAKE_CROSSCOMPILING)
 endif()
 
 if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
-  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib/pkgconfig" TYPE FILE FILES "/home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/build/yahboomcar_mediapipe/catkin_generated/installspace/yahboomcar_mediapipe.pc")
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib/pkgconfig" TYPE FILE FILES "/home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/build/yahboomcar_mediapipe/catkin_generated/installspace/yahboomcar_mediapipe.pc")
 endif()
 
 if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
   file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/yahboomcar_mediapipe/cmake" TYPE FILE FILES
-    "/home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/build/yahboomcar_mediapipe/catkin_generated/installspace/yahboomcar_mediapipeConfig.cmake"
-    "/home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/build/yahboomcar_mediapipe/catkin_generated/installspace/yahboomcar_mediapipeConfig-version.cmake"
+    "/home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/build/yahboomcar_mediapipe/catkin_generated/installspace/yahboomcar_mediapipeConfig.cmake"
+    "/home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/build/yahboomcar_mediapipe/catkin_generated/installspace/yahboomcar_mediapipeConfig-version.cmake"
     )
 endif()
 
 if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
-  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/yahboomcar_mediapipe" TYPE FILE FILES "/home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/src/yahboomcar_mediapipe/package.xml")
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/yahboomcar_mediapipe" TYPE FILE FILES "/home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/src/yahboomcar_mediapipe/package.xml")
 endif()
 

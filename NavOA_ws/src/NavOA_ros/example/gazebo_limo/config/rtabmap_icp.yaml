@@ -3,6 +3,7 @@
 
 # Registration strategy: 0=Visual, 1=ICP, 2=Visual+ICP
 Reg/Strategy: 1
+Reg/Force3DoF: true
 
 # ICP Point-to-Plane for better alignment on flat surfaces
 Icp/PointToPlane: true

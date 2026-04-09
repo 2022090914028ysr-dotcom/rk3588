@@ -1,4 +1,4 @@
-prefix=/home/rana/Robit_SlamNav/NavOA_ws/devel_isolated/lidar_ros
+prefix=/home/ubuntu/Robit_SlamNav/NavOA_ws/devel_isolated/lidar_ros
 
 Name: lidar_ros
 Description: Description of lidar_ros

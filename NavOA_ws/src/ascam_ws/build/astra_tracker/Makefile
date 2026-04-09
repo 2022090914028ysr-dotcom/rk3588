@@ -48,10 +48,10 @@ RM = /usr/bin/cmake -E remove -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/src
+CMAKE_SOURCE_DIR = /home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/src
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/build
+CMAKE_BINARY_DIR = /home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/build
 
 #=============================================================================
 # Targets provided globally by CMake.
@@ -137,14 +137,14 @@ install/fast: preinstall/fast
 
 # The main all target
 all: cmake_check_build_system
-	cd /home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/build && $(CMAKE_COMMAND) -E cmake_progress_start /home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/build/CMakeFiles /home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/build/astra_tracker/CMakeFiles/progress.marks
-	cd /home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/build && $(MAKE) -f CMakeFiles/Makefile2 astra_tracker/all
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/build/CMakeFiles 0
+	cd /home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/build && $(CMAKE_COMMAND) -E cmake_progress_start /home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/build/CMakeFiles /home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/build/astra_tracker/CMakeFiles/progress.marks
+	cd /home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/build && $(MAKE) -f CMakeFiles/Makefile2 astra_tracker/all
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/build/CMakeFiles 0
 .PHONY : all
 
 # The main clean target
 clean:
-	cd /home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/build && $(MAKE) -f CMakeFiles/Makefile2 astra_tracker/clean
+	cd /home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/build && $(MAKE) -f CMakeFiles/Makefile2 astra_tracker/clean
 .PHONY : clean
 
 # The main clean target
@@ -154,22 +154,22 @@ clean/fast: clean
 
 # Prepare targets for installation.
 preinstall: all
-	cd /home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/build && $(MAKE) -f CMakeFiles/Makefile2 astra_tracker/preinstall
+	cd /home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/build && $(MAKE) -f CMakeFiles/Makefile2 astra_tracker/preinstall
 .PHONY : preinstall
 
 # Prepare targets for installation.
 preinstall/fast:
-	cd /home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/build && $(MAKE) -f CMakeFiles/Makefile2 astra_tracker/preinstall
+	cd /home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/build && $(MAKE) -f CMakeFiles/Makefile2 astra_tracker/preinstall
 .PHONY : preinstall/fast
 
 # clear depends
 depend:
-	cd /home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/build && $(CMAKE_COMMAND) -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 1
+	cd /home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/build && $(CMAKE_COMMAND) -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 1
 .PHONY : depend
 
 # Convenience name for target.
 astra_tracker/CMakeFiles/dynamic_reconfigure_generate_messages_cpp.dir/rule:
-	cd /home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/build && $(MAKE) -f CMakeFiles/Makefile2 astra_tracker/CMakeFiles/dynamic_reconfigure_generate_messages_cpp.dir/rule
+	cd /home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/build && $(MAKE) -f CMakeFiles/Makefile2 astra_tracker/CMakeFiles/dynamic_reconfigure_generate_messages_cpp.dir/rule
 .PHONY : astra_tracker/CMakeFiles/dynamic_reconfigure_generate_messages_cpp.dir/rule
 
 # Convenience name for target.
@@ -179,12 +179,12 @@ dynamic_reconfigure_generate_messages_cpp: astra_tracker/CMakeFiles/dynamic_reco
 
 # fast build rule for target.
 dynamic_reconfigure_generate_messages_cpp/fast:
-	cd /home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/build && $(MAKE) -f astra_tracker/CMakeFiles/dynamic_reconfigure_generate_messages_cpp.dir/build.make astra_tracker/CMakeFiles/dynamic_reconfigure_generate_messages_cpp.dir/build
+	cd /home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/build && $(MAKE) -f astra_tracker/CMakeFiles/dynamic_reconfigure_generate_messages_cpp.dir/build.make astra_tracker/CMakeFiles/dynamic_reconfigure_generate_messages_cpp.dir/build
 .PHONY : dynamic_reconfigure_generate_messages_cpp/fast
 
 # Convenience name for target.
 astra_tracker/CMakeFiles/dynamic_reconfigure_generate_messages_eus.dir/rule:
-	cd /home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/build && $(MAKE) -f CMakeFiles/Makefile2 astra_tracker/CMakeFiles/dynamic_reconfigure_generate_messages_eus.dir/rule
+	cd /home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/build && $(MAKE) -f CMakeFiles/Makefile2 astra_tracker/CMakeFiles/dynamic_reconfigure_generate_messages_eus.dir/rule
 .PHONY : astra_tracker/CMakeFiles/dynamic_reconfigure_generate_messages_eus.dir/rule
 
 # Convenience name for target.
@@ -194,12 +194,12 @@ dynamic_reconfigure_generate_messages_eus: astra_tracker/CMakeFiles/dynamic_reco
 
 # fast build rule for target.
 dynamic_reconfigure_generate_messages_eus/fast:
-	cd /home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/build && $(MAKE) -f astra_tracker/CMakeFiles/dynamic_reconfigure_generate_messages_eus.dir/build.make astra_tracker/CMakeFiles/dynamic_reconfigure_generate_messages_eus.dir/build
+	cd /home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/build && $(MAKE) -f astra_tracker/CMakeFiles/dynamic_reconfigure_generate_messages_eus.dir/build.make astra_tracker/CMakeFiles/dynamic_reconfigure_generate_messages_eus.dir/build
 .PHONY : dynamic_reconfigure_generate_messages_eus/fast
 
 # Convenience name for target.
 astra_tracker/CMakeFiles/dynamic_reconfigure_generate_messages_py.dir/rule:
-	cd /home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/build && $(MAKE) -f CMakeFiles/Makefile2 astra_tracker/CMakeFiles/dynamic_reconfigure_generate_messages_py.dir/rule
+	cd /home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/build && $(MAKE) -f CMakeFiles/Makefile2 astra_tracker/CMakeFiles/dynamic_reconfigure_generate_messages_py.dir/rule
 .PHONY : astra_tracker/CMakeFiles/dynamic_reconfigure_generate_messages_py.dir/rule
 
 # Convenience name for target.
@@ -209,12 +209,12 @@ dynamic_reconfigure_generate_messages_py: astra_tracker/CMakeFiles/dynamic_recon
 
 # fast build rule for target.
 dynamic_reconfigure_generate_messages_py/fast:
-	cd /home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/build && $(MAKE) -f astra_tracker/CMakeFiles/dynamic_reconfigure_generate_messages_py.dir/build.make astra_tracker/CMakeFiles/dynamic_reconfigure_generate_messages_py.dir/build
+	cd /home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/build && $(MAKE) -f astra_tracker/CMakeFiles/dynamic_reconfigure_generate_messages_py.dir/build.make astra_tracker/CMakeFiles/dynamic_reconfigure_generate_messages_py.dir/build
 .PHONY : dynamic_reconfigure_generate_messages_py/fast
 
 # Convenience name for target.
 astra_tracker/CMakeFiles/dynamic_reconfigure_gencfg.dir/rule:
-	cd /home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/build && $(MAKE) -f CMakeFiles/Makefile2 astra_tracker/CMakeFiles/dynamic_reconfigure_gencfg.dir/rule
+	cd /home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/build && $(MAKE) -f CMakeFiles/Makefile2 astra_tracker/CMakeFiles/dynamic_reconfigure_gencfg.dir/rule
 .PHONY : astra_tracker/CMakeFiles/dynamic_reconfigure_gencfg.dir/rule
 
 # Convenience name for target.
@@ -224,12 +224,12 @@ dynamic_reconfigure_gencfg: astra_tracker/CMakeFiles/dynamic_reconfigure_gencfg.
 
 # fast build rule for target.
 dynamic_reconfigure_gencfg/fast:
-	cd /home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/build && $(MAKE) -f astra_tracker/CMakeFiles/dynamic_reconfigure_gencfg.dir/build.make astra_tracker/CMakeFiles/dynamic_reconfigure_gencfg.dir/build
+	cd /home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/build && $(MAKE) -f astra_tracker/CMakeFiles/dynamic_reconfigure_gencfg.dir/build.make astra_tracker/CMakeFiles/dynamic_reconfigure_gencfg.dir/build
 .PHONY : dynamic_reconfigure_gencfg/fast
 
 # Convenience name for target.
 astra_tracker/CMakeFiles/dynamic_reconfigure_generate_messages_nodejs.dir/rule:
-	cd /home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/build && $(MAKE) -f CMakeFiles/Makefile2 astra_tracker/CMakeFiles/dynamic_reconfigure_generate_messages_nodejs.dir/rule
+	cd /home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/build && $(MAKE) -f CMakeFiles/Makefile2 astra_tracker/CMakeFiles/dynamic_reconfigure_generate_messages_nodejs.dir/rule
 .PHONY : astra_tracker/CMakeFiles/dynamic_reconfigure_generate_messages_nodejs.dir/rule
 
 # Convenience name for target.
@@ -239,12 +239,12 @@ dynamic_reconfigure_generate_messages_nodejs: astra_tracker/CMakeFiles/dynamic_r
 
 # fast build rule for target.
 dynamic_reconfigure_generate_messages_nodejs/fast:
-	cd /home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/build && $(MAKE) -f astra_tracker/CMakeFiles/dynamic_reconfigure_generate_messages_nodejs.dir/build.make astra_tracker/CMakeFiles/dynamic_reconfigure_generate_messages_nodejs.dir/build
+	cd /home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/build && $(MAKE) -f astra_tracker/CMakeFiles/dynamic_reconfigure_generate_messages_nodejs.dir/build.make astra_tracker/CMakeFiles/dynamic_reconfigure_generate_messages_nodejs.dir/build
 .PHONY : dynamic_reconfigure_generate_messages_nodejs/fast
 
 # Convenience name for target.
 astra_tracker/CMakeFiles/astra_tracker_gencfg.dir/rule:
-	cd /home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/build && $(MAKE) -f CMakeFiles/Makefile2 astra_tracker/CMakeFiles/astra_tracker_gencfg.dir/rule
+	cd /home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/build && $(MAKE) -f CMakeFiles/Makefile2 astra_tracker/CMakeFiles/astra_tracker_gencfg.dir/rule
 .PHONY : astra_tracker/CMakeFiles/astra_tracker_gencfg.dir/rule
 
 # Convenience name for target.
@@ -254,12 +254,12 @@ astra_tracker_gencfg: astra_tracker/CMakeFiles/astra_tracker_gencfg.dir/rule
 
 # fast build rule for target.
 astra_tracker_gencfg/fast:
-	cd /home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/build && $(MAKE) -f astra_tracker/CMakeFiles/astra_tracker_gencfg.dir/build.make astra_tracker/CMakeFiles/astra_tracker_gencfg.dir/build
+	cd /home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/build && $(MAKE) -f astra_tracker/CMakeFiles/astra_tracker_gencfg.dir/build.make astra_tracker/CMakeFiles/astra_tracker_gencfg.dir/build
 .PHONY : astra_tracker_gencfg/fast
 
 # Convenience name for target.
 astra_tracker/CMakeFiles/KCFTracker_node.dir/rule:
-	cd /home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/build && $(MAKE) -f CMakeFiles/Makefile2 astra_tracker/CMakeFiles/KCFTracker_node.dir/rule
+	cd /home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/build && $(MAKE) -f CMakeFiles/Makefile2 astra_tracker/CMakeFiles/KCFTracker_node.dir/rule
 .PHONY : astra_tracker/CMakeFiles/KCFTracker_node.dir/rule
 
 # Convenience name for target.
@@ -269,12 +269,12 @@ KCFTracker_node: astra_tracker/CMakeFiles/KCFTracker_node.dir/rule
 
 # fast build rule for target.
 KCFTracker_node/fast:
-	cd /home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/build && $(MAKE) -f astra_tracker/CMakeFiles/KCFTracker_node.dir/build.make astra_tracker/CMakeFiles/KCFTracker_node.dir/build
+	cd /home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/build && $(MAKE) -f astra_tracker/CMakeFiles/KCFTracker_node.dir/build.make astra_tracker/CMakeFiles/KCFTracker_node.dir/build
 .PHONY : KCFTracker_node/fast
 
 # Convenience name for target.
 astra_tracker/CMakeFiles/dynamic_reconfigure_generate_messages_lisp.dir/rule:
-	cd /home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/build && $(MAKE) -f CMakeFiles/Makefile2 astra_tracker/CMakeFiles/dynamic_reconfigure_generate_messages_lisp.dir/rule
+	cd /home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/build && $(MAKE) -f CMakeFiles/Makefile2 astra_tracker/CMakeFiles/dynamic_reconfigure_generate_messages_lisp.dir/rule
 .PHONY : astra_tracker/CMakeFiles/dynamic_reconfigure_generate_messages_lisp.dir/rule
 
 # Convenience name for target.
@@ -284,7 +284,7 @@ dynamic_reconfigure_generate_messages_lisp: astra_tracker/CMakeFiles/dynamic_rec
 
 # fast build rule for target.
 dynamic_reconfigure_generate_messages_lisp/fast:
-	cd /home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/build && $(MAKE) -f astra_tracker/CMakeFiles/dynamic_reconfigure_generate_messages_lisp.dir/build.make astra_tracker/CMakeFiles/dynamic_reconfigure_generate_messages_lisp.dir/build
+	cd /home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/build && $(MAKE) -f astra_tracker/CMakeFiles/dynamic_reconfigure_generate_messages_lisp.dir/build.make astra_tracker/CMakeFiles/dynamic_reconfigure_generate_messages_lisp.dir/build
 .PHONY : dynamic_reconfigure_generate_messages_lisp/fast
 
 src/KCF_Tracker.o: src/KCF_Tracker.cpp.o
@@ -293,7 +293,7 @@ src/KCF_Tracker.o: src/KCF_Tracker.cpp.o
 
 # target to build an object file
 src/KCF_Tracker.cpp.o:
-	cd /home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/build && $(MAKE) -f astra_tracker/CMakeFiles/KCFTracker_node.dir/build.make astra_tracker/CMakeFiles/KCFTracker_node.dir/src/KCF_Tracker.cpp.o
+	cd /home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/build && $(MAKE) -f astra_tracker/CMakeFiles/KCFTracker_node.dir/build.make astra_tracker/CMakeFiles/KCFTracker_node.dir/src/KCF_Tracker.cpp.o
 .PHONY : src/KCF_Tracker.cpp.o
 
 src/KCF_Tracker.i: src/KCF_Tracker.cpp.i
@@ -302,7 +302,7 @@ src/KCF_Tracker.i: src/KCF_Tracker.cpp.i
 
 # target to preprocess a source file
 src/KCF_Tracker.cpp.i:
-	cd /home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/build && $(MAKE) -f astra_tracker/CMakeFiles/KCFTracker_node.dir/build.make astra_tracker/CMakeFiles/KCFTracker_node.dir/src/KCF_Tracker.cpp.i
+	cd /home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/build && $(MAKE) -f astra_tracker/CMakeFiles/KCFTracker_node.dir/build.make astra_tracker/CMakeFiles/KCFTracker_node.dir/src/KCF_Tracker.cpp.i
 .PHONY : src/KCF_Tracker.cpp.i
 
 src/KCF_Tracker.s: src/KCF_Tracker.cpp.s
@@ -311,7 +311,7 @@ src/KCF_Tracker.s: src/KCF_Tracker.cpp.s
 
 # target to generate assembly for a file
 src/KCF_Tracker.cpp.s:
-	cd /home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/build && $(MAKE) -f astra_tracker/CMakeFiles/KCFTracker_node.dir/build.make astra_tracker/CMakeFiles/KCFTracker_node.dir/src/KCF_Tracker.cpp.s
+	cd /home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/build && $(MAKE) -f astra_tracker/CMakeFiles/KCFTracker_node.dir/build.make astra_tracker/CMakeFiles/KCFTracker_node.dir/src/KCF_Tracker.cpp.s
 .PHONY : src/KCF_Tracker.cpp.s
 
 src/KCF_Tracker_main.o: src/KCF_Tracker_main.cpp.o
@@ -320,7 +320,7 @@ src/KCF_Tracker_main.o: src/KCF_Tracker_main.cpp.o
 
 # target to build an object file
 src/KCF_Tracker_main.cpp.o:
-	cd /home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/build && $(MAKE) -f astra_tracker/CMakeFiles/KCFTracker_node.dir/build.make astra_tracker/CMakeFiles/KCFTracker_node.dir/src/KCF_Tracker_main.cpp.o
+	cd /home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/build && $(MAKE) -f astra_tracker/CMakeFiles/KCFTracker_node.dir/build.make astra_tracker/CMakeFiles/KCFTracker_node.dir/src/KCF_Tracker_main.cpp.o
 .PHONY : src/KCF_Tracker_main.cpp.o
 
 src/KCF_Tracker_main.i: src/KCF_Tracker_main.cpp.i
@@ -329,7 +329,7 @@ src/KCF_Tracker_main.i: src/KCF_Tracker_main.cpp.i
 
 # target to preprocess a source file
 src/KCF_Tracker_main.cpp.i:
-	cd /home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/build && $(MAKE) -f astra_tracker/CMakeFiles/KCFTracker_node.dir/build.make astra_tracker/CMakeFiles/KCFTracker_node.dir/src/KCF_Tracker_main.cpp.i
+	cd /home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/build && $(MAKE) -f astra_tracker/CMakeFiles/KCFTracker_node.dir/build.make astra_tracker/CMakeFiles/KCFTracker_node.dir/src/KCF_Tracker_main.cpp.i
 .PHONY : src/KCF_Tracker_main.cpp.i
 
 src/KCF_Tracker_main.s: src/KCF_Tracker_main.cpp.s
@@ -338,7 +338,7 @@ src/KCF_Tracker_main.s: src/KCF_Tracker_main.cpp.s
 
 # target to generate assembly for a file
 src/KCF_Tracker_main.cpp.s:
-	cd /home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/build && $(MAKE) -f astra_tracker/CMakeFiles/KCFTracker_node.dir/build.make astra_tracker/CMakeFiles/KCFTracker_node.dir/src/KCF_Tracker_main.cpp.s
+	cd /home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/build && $(MAKE) -f astra_tracker/CMakeFiles/KCFTracker_node.dir/build.make astra_tracker/CMakeFiles/KCFTracker_node.dir/src/KCF_Tracker_main.cpp.s
 .PHONY : src/KCF_Tracker_main.cpp.s
 
 # Help Target
@@ -379,6 +379,6 @@ help:
 # No rule that depends on this can have commands that come from listfiles
 # because they might be regenerated.
 cmake_check_build_system:
-	cd /home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/build && $(CMAKE_COMMAND) -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 0
+	cd /home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/build && $(CMAKE_COMMAND) -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 0
 .PHONY : cmake_check_build_system
 

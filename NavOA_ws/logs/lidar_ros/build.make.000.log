@@ -7,7 +7,7 @@ Scanning dependencies of target lidar_node
 [ 55%] Building CXX object CMakeFiles/lidar_node.dir/sdk/src/lidar/lidar_protocol.cpp.o
 [ 66%] Building CXX object CMakeFiles/lidar_node.dir/sdk/src/lidar.cpp.o
 [ 77%] Building CXX object CMakeFiles/lidar_node.dir/sdk/src/interface/serial/unix/interface_serial.cpp.o
-[ 88%] Linking CXX executable /home/rana/Robit_SlamNav/NavOA_ws/devel/.private/lidar_ros/lib/lidar_ros/lidar_node
-[100%] Linking CXX executable /home/rana/Robit_SlamNav/NavOA_ws/devel/.private/lidar_ros/lib/lidar_ros/lidar_client
+[ 88%] Linking CXX executable /home/ubuntu/Robit_SlamNav/NavOA_ws/devel/.private/lidar_ros/lib/lidar_ros/lidar_node
+[100%] Linking CXX executable /home/ubuntu/Robit_SlamNav/NavOA_ws/devel/.private/lidar_ros/lib/lidar_ros/lidar_client
 [100%] Built target lidar_node
 [100%] Built target lidar_client

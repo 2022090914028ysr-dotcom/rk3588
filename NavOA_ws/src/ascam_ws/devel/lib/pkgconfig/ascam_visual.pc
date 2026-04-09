@@ -1,4 +1,4 @@
-prefix=/home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/devel
+prefix=/home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/devel
 
 Name: ascam_visual
 Description: Description of ascam_visual

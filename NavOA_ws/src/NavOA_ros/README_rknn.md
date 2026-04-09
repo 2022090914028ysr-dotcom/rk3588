@@ -49,7 +49,7 @@
 # ȷ�� rknn-toolkit2 ��װ�ڵ�ǰ������������ /dev/rknpu*
 roslaunch NavOA_ros NavOA_gazebo_limo.launch \
   use_rknn:=true \
-  dune_rknn:=/home/rana/NavOA_ws2/src/NavOA_ros/example/gazebo_limo/pretrain_limo/model_5000_quant.rknn \
+  dune_rknn:=/home/ubuntu/NavOA_ws2/src/NavOA_ros/example/gazebo_limo/pretrain_limo/model_5000_quant.rknn \
   rknn_target:=rk3588 \
   rknn_core:=auto
 ```

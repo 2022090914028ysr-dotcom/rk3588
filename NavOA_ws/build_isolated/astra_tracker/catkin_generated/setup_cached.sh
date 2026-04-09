@@ -7,9 +7,6 @@
 # new environment variables
 
 # modified environment variables
-export CMAKE_PREFIX_PATH="/home/rana/Robit_SlamNav/NavOA_ws/devel_isolated/astra_tracker:$CMAKE_PREFIX_PATH"
-export LD_LIBRARY_PATH="/home/rana/Robit_SlamNav/NavOA_ws/devel_isolated/astra_tracker/lib:$LD_LIBRARY_PATH"
-export PKG_CONFIG_PATH="/home/rana/Robit_SlamNav/NavOA_ws/devel_isolated/astra_tracker/lib/pkgconfig:$PKG_CONFIG_PATH"
-export PYTHONPATH="/home/rana/Robit_SlamNav/NavOA_ws/devel_isolated/astra_tracker/lib/python3/dist-packages:$PYTHONPATH"
-export ROSLISP_PACKAGE_DIRECTORIES="/home/rana/Robit_SlamNav/NavOA_ws/devel_isolated/astra_tracker/share/common-lisp:$ROSLISP_PACKAGE_DIRECTORIES"
-export ROS_PACKAGE_PATH="/home/rana/Robit_SlamNav/NavOA_ws/src/ascam_ws/src/astra_tracker:$ROS_PACKAGE_PATH"
+export CMAKE_PREFIX_PATH="/home/ubuntu/Robit_SlamNav/NavOA_ws/devel_isolated/astra_tracker:$CMAKE_PREFIX_PATH"
+export ROSLISP_PACKAGE_DIRECTORIES="/home/ubuntu/Robit_SlamNav/NavOA_ws/devel_isolated/astra_tracker/share/common-lisp:$ROSLISP_PACKAGE_DIRECTORIES"
+export ROS_PACKAGE_PATH="/home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/src/astra_tracker:$ROS_PACKAGE_PATH"

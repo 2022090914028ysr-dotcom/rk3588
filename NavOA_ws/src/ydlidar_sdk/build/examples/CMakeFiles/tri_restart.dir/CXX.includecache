@@ -180,9 +180,9 @@ string
 map
 -
 
-/home/rana/Robit_SlamNav/NavOA_ws/src/ydlidar_sdk/examples/tri_restart.cpp
+/home/ubuntu/Robit_SlamNav/NavOA_ws/src/ydlidar_sdk/examples/tri_restart.cpp
 CYdLidar.h
-/home/rana/Robit_SlamNav/NavOA_ws/src/ydlidar_sdk/examples/CYdLidar.h
+/home/ubuntu/Robit_SlamNav/NavOA_ws/src/ydlidar_sdk/examples/CYdLidar.h
 iostream
 -
 string
@@ -192,7 +192,7 @@ algorithm
 cctype
 -
 core/base/timer.h
-/home/rana/Robit_SlamNav/NavOA_ws/src/ydlidar_sdk/examples/core/base/timer.h
+/home/ubuntu/Robit_SlamNav/NavOA_ws/src/ydlidar_sdk/examples/core/base/timer.h
 
 ydlidar_config.h
 
