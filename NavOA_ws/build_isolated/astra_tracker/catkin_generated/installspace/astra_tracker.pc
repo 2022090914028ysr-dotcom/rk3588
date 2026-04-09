@@ -1,0 +1,8 @@
+prefix=/home/ubuntu/Robit_SlamNav/NavOA_ws/install_isolated
+
+Name: astra_tracker
+Description: Description of astra_tracker
+Version: 0.0.0
+Cflags: -I${prefix}/include
+Libs: -L${prefix}/lib 
+Requires: 
