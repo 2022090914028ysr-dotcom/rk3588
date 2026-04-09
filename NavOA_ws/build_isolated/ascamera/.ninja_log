@@ -1,7 +1,0 @@
-# ninja log v7
-3	3045	1775123182943264038	CMakeFiles/ascamera_node.dir/src/TfTreeFrameIdInfo.cpp.o	e42b51d0533933d5
-3	5480	1775123182943264038	CMakeFiles/ascamera_node.dir/src/Camera.cpp.o	a108c486c85e9b4e
-2	12126	1775123182943264038	CMakeFiles/ascamera_node.dir/src/ascamera_node.cpp.o	853418db44d31024
-2	12812	1775123182943264038	CMakeFiles/ascamera_node.dir/src/CameraSrv.cpp.o	2d8dc067760b6fb5
-2	17226	1775123182943264038	CMakeFiles/ascamera_node.dir/src/CameraPublisher.cpp.o	e83e81be2eeb3ad0
-17226	17762	1775123200167579861	/home/ubuntu/Robit_SlamNav/NavOA_ws/devel_isolated/ascamera/lib/ascamera/ascamera_node	e93ce9e6abb1f20c

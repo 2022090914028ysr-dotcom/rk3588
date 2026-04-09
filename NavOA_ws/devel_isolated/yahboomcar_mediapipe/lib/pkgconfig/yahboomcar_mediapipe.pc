@@ -1,8 +1,0 @@
-prefix=/home/ubuntu/Robit_SlamNav/NavOA_ws/devel_isolated/yahboomcar_mediapipe
-
-Name: yahboomcar_mediapipe
-Description: Description of yahboomcar_mediapipe
-Version: 0.0.0
-Cflags: 
-Libs: -L${prefix}/lib 
-Requires: 
