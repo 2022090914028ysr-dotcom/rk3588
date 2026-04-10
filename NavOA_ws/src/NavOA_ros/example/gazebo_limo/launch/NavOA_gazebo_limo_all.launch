@@ -40,7 +40,7 @@
 
   <!-- Bridge /cmd_vel and IMU over /dev/ttyS6 to the other PC -->
   <node pkg="NavOA_ros" type="serial_cmd_vel_imu_bridge.py" name="serial_cmd_vel_imu_bridge" output="screen">
-    <param name="serial_port" value="/dev/ttyS6" />
+    <param name="serial_port" value="/dev/ttyS7" />
     <param name="baudrate" value="230400" />
     <!-- Publish IMU from serial onto /imu_serial; mux will prioritize this -->
     <param name="imu_topic" value="/imu_serial" />

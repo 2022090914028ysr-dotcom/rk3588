@@ -4,7 +4,7 @@
 """Bridge /cmd_vel and IMU data over a single serial port.
 
 From this PC:
-  - Read IMU CSV lines coming from the other PC via serial (default /dev/ttyS6)
+  - Read IMU CSV lines coming from the other PC via serial (default /dev/ttyS7)
     and publish them as sensor_msgs/Imu on /imu (or a configurable topic).
   - Subscribe to /cmd_vel and forward each command as a CSV line over the
     same serial port so the other PC can consume it.
@@ -54,7 +54,7 @@ class SerialCmdVelImuBridge(object):
             raise RuntimeError("pyserial is required for serial_cmd_vel_imu_bridge")
 
         # Parameters
-        self.port = rospy.get_param("~serial_port", "/dev/ttyS6")
+        self.port = rospy.get_param("~serial_port", "/dev/ttyS7")
         self.baudrate = rospy.get_param("~baudrate", 230400)
         self.serial_timeout = rospy.get_param("~serial_timeout", 0.1)
 
