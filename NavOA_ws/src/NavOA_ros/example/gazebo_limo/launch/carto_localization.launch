@@ -3,7 +3,7 @@
   <!-- Use muxed IMU by default; can still be overridden by caller -->
   <arg name="imu_topic" default="/imu_mux" />
   <arg name="odom_topic" default="/odom" />
-  <arg name="load_state_filename" default="$(find NavOA_ros)/example/gazebo_limo/maps/quan/limo_map.pbstream" />
+  <arg name="load_state_filename" default="$(find NavOA_ros)/example/gazebo_limo/maps/quezhu/officeMap.pbstream" />
   <arg name="configuration_basename" default="limo_localization_fast.lua" />
 
   <node name="cartographer_node" pkg="cartographer_ros"

@@ -13,7 +13,10 @@ find_package(catkin REQUIRED COMPONENTS
   std_msgs
   geometry_msgs
   nav_msgs
+  sensor_msgs
+  std_srvs
   tf
+  cartographer_ros_msgs
   dynamic_reconfigure
 )
 
@@ -170,6 +173,8 @@ catkin_install_python(PROGRAMS
   scripts/test_ref_speed.py
   scripts/voice_goal_router.py
   scripts/waypoint_capture_from_goal.py
+  scripts/localization_recovery.py
+  scripts/cartographer_reset_service.py
   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
 

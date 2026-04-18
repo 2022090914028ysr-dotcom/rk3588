@@ -28,13 +28,19 @@
 
   
 
-  <arg name="map_file" default="/home/ubuntu/Robit_SlamNav/NavOA_ws/src/NavOA_ros/example/gazebo_limo/maps/quan/limo_carto.yaml" />
+  <arg name="map_file" default="/home/ubuntu/Robit_SlamNav/NavOA_ws/src/NavOA_ros/example/gazebo_limo/maps/quezhu/officeMap.yaml" />
   <include file="$(find NavOA_ros)/example/gazebo_limo/launch/global_planner.launch">
     <arg name="map_file" value="$(arg map_file)" /> 
   </include>
 
   <include file="$(find NavOA_ros)/example/gazebo_limo/launch/carto_localization.launch" />
 
+  <include file="$(find NavOA_ros)/launch/localization_recovery.launch">
+    <param name="localization_mode" value="cartographer" />
+    <param name="base_frame" value="base_footprint" />
+    <param name="publish_initialpose" value="true" />
+    <param name="cartographer_reset_service" value="" />
+  </include>
 
   <!-- Real robot command bridge listening on /cmd_vel -->
 

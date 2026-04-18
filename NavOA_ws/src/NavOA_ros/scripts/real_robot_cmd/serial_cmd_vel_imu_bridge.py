@@ -114,7 +114,7 @@ class SerialCmdVelImuBridge(object):
         w = msg.angular.z
         line = "{:.6f},{:.6f},{:.6f}\n".format(vx, vy, w)
         rospy.loginfo_throttle(
-            0.5,
+            0.0,
             "[serial_cmd_vel_imu_bridge] Forwarding cmd_vel: vx=%.3f vy=%.3f w=%.3f as '%s'",
             vx,
             vy,

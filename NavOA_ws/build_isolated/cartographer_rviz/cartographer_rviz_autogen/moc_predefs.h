@@ -365,7 +365,6 @@
 #define __cpp_runtime_arrays 198712
 #define __UINT64_TYPE__ long unsigned int
 #define __UINT32_C(c) c ## U
-#define ARCHITECTURE_ID "aarch64"
 #define __INTMAX_MAX__ 0x7fffffffffffffffL
 #define __cpp_alias_templates 200704
 #define __BYTE_ORDER__ __ORDER_LITTLE_ENDIAN__

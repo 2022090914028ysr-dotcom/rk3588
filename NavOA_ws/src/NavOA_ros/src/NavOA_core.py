@@ -143,6 +143,18 @@ class NavOA_core:
         self.external_last_time = rospy.Time(0)
         self.external_cmd = Twist()
 
+        self.goal_tolerance = float(rospy.get_param('~goal_tolerance', 0.20))
+
+        # Previous/return goal logic
+        self.previous_goal = None
+        self.goal_reached_time = rospy.Time(0)
+        self.return_to_previous_goal_timeout = float(
+            rospy.get_param('~return_to_previous_goal_timeout', 5.0)
+        )
+        self.return_to_previous_goal_enabled = bool(
+            rospy.get_param('~return_to_previous_goal_enabled', True)
+        )
+
         # Subscribers for external control
         rospy.Subscriber(self.external_control_topic, Twist, self.external_cmd_callback)
         rospy.Subscriber(self.external_control_enable_topic, Bool, self.external_enable_callback)
@@ -236,6 +248,39 @@ class NavOA_core:
                     r.sleep()
                     continue
 
+            if (
+                self.goal is not None
+                and self.robot_state is not None
+                and not self.planning_finished
+            ):
+                dist_to_goal = np.linalg.norm(self.goal[:2, 0] - self.robot_state[:2, 0])
+                if dist_to_goal <= self.goal_tolerance:
+                    rospy.loginfo(
+                        "[NavOA] Goal tolerance reached (%.3fm <= %.3fm); stopping.",
+                        dist_to_goal,
+                        self.goal_tolerance,
+                    )
+                    self.vel_pub.publish(Twist())
+                    self.goal_reached_time = rospy.Time.now()
+                    self.goal = None
+                    self._explicit_goal_active = False
+                    self.planning_finished = True
+                    r.sleep()
+                    continue
+
+            if (
+                self.planning_finished
+                and self.return_to_previous_goal_enabled
+                and self.previous_goal is not None
+                and self.goal_reached_time != rospy.Time(0)
+                and (now - self.goal_reached_time).to_sec() > self.return_to_previous_goal_timeout
+            ):
+                rospy.loginfo(
+                    "[NavOA] No new goal received after %.1fs, returning to previous goal",
+                    self.return_to_previous_goal_timeout,
+                )
+                self._return_to_previous_goal()
+
             rospy.loginfo_once(
                 "robot state received {}".format(self.robot_state.tolist())
             )
@@ -287,19 +332,35 @@ class NavOA_core:
                     # 1. 强制发送停车指令
                     self.vel_pub.publish(Twist())
                     
-                    # 2. 清除目标变量
+                    # 2. 保存到达时间，用于返回上一目标点
+                    self.goal_reached_time = rospy.Time.now()
+
+                    # 3. 清除当前目标变量
                     self.goal = None
 
-                    # 2.1 Clear explicit-goal latch so we won't move again until a new goal/path arrives
+                    # 4. Clear explicit-goal latch so we won't move again until a new goal/path arrives
                     self._explicit_goal_active = False
                     
-                    # 3. 设置标志位为 True。这将导致下一次循环进入 "waiting for NEW path" 状态
+                    # 5. 设置标志位为 True。这将导致下一次循环进入 "waiting for NEW path" 状态
                     #    直到 path_callback 或 goal_callback 将其重置为 False
                     self.planning_finished = True
                     
                     r.sleep()
                     continue
                 # --------------------------------
+
+                dist_to_goal = (
+                    np.linalg.norm(self.goal[:2, 0] - self.robot_state[:2, 0])
+                    if self.goal is not None
+                    else float('nan')
+                )
+                rospy.loginfo_throttle(
+                    1.0,
+                    "[NavOA] raw action v=%.3f w=%.3f dist=%.3f",
+                    action[0, 0],
+                    action[1, 0],
+                    dist_to_goal,
+                )
 
                 action = self.apply_goal_speed_limit(action)
 
@@ -492,8 +553,16 @@ class NavOA_core:
         y = goal.pose.position.y
         theta = self.quat_to_yaw(goal.pose.orientation)
 
+        if self.goal is not None:
+            try:
+                if not np.allclose(self.goal, np.array([[x], [y], [theta]])):
+                    self.previous_goal = self.goal.copy()
+            except Exception:
+                self.previous_goal = self.goal
+
         self.goal = np.array([[x], [y], [theta]])
         self._explicit_goal_active = True
+        self.goal_reached_time = rospy.Time(0)
 
         print(f"set NavOA goal: {[x, y, theta]}")
 
@@ -605,6 +674,21 @@ class NavOA_core:
         scaled_action[1, 0] = action[1, 0] * scale
 
         return scaled_action
+
+    def _return_to_previous_goal(self):
+        if self.previous_goal is None or self.robot_state is None:
+            return
+
+        rospy.loginfo(
+            "[NavOA] Fallback replan: returning to previous goal after timeout: %s",
+            self.previous_goal.T.tolist(),
+        )
+        self.goal = self.previous_goal.copy()
+        self.NavOA_planner.update_initial_path_from_goal(self.robot_state, self.goal)
+        self.NavOA_planner.reset()
+        self.planning_finished = False
+        self._explicit_goal_active = True
+        self.goal_reached_time = rospy.Time(0)
 
     def generate_dune_points_markers_msg(self):
 

@@ -7,8 +7,3 @@
 # new environment variables
 
 # modified environment variables
-export CMAKE_PREFIX_PATH="/home/ubuntu/Robit_SlamNav/NavOA_ws/devel_isolated/ascam_visual:$CMAKE_PREFIX_PATH"
-export LD_LIBRARY_PATH="/home/ubuntu/Robit_SlamNav/NavOA_ws/devel_isolated/ascam_visual/lib:$LD_LIBRARY_PATH"
-export PKG_CONFIG_PATH="/home/ubuntu/Robit_SlamNav/NavOA_ws/devel_isolated/ascam_visual/lib/pkgconfig:$PKG_CONFIG_PATH"
-export ROSLISP_PACKAGE_DIRECTORIES="/home/ubuntu/Robit_SlamNav/NavOA_ws/devel_isolated/ascam_visual/share/common-lisp:$ROSLISP_PACKAGE_DIRECTORIES"
-export ROS_PACKAGE_PATH="/home/ubuntu/Robit_SlamNav/NavOA_ws/src/ascam_ws/src/ascam_visual:$ROS_PACKAGE_PATH"

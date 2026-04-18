@@ -58,6 +58,8 @@ class VelocityFilter:
 
         self._last_cmd_time = rospy.Time(0)
         self._latest_output = Twist()
+        self._has_valid_cmd = False
+        self._timeout_published = False
 
         rospy.Subscriber(self.cmd_in_topic, Twist, self.callback)
         rospy.Subscriber(self.scan_topic, LaserScan, self.scan_callback)
@@ -85,9 +87,17 @@ class VelocityFilter:
         now = rospy.Time.now()
         if self._last_cmd_time != rospy.Time(0) and (now - self._last_cmd_time).to_sec() <= self.cmd_timeout:
             out = copy.deepcopy(self._latest_output)
+            self.pub.publish(out)
+            self._timeout_published = False
+        elif self._has_valid_cmd and not self._timeout_published:
+            # Publish a single zero command when the last valid command expires,
+            # then stop publishing until a new command arrives.
+            rospy.loginfo_once("[vel_filter] cmd_vel timeout expired; publishing single zero command.")
+            self.pub.publish(Twist())
+            self._timeout_published = True
+            self._has_valid_cmd = False
         else:
-            out = Twist()
-        self.pub.publish(out)
+            pass
 
     def scan_callback(self, msg: LaserScan):
         if not msg.ranges or msg.angle_increment == 0.0:

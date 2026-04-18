@@ -7,8 +7,8 @@ footprint: [[0.25, 0.25], [0.25, -0.25], [-0.25, -0.25], [-0.25, 0.25]]
 
 
 # 膨胀半径 (通用设置)
-inflation_radius: 0.4
-cost_scaling_factor: 3.0
+inflation_radius: 0.35
+cost_scaling_factor: 2.0
 
 # 这里的 scan 配置其实对于"只做静态全局规划"不是必须的
 # 但如果您想留着，必须写对格式

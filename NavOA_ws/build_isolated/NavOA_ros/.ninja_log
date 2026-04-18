@@ -1,20 +1,8 @@
 # ninja log v7
-5	78	1767668982720373292	/home/ubuntu/Robit_SlamNav/NavOA_ws/devel_isolated/NavOA_ros/include/NavOA_ros/RefSpeedConfig.h	2248447be67c6bd7
-5	78	1767668982720373292	/home/ubuntu/Robit_SlamNav/NavOA_ws/devel_isolated/NavOA_ros/share/NavOA_ros/docs/RefSpeedConfig.dox	2248447be67c6bd7
-5	78	1767668982720373292	/home/ubuntu/Robit_SlamNav/NavOA_ws/devel_isolated/NavOA_ros/share/NavOA_ros/docs/RefSpeedConfig-usage.dox	2248447be67c6bd7
-5	78	1767668982720373292	/home/ubuntu/Robit_SlamNav/NavOA_ws/devel_isolated/NavOA_ros/lib/python3/dist-packages/NavOA_ros/cfg/RefSpeedConfig.py	2248447be67c6bd7
-5	78	1767668982720373292	/home/ubuntu/Robit_SlamNav/NavOA_ws/devel_isolated/NavOA_ros/share/NavOA_ros/docs/RefSpeedConfig.wikidoc	2248447be67c6bd7
-41	2258	1768962052319484641	build.ninja	1709ddc528b9270c
-41	2258	1768962052319484641	/home/ubuntu/Robit_SlamNav/NavOA_ws/build_isolated/NavOA_ros/cmake_install.cmake	1709ddc528b9270c
-41	2258	1768962052319484641	/home/ubuntu/Robit_SlamNav/NavOA_ws/build_isolated/NavOA_ros/gtest/cmake_install.cmake	1709ddc528b9270c
-41	2258	1768962052319484641	/home/ubuntu/Robit_SlamNav/NavOA_ws/build_isolated/NavOA_ros/gtest/googlemock/cmake_install.cmake	1709ddc528b9270c
-41	2258	1768962052319484641	/home/ubuntu/Robit_SlamNav/NavOA_ws/build_isolated/NavOA_ros/gtest/googletest/cmake_install.cmake	1709ddc528b9270c
-41	2258	1768962052319484641	/home/ubuntu/Robit_SlamNav/NavOA_ws/build_isolated/NavOA_ros/CTestTestfile.cmake	1709ddc528b9270c
-41	2258	1768962052319484641	/home/ubuntu/Robit_SlamNav/NavOA_ws/build_isolated/NavOA_ros/gtest/CTestTestfile.cmake	1709ddc528b9270c
-41	2258	1768962052319484641	/home/ubuntu/Robit_SlamNav/NavOA_ws/build_isolated/NavOA_ros/gtest/googlemock/CTestTestfile.cmake	1709ddc528b9270c
-41	2258	1768962052319484641	/home/ubuntu/Robit_SlamNav/NavOA_ws/build_isolated/NavOA_ros/gtest/googletest/CTestTestfile.cmake	1709ddc528b9270c
-4	125	1768962052475487493	/home/ubuntu/Robit_SlamNav/NavOA_ws/devel_isolated/NavOA_ros/include/NavOA_ros/RefSpeedConfig.h	f216a97f120c35a
-4	125	1768962052475487493	/home/ubuntu/Robit_SlamNav/NavOA_ws/devel_isolated/NavOA_ros/share/NavOA_ros/docs/RefSpeedConfig.dox	f216a97f120c35a
-4	125	1768962052475487493	/home/ubuntu/Robit_SlamNav/NavOA_ws/devel_isolated/NavOA_ros/share/NavOA_ros/docs/RefSpeedConfig-usage.dox	f216a97f120c35a
-4	125	1768962052475487493	/home/ubuntu/Robit_SlamNav/NavOA_ws/devel_isolated/NavOA_ros/lib/python3/dist-packages/NavOA_ros/cfg/RefSpeedConfig.py	f216a97f120c35a
-4	125	1768962052475487493	/home/ubuntu/Robit_SlamNav/NavOA_ws/devel_isolated/NavOA_ros/share/NavOA_ros/docs/RefSpeedConfig.wikidoc	f216a97f120c35a
+2	87	1776306740341927113	/home/ubuntu/Robit_SlamNav/NavOA_ws/devel_isolated/NavOA_ros/include/NavOA_ros/RefSpeedConfig.h	f216a97f120c35a
+2	87	1776306740341927113	/home/ubuntu/Robit_SlamNav/NavOA_ws/devel_isolated/NavOA_ros/share/NavOA_ros/docs/RefSpeedConfig.dox	f216a97f120c35a
+2	87	1776306740341927113	/home/ubuntu/Robit_SlamNav/NavOA_ws/devel_isolated/NavOA_ros/share/NavOA_ros/docs/RefSpeedConfig-usage.dox	f216a97f120c35a
+2	87	1776306740341927113	/home/ubuntu/Robit_SlamNav/NavOA_ws/devel_isolated/NavOA_ros/lib/python3/dist-packages/NavOA_ros/cfg/RefSpeedConfig.py	f216a97f120c35a
+2	87	1776306740341927113	/home/ubuntu/Robit_SlamNav/NavOA_ws/devel_isolated/NavOA_ros/share/NavOA_ros/docs/RefSpeedConfig.wikidoc	f216a97f120c35a
+30	2013	1776484024583758908	build.ninja	34d8ac1c1517f20e
+4	1839	1776484024583758908	build.ninja	34d8ac1c1517f20e

@@ -1,0 +1,24 @@
+<launch>
+  <arg name="use_sim_time" default="false" />
+  <arg name="configuration_directory" default="$(find NavOA_ros)/example/gazebo_limo/config" />
+  <arg name="configuration_basename" default="limo_localization_fast.lua" />
+  <arg name="map_frame" default="map" />
+  <arg name="base_frame" default="base_footprint" />
+  <arg name="trajectory_id" default="0" />
+  <arg name="cartographer_namespace" default="" />
+  <arg name="start_after_finish" default="true" />
+  <arg name="initialpose_topic" default="/initialpose" />
+
+  <param name="use_sim_time" value="$(arg use_sim_time)" />
+
+  <node pkg="NavOA_ros" type="cartographer_reset_service.py" name="cartographer_reset_service" output="screen">
+    <param name="configuration_directory" value="$(arg configuration_directory)" />
+    <param name="configuration_basename" value="$(arg configuration_basename)" />
+    <param name="map_frame" value="$(arg map_frame)" />
+    <param name="base_frame" value="$(arg base_frame)" />
+    <param name="trajectory_id" value="$(arg trajectory_id)" />
+    <param name="cartographer_namespace" value="$(arg cartographer_namespace)" />
+    <param name="start_after_finish" value="$(arg start_after_finish)" />
+    <param name="initialpose_topic" value="$(arg initialpose_topic)" />
+  </node>
+</launch>

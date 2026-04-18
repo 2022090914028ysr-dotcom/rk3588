@@ -1,0 +1,15 @@
+# RTAB-Map mapping constraints for the default humanoid RGB-D pipeline.
+# Prefer visual registration and keep the graph planar to avoid map layering
+# from body bobbing and to avoid waiting on scan synchronization.
+
+Reg/Strategy: 0
+Reg/Force3DoF: true
+Grid/FromDepth: true
+RGBD/ForceOdom3DoF: true
+Vis/FeatureType: 8
+Vis/MaxFeatures: 1600
+Vis/MinInliers: 15
+Vis/MinInliersDistribution: 0.02
+Vis/InlierDistance: 0.08
+Vis/CorGuessWinSize: 0
+Vis/PnPReprojError: 1.5

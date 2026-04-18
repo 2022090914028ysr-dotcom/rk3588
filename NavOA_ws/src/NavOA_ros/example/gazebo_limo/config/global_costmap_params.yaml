@@ -26,7 +26,7 @@ global_costmap:
     
     
   inflation_layer:
-    inflation_radius: 0.8
+    inflation_radius: 0.40
     cost_scaling_factor: 2.0
     inscribed_radius: 0.35
     

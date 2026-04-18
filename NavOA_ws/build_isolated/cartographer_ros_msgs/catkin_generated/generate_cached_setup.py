@@ -12,7 +12,7 @@ try:
     from catkin.environment_cache import generate_environment_script
 except ImportError:
     # search for catkin package in all workspaces and prepend to path
-    for workspace in '/home/ubuntu/Robit_SlamNav/NavOA_ws/devel_isolated/astra_tracker;/home/ubuntu/Robit_SlamNav/NavOA_ws/devel_isolated/ascamera;/home/ubuntu/Robit_SlamNav/NavOA_ws/devel_isolated/ascam_visual;/home/ubuntu/Robit_SlamNav/NavOA_ws/devel_isolated/NavOA_ros;/opt/ros/noetic'.split(';'):
+    for workspace in '/home/ubuntu/Robit_SlamNav/NavOA_ws/devel_isolated/yahboomcar_mediapipe;/home/ubuntu/Robit_SlamNav/NavOA_ws/devel_isolated/yahboomcar_msgs;/home/ubuntu/Robit_SlamNav/NavOA_ws/devel_isolated/rf2o_laser_odometry;/home/ubuntu/Robit_SlamNav/NavOA_ws/devel_isolated/lidar_ros;/home/ubuntu/Robit_SlamNav/NavOA_ws/devel_isolated/cartographer_rviz;/home/ubuntu/Robit_SlamNav/NavOA_ws/devel_isolated/cartographer_ros;/home/ubuntu/Robit_SlamNav/NavOA_ws/devel_isolated/cartographer_ros_msgs;/home/ubuntu/Robit_SlamNav/NavOA_ws/devel_isolated/astra_tracker;/home/ubuntu/Robit_SlamNav/NavOA_ws/devel_isolated/ascamera;/home/ubuntu/Robit_SlamNav/NavOA_ws/devel_isolated/ascam_visual;/home/ubuntu/Robit_SlamNav/NavOA_ws/devel_isolated/NavOA_ros;/opt/ros/noetic'.split(';'):
         python_path = os.path.join(workspace, 'lib/python3/dist-packages')
         if os.path.isdir(os.path.join(python_path, 'catkin')):
             sys.path.insert(0, python_path)

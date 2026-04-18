@@ -1,0 +1,26 @@
+slam_toolbox:
+  ros__parameters:
+    mode: mapping #to use localization, change to "localization"
+    map_frame: map
+    odom_frame: odom
+    base_frame: base_footprint
+    scan_topic: /scan
+    use_sim_time: false
+    map_save_period_sec: 0.0
+    publish_period_sec: 0.05
+    transform_publish_period: 0.05
+    tf_buffer_timeout: 0.1
+    max_laser_range: 12.0
+    min_laser_range: 0.01
+    use_scan_tf: true
+    occupancy_grid_resolution: 0.05
+    scan_subscriber_queue_size: 5
+    map_file_name: ""
+    save_map_timeout_sec: 10.0
+    map_start_pose_x: 0.0
+    map_start_pose_y: 0.0
+    map_start_pose_a: 0.0
+    initial_pose_x: 0.0
+    initial_pose_y: 0.0
+    initial_pose_a: 0.0
+    serialize_map: false

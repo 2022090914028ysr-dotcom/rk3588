@@ -1,0 +1,19 @@
+# RGB-D + IMU odometry tuning for humanoid mapping.
+# The key constraint is to keep odometry planar and filtered so walking-induced
+# bobbing does not create stacked map layers.
+
+Odom/Strategy: 0
+Odom/FilteringStrategy: 1
+Odom/GuessMotion: false
+Odom/ResetCountdown: 1
+Odom/KeyFrameThr: 0.6
+Odom/ImageDecimation: 1
+RGBD/ForceOdom3DoF: true
+Reg/Force3DoF: true
+Vis/FeatureType: 8
+Vis/MaxFeatures: 1600
+Vis/MinInliers: 15
+Vis/MinInliersDistribution: 0.02
+Vis/InlierDistance: 0.08
+Vis/CorGuessWinSize: 0
+Vis/PnPReprojError: 1.5
