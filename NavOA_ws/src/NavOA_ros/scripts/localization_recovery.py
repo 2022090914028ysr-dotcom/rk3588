@@ -188,8 +188,14 @@ class LocalizationRecoveryNode(object):
                 reset_srv = rospy.ServiceProxy(self.cartographer_reset_service, Trigger)
                 response = reset_srv()
                 rospy.loginfo('Cartographer reset service returned: success=%s, message=%s', response.success, response.message)
+                if not response.success:
+                    rospy.logwarn('Cartographer relocalization failed to restart Cartographer: %s', response.message)
+                    self.localization_status = 'LOST'
+                    self.publish_status(self.localization_status)
             except Exception as ex:
                 rospy.logwarn('Cartographer reset service not available: %s', ex)
+                self.localization_status = 'LOST'
+                self.publish_status(self.localization_status)
         else:
             rospy.loginfo('Published initialpose for Cartographer relocalization')
 

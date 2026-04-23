@@ -1,24 +1,26 @@
 <launch>
   <arg name="use_sim_time" default="false" />
   <arg name="configuration_directory" default="$(find NavOA_ros)/example/gazebo_limo/config" />
-  <arg name="configuration_basename" default="limo_localization_fast.lua" />
+  <arg name="normal_configuration_basename" default="limo_localization_fast.lua" />
+  <arg name="relocalization_configuration_basename" default="limo_localization_fast.lua" />
+  <arg name="cartographer_launch" default="$(find NavOA_ros)/example/gazebo_limo/launch/carto_localization.launch" />
+  <arg name="cartographer_namespace" default="" />
   <arg name="map_frame" default="map" />
   <arg name="base_frame" default="base_footprint" />
-  <arg name="trajectory_id" default="0" />
-  <arg name="cartographer_namespace" default="" />
-  <arg name="start_after_finish" default="true" />
+  <arg name="relocalization_hold" default="15.0" />
   <arg name="initialpose_topic" default="/initialpose" />
 
   <param name="use_sim_time" value="$(arg use_sim_time)" />
 
   <node pkg="NavOA_ros" type="cartographer_reset_service.py" name="cartographer_reset_service" output="screen">
     <param name="configuration_directory" value="$(arg configuration_directory)" />
-    <param name="configuration_basename" value="$(arg configuration_basename)" />
+    <param name="normal_configuration_basename" value="$(arg normal_configuration_basename)" />
+    <param name="relocalization_configuration_basename" value="$(arg relocalization_configuration_basename)" />
+    <param name="cartographer_launch" value="$(arg cartographer_launch)" />
+    <param name="cartographer_namespace" value="$(arg cartographer_namespace)" />
     <param name="map_frame" value="$(arg map_frame)" />
     <param name="base_frame" value="$(arg base_frame)" />
-    <param name="trajectory_id" value="$(arg trajectory_id)" />
-    <param name="cartographer_namespace" value="$(arg cartographer_namespace)" />
-    <param name="start_after_finish" value="$(arg start_after_finish)" />
+    <param name="relocalization_hold" value="$(arg relocalization_hold)" />
     <param name="initialpose_topic" value="$(arg initialpose_topic)" />
   </node>
 </launch>

@@ -5,10 +5,10 @@ options = {
   map_builder = MAP_BUILDER,
   trajectory_builder = TRAJECTORY_BUILDER,
   map_frame = "map",
-  tracking_frame = "base_footprint",     -- ✅ 与你的 TF 树一致
-  published_frame = "base_footprint",              -- Cartographer 发布 map->odom
+  tracking_frame = "imu_link",     -- ✅ 与你的 TF 树一致
+  published_frame = "odom",              -- Cartographer 发布 map->odom
   odom_frame = "odom",                   -- 接收 /odom topic
-  provide_odom_frame = true,            -- ✅ false：由 vins_to_odom 提供 odom->base_footprint
+  provide_odom_frame = false,            -- ✅ false：由 vins_to_odom 提供 odom->base_footprint
   publish_frame_projected_to_2d = false,
   use_pose_extrapolator = true,
 
@@ -45,7 +45,7 @@ TRAJECTORY_BUILDER_2D.max_range = 8.0
 TRAJECTORY_BUILDER_2D.missing_data_ray_length = 8.5
 
 -- 启用 IMU（你已提供 /imu）
-TRAJECTORY_BUILDER_2D.use_imu_data = false
+TRAJECTORY_BUILDER_2D.use_imu_data = true
 
 -- 扫描匹配（可选，提升定位）
 TRAJECTORY_BUILDER_2D.use_online_correlative_scan_matching = true

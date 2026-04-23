@@ -1,6 +1,10 @@
 include "limo_2d.lua"
 
 -- ==================== 核心修复 ====================
+-- Use external odometry transform from odom -> base_footprint instead of letting Cartographer publish it.
+options.provide_odom_frame = false
+options.published_frame = "odom"
+
 -- [删除] 下面这行会导致崩溃，因为你的 Cartographer 版本不识别它
 -- options.num_background_threads = 2 
 

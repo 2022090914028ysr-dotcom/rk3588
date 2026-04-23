@@ -35,11 +35,19 @@
 
   <include file="$(find NavOA_ros)/example/gazebo_limo/launch/carto_localization.launch" />
 
+  <include file="$(find NavOA_ros)/launch/cartographer_reset_service.launch">
+    <arg name="map_frame" value="map" />
+    <arg name="base_frame" value="base_footprint" />
+    <arg name="normal_configuration_basename" value="limo_localization_fast.lua" />
+    <arg name="relocalization_configuration_basename" value="limo_localization_fast.lua" />
+    <arg name="relocalization_hold" value="20.0" />
+  </include>
+
   <include file="$(find NavOA_ros)/launch/localization_recovery.launch">
     <param name="localization_mode" value="cartographer" />
     <param name="base_frame" value="base_footprint" />
     <param name="publish_initialpose" value="true" />
-    <param name="cartographer_reset_service" value="" />
+    <param name="cartographer_reset_service" value="/cartographer_reset" />
   </include>
 
   <!-- Real robot command bridge listening on /cmd_vel -->

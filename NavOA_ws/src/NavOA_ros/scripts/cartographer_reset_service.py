@@ -1,11 +1,12 @@
 #!/usr/bin/env python3
+import os
 import math
+import subprocess
 
 import rospy
 import tf
 from geometry_msgs.msg import Pose, PoseWithCovarianceStamped
-from std_srvs.srv import Trigger, TriggerResponse
-from cartographer_ros_msgs.srv import FinishTrajectory, FinishTrajectoryRequest, StartTrajectory, StartTrajectoryRequest
+from std_srvs.srv import Trigger, TriggerResponse, SetBool, SetBoolResponse
 
 
 def quaternion_to_yaw(quat):
@@ -25,19 +26,30 @@ class CartographerResetService(object):
         self.map_frame = rospy.get_param('~map_frame', 'map')
         self.base_frame = rospy.get_param('~base_frame', 'base_footprint')
         self.configuration_directory = rospy.get_param('~configuration_directory', '')
-        self.configuration_basename = rospy.get_param('~configuration_basename', '')
-        self.use_initial_pose = rospy.get_param('~use_initial_pose', True)
-        self.trajectory_id = rospy.get_param('~trajectory_id', 0)
+        self.normal_configuration_basename = rospy.get_param('~normal_configuration_basename', rospy.get_param('~configuration_basename', 'limo_2d.lua'))
+        self.relocalization_configuration_basename = rospy.get_param('~relocalization_configuration_basename', 'limo_2d_reloc.lua')
+        self.cartographer_launch = rospy.get_param('~cartographer_launch', '')
         self.cartographer_namespace = rospy.get_param('~cartographer_namespace', '')
-        self.start_after_finish = rospy.get_param('~start_after_finish', True)
+        self.cartographer_node_name = rospy.get_param('~cartographer_node_name', '/cartographer_node')
+        self.cartographer_occupancy_node_name = rospy.get_param('~cartographer_occupancy_node_name', '/cartographer_occupancy_grid_node')
+        self.use_initial_pose = rospy.get_param('~use_initial_pose', True)
+        self.relocalization_hold = rospy.get_param('~relocalization_hold', 15.0)
         self.publish_initialpose = rospy.get_param('~publish_initialpose', True)
         self.initialpose_topic = rospy.get_param('~initialpose_topic', '/initialpose')
+        self.current_mode = 'normal'
+        self.relocalization_deadline = None
+        self.cartographer_proc = None
 
         self.tf_listener = tf.TransformListener()
         self.initialpose_pub = rospy.Publisher(self.initialpose_topic, PoseWithCovarianceStamped, queue_size=1)
         self.reset_service = rospy.Service('/cartographer_reset', Trigger, self.on_reset)
+        self.mode_service = rospy.Service('/cartographer_set_mode', SetBool, self.on_set_mode)
+        self.timer = rospy.Timer(rospy.Duration(1.0), self.timer_callback)
 
-        rospy.loginfo('CartographerResetService ready: namespace=%s, trajectory_id=%s', self.cartographer_namespace, self.trajectory_id)
+        rospy.loginfo('CartographerResetService ready: namespace=%s, normal_config=%s, relocalization_config=%s, cartographer_launch=%s',
+                      self.cartographer_namespace,
+                      self.normal_configuration_basename, self.relocalization_configuration_basename,
+                      self.cartographer_launch)
         rospy.spin()
 
     def on_reset(self, req):
@@ -45,56 +57,89 @@ class CartographerResetService(object):
         if self.publish_initialpose:
             self.publish_initialpose_guess()
 
-        finished = self.finish_trajectory()
-        started = False
-        if self.start_after_finish:
-            started = self.start_trajectory()
+        success = self.restart_cartographer(self.relocalization_configuration_basename)
+        if success:
+            return TriggerResponse(success=True, message='Cartographer reset completed and relocalization restarted')
+        return TriggerResponse(success=False, message='Cartographer reset failed to restart Cartographer')
 
-        if finished or started or self.publish_initialpose:
-            return TriggerResponse(success=True, message='Cartographer reset completed')
+    def start_relocalization_mode(self):
+        rospy.loginfo('Starting Cartographer relocalization mode')
+        if self.current_mode == 'relocalization':
+            rospy.loginfo('Already in relocalization mode')
+            return True
 
-        return TriggerResponse(success=False, message='Cartographer reset did not perform any action')
+        success = self.restart_cartographer(self.relocalization_configuration_basename)
+        if success:
+            self.current_mode = 'relocalization'
+            self.relocalization_deadline = rospy.Time.now() + rospy.Duration(self.relocalization_hold)
+            rospy.loginfo('Cartographer relocalization mode active for %.1fs', self.relocalization_hold)
+        return success
 
-    def finish_trajectory(self):
-        service_name = self.service_name('finish_trajectory')
+    def switch_to_normal_mode(self):
+        if self.current_mode == 'normal':
+            return True
+        rospy.loginfo('Switching Cartographer back to normal mode')
+        success = self.restart_cartographer(self.normal_configuration_basename)
+        if success:
+            self.current_mode = 'normal'
+            self.relocalization_deadline = None
+        return success
+
+    def on_set_mode(self, req):
+        if req.data:
+            success = self.start_relocalization_mode()
+            msg = 'relocalization mode enabled' if success else 'failed to enable relocalization mode'
+        else:
+            success = self.switch_to_normal_mode()
+            msg = 'normal mode enabled' if success else 'failed to enable normal mode'
+        return SetBoolResponse(success=success, message=msg)
+
+    def timer_callback(self, event):
+        if self.current_mode == 'relocalization' and self.relocalization_deadline is not None:
+            if rospy.Time.now() >= self.relocalization_deadline:
+                self.switch_to_normal_mode()
+
+    def restart_cartographer(self, config_basename):
+        if not self.cartographer_launch:
+            rospy.logwarn('Cartographer restart skipped because cartographer_launch is not configured')
+            return False
+
+        self.kill_node(self.cartographer_node_name)
+        self.kill_node(self.cartographer_occupancy_node_name)
+        rospy.sleep(0.5)
+
+        if self.cartographer_proc is not None and self.cartographer_proc.poll() is None:
+            rospy.loginfo('Terminating previous cartographer launch process')
+            self.cartographer_proc.terminate()
+            try:
+                self.cartographer_proc.wait(timeout=3)
+            except subprocess.TimeoutExpired:
+                self.cartographer_proc.kill()
+
+        cmd = [
+            'roslaunch',
+            self.cartographer_launch,
+            'configuration_basename:=' + config_basename,
+        ]
+        rospy.loginfo('Starting Cartographer launch: %s', ' '.join(cmd))
         try:
-            rospy.wait_for_service(service_name, timeout=2.0)
-            finish_srv = rospy.ServiceProxy(service_name, FinishTrajectory)
-            req = FinishTrajectoryRequest()
-            req.trajectory_id = self.trajectory_id
-            resp = finish_srv(req)
-            rospy.loginfo('finish_trajectory returned %s: %s', resp.status.code, resp.status.message)
-            return resp.status.code == 0
+            self.cartographer_proc = subprocess.Popen(cmd, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, env=os.environ.copy())
+            rospy.loginfo('Cartographer restart command launched with pid=%s', self.cartographer_proc.pid)
         except Exception as ex:
-            rospy.logwarn('Cartographer finish_trajectory failed: %s', ex)
+            rospy.logwarn('Failed to launch Cartographer process: %s', ex)
             return False
+        return True
 
-    def start_trajectory(self):
-        if not self.configuration_directory or not self.configuration_basename:
-            rospy.logwarn('Cartographer start_trajectory skipped because configuration directory/basename is not set')
-            return False
-
-        service_name = self.service_name('start_trajectory')
+    def kill_node(self, node_name):
         try:
-            rospy.wait_for_service(service_name, timeout=2.0)
-            start_srv = rospy.ServiceProxy(service_name, StartTrajectory)
-            req = StartTrajectoryRequest()
-            req.configuration_directory = self.configuration_directory
-            req.configuration_basename = self.configuration_basename
-            req.use_initial_pose = self.use_initial_pose
-            req.initial_pose = self.seed_pose()
-            req.relative_to_trajectory_id = self.trajectory_id
-            resp = start_srv(req)
-            rospy.loginfo('start_trajectory returned %s: %s trajectory_id=%s', resp.status.code, resp.status.message, resp.trajectory_id)
-            return resp.status.code == 0
+            subprocess.check_call(['rosnode', 'kill', node_name], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+            rospy.loginfo('Killed ROS node %s', node_name)
+            return True
+        except subprocess.CalledProcessError:
+            rospy.logdebug('ROS node %s was not running or could not be killed', node_name)
         except Exception as ex:
-            rospy.logwarn('Cartographer start_trajectory failed: %s', ex)
-            return False
-
-    def service_name(self, name):
-        if self.cartographer_namespace:
-            return self.cartographer_namespace.rstrip('/') + '/' + name
-        return '/' + name
+            rospy.logwarn('Failed to kill ROS node %s: %s', node_name, ex)
+        return False
 
     def publish_initialpose_guess(self):
         pose = PoseWithCovarianceStamped()
