@@ -1,0 +1,37 @@
+<?xml version="1.0"?>
+<launch>
+  <param name="/use_sim_time" value="false" />
+
+
+  <node name="lidar_node" pkg="lidar_ros" type="lidar_node" output="screen" respawn="false">
+    <param name="serial_name" type="string" value="/dev/ttyS4"/>  
+    <param name="serial_baud" type="int" value="230400"/>  
+    <param name="frame_id" type="string" value="laser_frame"/>
+    <param name="counterclockwise" type="bool" value="true"/>
+    <param name="angle_min" type="double" value="-180.0" />
+    <param name="angle_max" type="double" value="180" />
+    <param name="range_min" type="double" value="0.1" />
+    <param name="range_max" type="double" value="15" />
+    <param name="resolution_fixed" type="bool" value="false"/>
+    <param name="angle_corp_string" type="string" value="" />
+  </node>
+
+
+  <node pkg="tf" type="static_transform_publisher" name="base_link_to_laser"
+    args="0.0 0.0 0.0 -1.57 0.0 0.0 /base_footprint /laser_frame 40" />
+
+
+  <node name="cartographer_node" pkg="cartographer_ros" type="cartographer_node" 
+        args="-configuration_directory $(find cartographer_ros)/configuration_files
+               -configuration_basename livox_2d.lua" output="screen">
+    <remap from="scan" to="/scan" />
+  </node>
+
+
+  <node name="cartographer_occupancy_grid_node" pkg="cartographer_ros"
+        type="cartographer_occupancy_grid_node" args="-resolution 0.05" />
+
+
+  <node name="rviz" pkg="rviz" type="rviz" required="false"
+        args="-d $(find cartographer_ros)/configuration_files/demo_2d.rviz" />
+</launch>

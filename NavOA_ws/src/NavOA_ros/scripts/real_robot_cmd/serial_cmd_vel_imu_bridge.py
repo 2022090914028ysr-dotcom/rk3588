@@ -210,7 +210,7 @@ class SerialCmdVelImuBridge(object):
 
     def _handle_imu_line(self, line: str):
         parts = line.split(",")
-        if len(parts) not in (10, 11):
+        if len(parts) < 10:
             rospy.logwarn_throttle(5.0, "Invalid IMU line: %s", line)
             return
 
@@ -225,7 +225,14 @@ class SerialCmdVelImuBridge(object):
             roll_f = float(roll)
             pitch_f = float(pitch)
             yaw_f = float(yaw)
-            device_stamp = float(parts[10]) if len(parts) == 11 else None
+            device_stamp = None
+            if len(parts) >= 11:
+                try:
+                    maybe_stamp = float(parts[-1])
+                    if maybe_stamp > 1e5:
+                        device_stamp = maybe_stamp
+                except ValueError:
+                    device_stamp = None
         except ValueError:
             rospy.logwarn_throttle(5.0, "Failed to parse IMU line: %s", line)
             return

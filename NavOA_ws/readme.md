@@ -179,6 +179,12 @@ taskset -c 4,5 roslaunch NavOA_ros NavOA_gazebo_limo_all.launch
 
 taskset -c 6,7 roslaunch NavOA_ros NavOA_gazebo_limo.launch
 
+
+
+rosrun tf tf_echo map odom 1
+rosrun tf tf_echo map imu_link 1
+
+
 roslaunch ascamera hp60c.launch
 
 taskset -c 6,7 python Ros_control/cmd_vel_bridge.py 

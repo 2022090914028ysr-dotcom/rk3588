@@ -73,7 +73,7 @@
         <!-- <remap from="/initial_path" to="/move_base/GlobalPlanner/plan"/> -->
 
     </node>
-    <include file="$(find NavOA_ros)/launch/cartographer_reset_service.launch">
+    <!-- <include file="$(find NavOA_ros)/launch/cartographer_reset_service.launch">
       <arg name="map_frame" value="map" />
       <arg name="base_frame" value="base_footprint" />
       <arg name="normal_configuration_basename" value="limo_localization_fast.lua" />
@@ -86,7 +86,7 @@
       <param name="base_frame" value="base_footprint" />
       <param name="publish_initialpose" value="true" />
       <param name="cartographer_reset_service" value="/cartographer_reset" />
-    </include>
-    <node name="rviz" pkg="rviz" type="rviz" args="-d $(find NavOA_ros)/example/gazebo_limo/rviz/limo_gazebo.rviz" />
+    </include> -->
+    <!-- <node name="rviz" pkg="rviz" type="rviz" args="-d $(find NavOA_ros)/example/gazebo_limo/rviz/limo_gazebo.rviz" /> -->
 
 </launch>

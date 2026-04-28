@@ -38,18 +38,17 @@ TRAJECTORY_BUILDER.pure_localization_trimmer = {
   max_submaps_to_keep = 2,
 }
 
--- 优化频率
-POSE_GRAPH.optimize_every_n_nodes = 20 
-
--- 采样率
-POSE_GRAPH.global_sampling_ratio = 0.015 
+-- 更多恢复能力：更频繁的全局匹配和更快的优化
+POSE_GRAPH.optimize_every_n_nodes = 20
+POSE_GRAPH.global_sampling_ratio = 0.05
 
 -- 约束构建
 POSE_GRAPH.constraint_builder.fast_correlative_scan_matcher.linear_search_window = 5.0
 POSE_GRAPH.constraint_builder.fast_correlative_scan_matcher.angular_search_window = math.rad(30.)
 POSE_GRAPH.constraint_builder.fast_correlative_scan_matcher.branch_and_bound_depth = 7
 
-POSE_GRAPH.constraint_builder.global_localization_min_score = 0.45
+-- 允许更早触发全局重定位，但仍保持局部约束稳定
+POSE_GRAPH.constraint_builder.global_localization_min_score = 0.40
 POSE_GRAPH.constraint_builder.min_score = 0.55
 
 POSE_GRAPH.constraint_builder.sampling_ratio = 0.3

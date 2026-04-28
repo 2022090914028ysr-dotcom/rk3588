@@ -1,0 +1,6 @@
+image: /home/ubuntu/Robit_SlamNav/carto_ws/map/Office_map.pgm
+resolution: 0.05
+origin: [-5.26348, -13.132, 0.0]
+negate: 0
+occupied_thresh: 0.65
+free_thresh: 0.196
