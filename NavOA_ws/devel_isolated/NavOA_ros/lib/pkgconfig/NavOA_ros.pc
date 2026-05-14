@@ -1,8 +1,0 @@
-prefix=/home/ubuntu/Robit_SlamNav/NavOA_ws/devel_isolated/NavOA_ros
-
-Name: NavOA_ros
-Description: Description of NavOA_ros
-Version: 0.0.0
-Cflags: -I/home/ubuntu/Robit_SlamNav/NavOA_ws/devel_isolated/NavOA_ros/include
-Libs: -L${prefix}/lib 
-Requires: 

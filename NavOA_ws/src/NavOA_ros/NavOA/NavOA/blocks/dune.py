@@ -38,7 +38,7 @@ try:
     # Try RKNNLite first (for newer versions)
     from rknnlite.api import RKNNLite
     RKNN = RKNNLite
-    print(f"[DUNE] Using RKNNLite API, constants available: {hasattr(RKNN, 'NPU_CORE_AUTO')}")
+    # print(f"[DUNE] Using RKNNLite API, constants available: {hasattr(RKNN, 'NPU_CORE_AUTO')}")
 except ImportError as e:
     print(f"[DUNE] RKNNLite import failed: {e}")
     try:

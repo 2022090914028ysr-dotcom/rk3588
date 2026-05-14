@@ -175,7 +175,7 @@ catkin_install_python(PROGRAMS
   scripts/voice_goal_router.py
   scripts/waypoint_capture_from_goal.py
   scripts/localization_recovery.py
-  scripts/cartographer_reset_service.py
+  
   scripts/error_collector.py
   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )

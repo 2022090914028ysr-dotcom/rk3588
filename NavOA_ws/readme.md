@@ -160,8 +160,14 @@ rosrun map_server map_saver -f /home/ubuntu/Robit_SlamNav/NavOA_ws/src/NavOA_ros
 
 #####################################################easy navigation launch file#####################################################
 cd NavOA_ws
+
+source /opt/ros/noetic/setup.bash
+
 rm -rf build_isolated/ devel_isolated/
+
 source devel_isolated/setup.bash
+
+catkin_make_isolated --install --use-ninja
 
 catkin_make_isolated --use-ninja
 
@@ -179,6 +185,11 @@ taskset -c 4,5 roslaunch NavOA_ros NavOA_gazebo_limo_all.launch
 
 taskset -c 6,7 roslaunch NavOA_ros NavOA_gazebo_limo.launch
 
+taskset -c 6,7 roslaunch cartographer_ros livox_2d_localization.launch
+
+roslaunch NavOA_ros navoa_nav_only.launch
+
+roslaunch cartographer_ros cartographer_guard.launch
 
 
 rosrun tf tf_echo map odom 1

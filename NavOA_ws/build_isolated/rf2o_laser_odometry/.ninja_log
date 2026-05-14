@@ -1,5 +1,0 @@
-# ninja log v7
-6	9484	1776255175243219332	CMakeFiles/rf2o_laser_odometry_node.dir/src/CLaserOdometry2DNode.cpp.o	7de9bbb6cd1e110f
-5	26288	1776255175243219332	CMakeFiles/rf2o_laser_odometry.dir/src/CLaserOdometry2D.cpp.o	a37b84caa99f3d5d
-26289	27101	1776255201527659635	/home/ubuntu/Robit_SlamNav/NavOA_ws/devel_isolated/rf2o_laser_odometry/lib/librf2o_laser_odometry.so	17d0136bacd2952a
-27101	27574	1776255202339673241	/home/ubuntu/Robit_SlamNav/NavOA_ws/devel_isolated/rf2o_laser_odometry/lib/rf2o_laser_odometry/rf2o_laser_odometry_node	cbd74beebb0b197

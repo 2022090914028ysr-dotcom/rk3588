@@ -51,6 +51,10 @@ class NavOA_core:
         self.rknn_target = rospy.get_param("~rknn_target", "")
         self.rknn_core = rospy.get_param("~rknn_core", "auto")
         self.refresh_initial_path = rospy.get_param("~refresh_initial_path", False)
+        self.control_rate = float(rospy.get_param("~control_rate", 50.0))
+        if self.control_rate <= 0.0:
+            rospy.logwarn("[NavOA] Invalid ~control_rate=%.3f, fallback to 50.0 Hz", self.control_rate)
+            self.control_rate = 50.0
         self.flip_angle = rospy.get_param("~flip_angle", False)
         self.include_initial_path_direction = rospy.get_param("~include_initial_path_direction", False)
         self.slow_down_radius = float(rospy.get_param("~slow_down_radius", "1.0"))
@@ -199,7 +203,8 @@ class NavOA_core:
 
     def run(self):
 
-        r = rospy.Rate(50)
+        r = rospy.Rate(self.control_rate)
+        rospy.loginfo("[NavOA] control loop rate target: %.1f Hz", self.control_rate)
 
         while not rospy.is_shutdown():
 

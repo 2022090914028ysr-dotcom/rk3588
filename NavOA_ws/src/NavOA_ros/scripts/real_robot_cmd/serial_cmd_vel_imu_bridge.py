@@ -16,16 +16,20 @@ Optional extended IMU line format:
     IMU,ax,ay,az,gx,gy,gz,roll,pitch,yaw,stamp_sec\n
 Expected cmd_vel line format sent to the other PC:
     CMD_VEL,linear_x,angular_z\n
+Optional JSON event line format from Nav bridge:
+    {"protocol":"xrobot-nav-jsonl-v1","msg_type":"event",...}\n
 """
 
 import threading
 import time
 import math
+import json
+from queue import Empty, Full, Queue
 
 import rospy
 from geometry_msgs.msg import Twist
 from sensor_msgs.msg import Imu
-from std_msgs.msg import Int32MultiArray
+from std_msgs.msg import Int32MultiArray, String
 
 try:
     import serial  # pyserial
@@ -58,25 +62,31 @@ class SerialCmdVelImuBridge(object):
 
         # Parameters
         self.port = rospy.get_param("~serial_port", "/dev/ttyS7")
-        self.baudrate = rospy.get_param("~baudrate", 230400)
-        self.serial_timeout = rospy.get_param("~serial_timeout", 0.1)
+        self.baudrate = rospy.get_param("~baudrate", 460800)
+        self.serial_timeout = rospy.get_param("~serial_timeout", 0.02)
+        self.cmd_send_rate_hz = rospy.get_param("~cmd_send_rate_hz", 30.0)
+        self.tx_queue_size = rospy.get_param("~tx_queue_size", 200)
+        self.serial_flush_interval = rospy.get_param("~serial_flush_interval", 0.05)
 
         # Topics
         self.cmd_vel_topic = rospy.get_param("~cmd_vel_topic", "/cmd_vel")
         self.button_topic = rospy.get_param("~button_topic", "/app_controller/button")
         # This is the IMU topic used by the rest of the stack; by default /imu
         self.imu_topic = rospy.get_param("~imu_topic", "/imu")
+        self.event_topic = rospy.get_param("~event_topic", "/nav_serial/event")
         self.imu_frame_id = rospy.get_param("~imu_frame_id", "imu_link")
         self.imu_time_offset = rospy.get_param("~imu_time_offset", 0.12)
         self.imu_min_dt = rospy.get_param("~imu_min_dt", 0.001)
         self.imu_max_future = rospy.get_param("~imu_max_future", 0.2)
         self.prefer_device_stamp = rospy.get_param("~prefer_device_stamp", True)
+        self.nav_json_protocol = rospy.get_param("~nav_json_protocol", "xrobot-nav-jsonl-v1")
         self.last_imu_stamp = None
 
         # Serial
         self.serial_lock = threading.Lock()
         self.serial_port = None
         self.running = True
+        self.tx_queue = Queue(maxsize=self.tx_queue_size)
 
         try:
             self.serial_port = serial.Serial(
@@ -91,12 +101,18 @@ class SerialCmdVelImuBridge(object):
 
         # ROS pub/sub
         self.imu_pub = rospy.Publisher(self.imu_topic, Imu, queue_size=50)
+        self.event_pub = rospy.Publisher(self.event_topic, String, queue_size=50)
         self.cmd_sub = rospy.Subscriber(
             self.cmd_vel_topic, Twist, self._cmd_vel_callback, queue_size=50
         )
         self.btn_sub = rospy.Subscriber(
             self.button_topic, Int32MultiArray, self._button_callback, queue_size=50
         )
+
+        self.writer_thread = threading.Thread(
+            target=self._serial_writer_loop, daemon=True
+        )
+        self.writer_thread.start()
 
         # Reader thread for IMU lines coming from the other PC
         self.reader_thread = threading.Thread(
@@ -107,7 +123,7 @@ class SerialCmdVelImuBridge(object):
         rospy.on_shutdown(self.shutdown)
 
         rospy.loginfo(
-            "serial_cmd_vel_imu_bridge running: IMU/cmd_vel/button over %s (offset=%.3fs, min_dt=%.4fs)",
+            "serial_cmd_vel_imu_bridge running: IMU/cmd_vel/button/event over %s (offset=%.3fs, min_dt=%.4fs)",
             self.port,
             self.imu_time_offset,
             self.imu_min_dt,
@@ -137,16 +153,7 @@ class SerialCmdVelImuBridge(object):
             line.strip(),
         )
         data = line.encode("ascii", errors="ignore")
-
-        with self.serial_lock:
-            if not self.serial_port or not self.serial_port.is_open:
-                rospy.logwarn_throttle(5.0, "Serial not open, cannot send cmd_vel")
-                return
-            try:
-                self.serial_port.write(data)
-                self.serial_port.flush()
-            except Exception as e:
-                rospy.logerr_throttle(5.0, "Error writing cmd_vel to serial: %s", e)
+        self._enqueue_tx("cmd", data)
 
     def _button_callback(self, msg: "Int32MultiArray"):
         try:
@@ -157,12 +164,7 @@ class SerialCmdVelImuBridge(object):
             event_type = int(data[1])
             line = f"BUTTON,{button_id},{event_type}\n"
             payload = line.encode("ascii", errors="ignore")
-            with self.serial_lock:
-                if not self.serial_port or not self.serial_port.is_open:
-                    rospy.logwarn_throttle(5.0, "Serial not open, cannot send button")
-                    return
-                self.serial_port.write(payload)
-                self.serial_port.flush()
+            self._enqueue_tx("button", payload)
             rospy.loginfo_throttle(
                 0.5,
                 "[serial_cmd_vel_imu_bridge] Forwarding button: id=%d event=%d as '%s'",
@@ -172,6 +174,73 @@ class SerialCmdVelImuBridge(object):
             )
         except Exception as e:
             rospy.logerr_throttle(5.0, "Error writing button to serial: %s", e)
+
+    def _enqueue_tx(self, msg_type: str, payload: bytes):
+        try:
+            self.tx_queue.put_nowait((msg_type, payload))
+        except Full:
+            if msg_type == "cmd":
+                # Keep command stream fresh under load by dropping oldest backlog.
+                try:
+                    self.tx_queue.get_nowait()
+                except Empty:
+                    pass
+                try:
+                    self.tx_queue.put_nowait((msg_type, payload))
+                except Full:
+                    pass
+            else:
+                rospy.logwarn_throttle(2.0, "TX queue full, dropping non-cmd message")
+
+    def _serial_writer_loop(self):
+        cmd_period = 0.0
+        if self.cmd_send_rate_hz > 0.0:
+            cmd_period = 1.0 / self.cmd_send_rate_hz
+
+        pending_cmd = None
+        next_cmd_time = time.monotonic()
+        last_flush_time = time.monotonic()
+
+        while not rospy.is_shutdown() and self.running:
+            try:
+                msg_type, payload = self.tx_queue.get(timeout=0.02)
+                if msg_type == "cmd":
+                    pending_cmd = payload
+                else:
+                    self._write_serial(payload)
+            except Empty:
+                pass
+            except Exception as e:
+                rospy.logerr_throttle(2.0, "Writer queue error: %s", e)
+
+            now = time.monotonic()
+            if pending_cmd is not None and now >= next_cmd_time:
+                self._write_serial(pending_cmd)
+                pending_cmd = None
+                next_cmd_time = now + cmd_period if cmd_period > 0.0 else now
+
+            if now - last_flush_time >= self.serial_flush_interval:
+                self._flush_serial()
+                last_flush_time = now
+
+    def _write_serial(self, payload: bytes):
+        with self.serial_lock:
+            if not self.serial_port or not self.serial_port.is_open:
+                rospy.logwarn_throttle(5.0, "Serial not open, cannot send message")
+                return
+            try:
+                self.serial_port.write(payload)
+            except Exception as e:
+                rospy.logerr_throttle(5.0, "Error writing to serial: %s", e)
+
+    def _flush_serial(self):
+        with self.serial_lock:
+            if not self.serial_port or not self.serial_port.is_open:
+                return
+            try:
+                self.serial_port.flush()
+            except Exception as e:
+                rospy.logwarn_throttle(5.0, "Error flushing serial: %s", e)
 
     # ------------------------------------------------------------------
     # serial IMU -> /imu
@@ -203,10 +272,50 @@ class SerialCmdVelImuBridge(object):
 
                 if line.startswith("IMU,"):
                     self._handle_imu_line(line)
+                elif line.startswith("{"):
+                    self._handle_json_line(line)
 
             except Exception as e:
                 rospy.logwarn_throttle(2.0, "Error in serial reader loop: %s", e)
                 time.sleep(0.1)
+
+    def _handle_json_line(self, line: str):
+        """Handle Nav JSONL messages and publish event payloads to ROS."""
+        try:
+            payload = json.loads(line)
+        except ValueError:
+            rospy.logwarn_throttle(5.0, "Failed to parse JSON line: %s", line)
+            return
+
+        if not isinstance(payload, dict):
+            return
+
+        protocol = str(payload.get("protocol", ""))
+        if protocol and protocol != self.nav_json_protocol:
+            return
+
+        msg_type = str(payload.get("msg_type", "")).lower()
+        if msg_type != "event":
+            return
+
+        event_msg = {
+            "protocol": protocol,
+            "msg_type": "event",
+            "subtype": str(payload.get("subtype", "UNKNOWN")),
+            "timestamp": payload.get("timestamp", None),
+            "seq": payload.get("seq", None),
+            "source": payload.get("source", "unknown"),
+            "data": payload.get("data", {}),
+        }
+
+        raw = json.dumps(event_msg, ensure_ascii=True, separators=(",", ":"))
+        self.event_pub.publish(String(data=raw))
+        rospy.loginfo_throttle(
+            0.5,
+            "[serial_cmd_vel_imu_bridge] Received Nav event: subtype=%s data=%s",
+            event_msg["subtype"],
+            event_msg["data"],
+        )
 
     def _handle_imu_line(self, line: str):
         parts = line.split(",")
@@ -290,6 +399,12 @@ class SerialCmdVelImuBridge(object):
         try:
             if self.reader_thread and self.reader_thread.is_alive():
                 self.reader_thread.join(timeout=1.0)
+        except Exception:
+            pass
+
+        try:
+            if self.writer_thread and self.writer_thread.is_alive():
+                self.writer_thread.join(timeout=1.0)
         except Exception:
             pass
 
