@@ -149,14 +149,15 @@ Important: After finishing mapping and before killing the current SLAM terminal,
 #Save MAP-----------------------------
 ```
 rosservice call /write_state \
-"filename: '/home/ubuntu/Robit_SlamNav/NavOA_ws/src/NavOA_ros/example/gazebo_limo/maps/quezhu/officeMap.pbstream'
+"filename: '/home/ubuntu/Robit_SlamNav/NavOA_ws/src/carto_ws/map/meeting_room/meeting_room.pbstream'
 include_unfinished_submaps: true"
 ```
-rosrun map_server map_saver -f /home/ubuntu/Robit_SlamNav/NavOA_ws/src/NavOA_ros/example/gazebo_limo/maps/quezhu/officeMap map:=/dynamic_map
+rosrun map_server map_saver -f /home/ubuntu/Robit_SlamNav/NavOA_ws/src/carto_ws/map/meeting_room/meeting_room
 
 # Must save as `.pbstream` format, and modify the save path to your own address.
 
-
+cd /home/ubuntu/Robit_SlamNav/NavOA_ws/src/carto_ws
+./save_map.sh meeting_room
 
 #####################################################easy navigation launch file#####################################################
 cd NavOA_ws
@@ -185,7 +186,9 @@ taskset -c 4,5 roslaunch NavOA_ros NavOA_gazebo_limo_all.launch
 
 taskset -c 6,7 roslaunch NavOA_ros NavOA_gazebo_limo.launch
 
-taskset -c 6,7 roslaunch cartographer_ros livox_2d_localization.launch
+taskset -c 5,6,7 roslaunch cartographer_ros livox_2d_localization.launch
+
+taskset -c 5,6,7 roslaunch cartographer_ros livox_2d.launch
 
 roslaunch NavOA_ros navoa_nav_only.launch
 
