@@ -1,0 +1,98 @@
+<launch>
+  <!--
+    Pure local obstacle-avoidance mode (no map, no goal, no global planner).
+    Starts lidar + vel_filter, with optional keyboard teleop.
+  -->
+
+  <arg name="use_sim_time" default="false"/>
+  <arg name="start_lidar" default="true"/>
+  <arg name="use_merged_scan" default="false"/>
+  <arg name="start_teleop" default="false"/>
+  <arg name="start_debug_monitor" default="true"/>
+
+  <arg name="scan_topic" default="/scan"/>
+  <arg name="cmd_in_topic" default="/cmd_vel_tem"/>
+  <arg name="cmd_out_topic" default="/cmd_vel_filtered"/>
+  <arg name="debug_topic" default="/vel_filter/debug"/>
+
+  <param name="use_sim_time" value="$(arg use_sim_time)"/>
+
+  <!-- Raw lidar driver -->
+  <include if="$(arg start_lidar)" file="$(find lidar_ros)/launch/lidar.launch" />
+
+  <!-- Optional scan merger (/scan + /Ultrasound_scan -> /merged_scan) -->
+  <include if="$(arg use_merged_scan)" file="$(find NavOA_ros)/example/gazebo_limo/launch/merged.launch" />
+
+  <node name="vel_filter" pkg="NavOA_ros" type="vel_filter.py" output="screen" launch-prefix="python3">
+    <param name="scan_topic" value="$(arg scan_topic)" />
+    <param name="cmd_in_topic" value="$(arg cmd_in_topic)" />
+    <param name="cmd_out_topic" value="$(arg cmd_out_topic)" />
+
+    <param name="cmd_timeout" value="0.5" />
+    <param name="publish_rate" value="100.0" />
+    <param name="debug_topic" value="$(arg debug_topic)" />
+
+    <param name="enable_forward_safety" value="true" />
+    <!-- Lidar zero-angle is rotated relative to robot forward; align sectors to robot front. -->
+    <param name="front_center_angle" value="1.57" />
+    <param name="forward_stop_distance" value="0.40" />
+    <param name="forward_slow_distance" value="0.60" />
+    <param name="forward_stop_release_distance" value="0.75" />
+    <param name="front_half_angle" value="0.70" />
+
+    <param name="reverse_obstacle_distance" value="0.45" />
+    <param name="enable_auto_reverse" value="false" />
+    <param name="auto_reverse_speed" value="-0.15" />
+
+    <param name="max_forward_speed" value="0.3" />
+    <param name="max_angular_speed" value="0.5" />
+    <param name="stop_turn_when_forward_blocked" value="true" />
+
+    <!-- Reactive steering toward more open side based on scan sectors -->
+    <param name="enable_free_space_steer" value="true" />
+    <param name="steer_scan_half_angle" value="1.57" />
+    <param name="steer_deadzone" value="0.30" />
+    <param name="steer_gain" value="1.2" />
+    <param name="steer_max_angular" value="0.5" />
+    <param name="steer_activation_distance" value="0.70" />
+    <param name="steer_release_distance" value="0.90" />
+    <param name="steer_forward_speed" value="0.05" />
+    <param name="enable_turn_search_when_blocked" value="true" />
+    <param name="turn_search_angular" value="0.35" />
+  </node>
+
+
+
+  <!-- Optional keyboard teleop. Publishes into vel_filter input topic. -->
+  <node if="$(arg start_teleop)" name="teleop_twist_keyboard" pkg="teleop_twist_keyboard" type="teleop_twist_keyboard.py" output="screen">
+    <remap from="cmd_vel" to="$(arg cmd_in_topic)" />
+  </node>
+
+  <node if="$(arg start_debug_monitor)" name="vel_filter_debug_monitor" pkg="NavOA_ros" type="vel_filter_debug_monitor.py" output="screen" launch-prefix="python3">
+    <param name="debug_topic" value="$(arg debug_topic)" />
+  </node>
+
+  <!-- Bridge /cmd_vel and IMU over /dev/ttyS6 to the other PC -->
+  <node pkg="NavOA_ros" type="serial_cmd_vel_imu_bridge.py" name="serial_cmd_vel_imu_bridge" output="screen">
+    <param name="serial_port" value="/dev/ttyS7" />
+    <param name="baudrate" value="460800" />
+    <param name="serial_timeout" value="0.02" />
+    <param name="cmd_send_rate_hz" value="80.0" />
+    <param name="tx_queue_size" value="200" />
+    <param name="serial_flush_interval" value="0.05" />
+    <param name="cmd_vel_topic" value="$(arg cmd_out_topic)" />
+    <!-- Publish IMU from serial onto /imu_serial; mux will prioritize this -->
+    <param name="imu_topic" value="/imu_serial" />
+    <param name= "event_topic" value="/nav_serial/event" />
+  </node>
+
+  <!-- IMU mux: prefer serial IMU (/imu_serial), fall back to ROS /imu -->
+  <node pkg="NavOA_ros" type="imu_mux.py" name="imu_mux" output="screen">
+    <param name="primary_topic" value="/imu_serial" />
+    <param name="fallback_topic" value="/imu" />
+    <param name="output_topic" value="/imu_mux" />
+    <param name="timeout" value="0.2" />
+  </node>
+
+
+</launch>

@@ -3,10 +3,16 @@
 # Fill in x/y/yaw using RViz (2D Nav Goal) + waypoint_capture_from_goal.py.
 
 places:
-  kitchen:      { x: 5.934, y: -4.633, yaw: -1.971 }
+
+
   meeting_room: { x: 9.267, y: 1.357, yaw: -1.974 }
   living_room:  { x: 3.688, y: 7.067, yaw: 2.009 }
   balcony:      { x: 0.037, y: -3.027, yaw: -2.476 }
   bedroom:      { x: 11.566, y: -5.031, yaw: -0.364 }
   hall:         { x: 2.168, y: 4.208, yaw: 1.380 }
+
+  office: { x: 3.827, y: 0.347, yaw: 0.000 }
+  hall: { x: 3.588, y: -2.700, yaw: 0.000 }
+
+  kitchen: { x: 0.118, y: -3.582, yaw: 0.000 }
   

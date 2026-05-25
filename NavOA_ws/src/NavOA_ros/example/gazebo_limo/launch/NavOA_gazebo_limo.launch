@@ -21,28 +21,61 @@
     <arg name="rknn_core" default="auto"/>
     <arg name="refresh_initial_path" default='true'/>
     <arg name="control_rate" default="50.0"/>
+    <arg name="vel_filter_scan_topic" default="/merged_scan"/>
+    <arg name="vel_filter_cmd_out_topic" default="/cmd_vel"/>
+    <arg name="vel_filter_front_center_angle" default="0.0"/>
+    <arg name="vel_filter_enable_auto_reverse" default="true"/>
+    <arg name="vel_filter_enable_free_space_steer" default="false"/>
+    <arg name="return_to_previous_goal_enabled" default="true"/>
+    <arg name="goal_timeout_button_enabled" default="false"/>
+    <arg name="goal_timeout_button_topic" default="/app_controller/button"/>
+    <arg name="goal_timeout_button_id" default="9"/>
+    <arg name="goal_timeout_button_event_type" default="1"/>
+    <arg name="goal_timeout_button_release_event_type" default="0"/>
+    <arg name="goal_timeout_button_release_delay" default="0.10"/>
+    <arg name="goal_timeout_button_send_release" default="true"/>
 
     <node name="path_segment_publisher" pkg="NavOA_ros" type="path_segment_publisher.py" output="screen" launch-prefix="python3"/>
     <node name="vel_filter" pkg="NavOA_ros" type="vel_filter.py" output="screen" launch-prefix="python3">
-        <param name="scan_topic" value="/merged_scan" />
+      <param name="scan_topic" value="$(arg vel_filter_scan_topic)" />
         <param name="cmd_in_topic" value="/cmd_vel_tem" />
-        <param name="cmd_out_topic" value="/cmd_vel" />
+      <param name="cmd_out_topic" value="$(arg vel_filter_cmd_out_topic)" />
         <param name="cmd_timeout" value="0.5" />
         <param name="publish_rate" value="100.0" />
         <param name="enable_forward_safety" value="true" />
+      <param name="front_center_angle" value="$(arg vel_filter_front_center_angle)" />
         <param name="forward_stop_distance" value="0.40" />
         <param name="forward_slow_distance" value="0.60" />
+      <param name="forward_stop_release_distance" value="0.75" />
         <param name="front_half_angle" value="0.70" />
         <param name="reverse_obstacle_distance" value="0.45" />
-        <param name="enable_auto_reverse" value="true" />
+      <param name="enable_auto_reverse" value="$(arg vel_filter_enable_auto_reverse)" />
         <param name="auto_reverse_speed" value="-0.15" />
         <param name="max_forward_speed" value="0.3" />
         <param name="max_angular_speed" value="0.5" />
         <param name="stop_turn_when_forward_blocked" value="true" />
+      <param name="enable_free_space_steer" value="$(arg vel_filter_enable_free_space_steer)" />
+      <param name="steer_scan_half_angle" value="1.57" />
+      <param name="steer_deadzone" value="0.30" />
+      <param name="steer_gain" value="1.2" />
+      <param name="steer_max_angular" value="0.5" />
+      <param name="steer_activation_distance" value="0.70" />
+      <param name="steer_release_distance" value="0.90" />
+      <param name="steer_forward_speed" value="0.05" />
+      <param name="enable_turn_search_when_blocked" value="true" />
+      <param name="turn_search_angular" value="0.35" />
     </node>
 
     <node name='NavOA_control' pkg="NavOA_ros" type="NavOA_node.py" output="screen" launch-prefix="python3">
         <param name="require_explicit_goal" value="true" />
+      <param name="return_to_previous_goal_enabled" value="$(arg return_to_previous_goal_enabled)" />
+      <param name="goal_timeout_button_enabled" value="$(arg goal_timeout_button_enabled)" />
+      <param name="goal_timeout_button_topic" value="$(arg goal_timeout_button_topic)" />
+      <param name="goal_timeout_button_id" value="$(arg goal_timeout_button_id)" />
+      <param name="goal_timeout_button_event_type" value="$(arg goal_timeout_button_event_type)" />
+      <param name="goal_timeout_button_release_event_type" value="$(arg goal_timeout_button_release_event_type)" />
+      <param name="goal_timeout_button_release_delay" value="$(arg goal_timeout_button_release_delay)" />
+      <param name="goal_timeout_button_send_release" value="$(arg goal_timeout_button_send_release)" />
         <param name="slow_down_radius" value="5.0" />
         <param name="max_speed_scale" value="2" />
         <param name="min_speed_near_goal" value="0.08" />

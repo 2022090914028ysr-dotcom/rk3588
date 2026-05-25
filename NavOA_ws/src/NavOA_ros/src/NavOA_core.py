@@ -19,7 +19,7 @@ import numpy as np
 import traceback
 from NavOA.util import get_transform
 import tf
-from std_msgs.msg import Float32, Bool
+from std_msgs.msg import Float32, Bool, Int32MultiArray
 
 
 class NavOA_core:
@@ -158,6 +158,33 @@ class NavOA_core:
         self.return_to_previous_goal_enabled = bool(
             rospy.get_param('~return_to_previous_goal_enabled', True)
         )
+        self.goal_timeout_button_enabled = bool(
+            rospy.get_param('~goal_timeout_button_enabled', False)
+        )
+        self.goal_timeout_button_topic = rospy.get_param(
+            '~goal_timeout_button_topic', '/app_controller/button'
+        )
+        self.goal_timeout_button_id = int(
+            rospy.get_param('~goal_timeout_button_id', 9)
+        )
+        self.goal_timeout_button_event_type = int(
+            rospy.get_param('~goal_timeout_button_event_type', 1)
+        )
+        self.goal_timeout_button_release_event_type = int(
+            rospy.get_param('~goal_timeout_button_release_event_type', 0)
+        )
+        self.goal_timeout_button_release_delay = float(
+            rospy.get_param('~goal_timeout_button_release_delay', 0.10)
+        )
+        self.goal_timeout_button_send_release = bool(
+            rospy.get_param('~goal_timeout_button_send_release', True)
+        )
+        self.goal_timeout_button_sent = False
+        self.goal_timeout_button_standing_active = False
+        self.goal_timeout_button_release_timer = None
+        self.goal_timeout_button_pub = rospy.Publisher(
+            self.goal_timeout_button_topic, Int32MultiArray, queue_size=1
+        )
 
         # Subscribers for external control
         rospy.Subscriber(self.external_control_topic, Twist, self.external_cmd_callback)
@@ -267,6 +294,7 @@ class NavOA_core:
                     )
                     self.vel_pub.publish(Twist())
                     self.goal_reached_time = rospy.Time.now()
+                    self.goal_timeout_button_sent = False
                     self.goal = None
                     self._explicit_goal_active = False
                     self.planning_finished = True
@@ -275,16 +303,17 @@ class NavOA_core:
 
             if (
                 self.planning_finished
-                and self.return_to_previous_goal_enabled
-                and self.previous_goal is not None
                 and self.goal_reached_time != rospy.Time(0)
                 and (now - self.goal_reached_time).to_sec() > self.return_to_previous_goal_timeout
             ):
-                rospy.loginfo(
-                    "[NavOA] No new goal received after %.1fs, returning to previous goal",
-                    self.return_to_previous_goal_timeout,
-                )
-                self._return_to_previous_goal()
+                if self.goal_timeout_button_enabled and not self.goal_timeout_button_sent:
+                    self._publish_goal_timeout_button(reason="goal-timeout-stand")
+                elif self.return_to_previous_goal_enabled and self.previous_goal is not None:
+                    rospy.loginfo(
+                        "[NavOA] No new goal received after %.1fs, returning to previous goal",
+                        self.return_to_previous_goal_timeout,
+                    )
+                    self._return_to_previous_goal()
 
             rospy.loginfo_once(
                 "robot state received {}".format(self.robot_state.tolist())
@@ -339,6 +368,7 @@ class NavOA_core:
                     
                     # 2. 保存到达时间，用于返回上一目标点
                     self.goal_reached_time = rospy.Time.now()
+                    self.goal_timeout_button_sent = False
 
                     # 3. 清除当前目标变量
                     self.goal = None
@@ -464,6 +494,9 @@ class NavOA_core:
         if not path.poses:
             rospy.logwarn_throttle(1.0, "[NavOA] Received an empty path from Global Planner. Ignoring.")
             return
+        # Do not auto-release external hold for planner path refreshes.
+        # A hard stop should remain latched until an explicit release command
+        # or an explicit user goal/waypoint input arrives.
 
         initial_point_list = []
 
@@ -508,6 +541,7 @@ class NavOA_core:
                 # 收到新路径，激活规划逻辑
                 self.planning_finished = False
                 self._explicit_goal_active = True
+                self.goal_timeout_button_sent = False
                 
                 rospy.loginfo("[NavOA] Initial path updated successfully.")
             except IndexError as e:
@@ -520,6 +554,8 @@ class NavOA_core:
         '''
         Utilize multiple waypoints (goals) to set the initial path
         '''
+
+        self._ensure_walking_mode("new-waypoints")
 
         waypoints_list = [self.robot_state]
 
@@ -551,8 +587,11 @@ class NavOA_core:
             # 收到新航点，激活规划逻辑
             self.planning_finished = False
             self._explicit_goal_active = True
+            self.goal_timeout_button_sent = False
 
     def goal_callback(self, goal):
+
+        self._ensure_walking_mode("new-goal")
 
         x = goal.pose.position.x
         y = goal.pose.position.y
@@ -568,6 +607,7 @@ class NavOA_core:
         self.goal = np.array([[x], [y], [theta]])
         self._explicit_goal_active = True
         self.goal_reached_time = rospy.Time(0)
+        self.goal_timeout_button_sent = False
 
         print(f"set NavOA goal: {[x, y, theta]}")
 
@@ -694,6 +734,76 @@ class NavOA_core:
         self.planning_finished = False
         self._explicit_goal_active = True
         self.goal_reached_time = rospy.Time(0)
+        self.goal_timeout_button_sent = False
+
+    def _publish_button_event(self, event_type, reason):
+        msg = Int32MultiArray(
+            data=[self.goal_timeout_button_id, int(event_type)]
+        )
+        self.goal_timeout_button_pub.publish(msg)
+        rospy.loginfo(
+            "[NavOA] Sent button id=%d event=%d on %s (%s)",
+            self.goal_timeout_button_id,
+            int(event_type),
+            self.goal_timeout_button_topic,
+            reason,
+        )
+
+    def _goal_timeout_button_release_callback(self, _event):
+        self._publish_button_event(
+            self.goal_timeout_button_release_event_type,
+            "button-release",
+        )
+
+    def _send_goal_timeout_button_pair(self, reason):
+        if self.goal_timeout_button_release_timer is not None:
+            self.goal_timeout_button_release_timer.shutdown()
+            self.goal_timeout_button_release_timer = None
+
+        self._publish_button_event(self.goal_timeout_button_event_type, reason)
+
+        if self.goal_timeout_button_send_release:
+            delay = max(0.0, self.goal_timeout_button_release_delay)
+            self.goal_timeout_button_release_timer = rospy.Timer(
+                rospy.Duration(delay),
+                self._goal_timeout_button_release_callback,
+                oneshot=True,
+            )
+
+    def _publish_goal_timeout_button(self, reason="goal-timeout"):
+        self._send_goal_timeout_button_pair(reason)
+        self.goal_timeout_button_sent = True
+        self.goal_timeout_button_standing_active = True
+        rospy.loginfo(
+            "[NavOA] No new goal within %.1fs; toggled stand mode with button id=%d",
+            self.return_to_previous_goal_timeout,
+            self.goal_timeout_button_id,
+        )
+
+    def _ensure_walking_mode(self, reason):
+        # New navigation input should always release forced external hold,
+        # no matter whether it came from middleware or a manual RViz click.
+        if self.external_control_forced or self.external_control_active:
+            self.external_control_forced = False
+            self.external_control_active = False
+            self.external_cmd = Twist()
+            rospy.loginfo(
+                "[NavOA] New navigation input received; releasing external control hold (%s)",
+                reason,
+            )
+
+        if not self.goal_timeout_button_enabled:
+            return
+        if not self.goal_timeout_button_standing_active:
+            return
+
+        self._send_goal_timeout_button_pair(reason)
+        self.goal_timeout_button_standing_active = False
+        self.goal_timeout_button_sent = False
+        rospy.loginfo(
+            "[NavOA] New navigation input received; toggled walking mode with button id=%d",
+            self.goal_timeout_button_id,
+        )
 
     def generate_dune_points_markers_msg(self):
 

@@ -9,6 +9,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 find_package(catkin REQUIRED COMPONENTS
   rosconsole
   roscpp
+  rospy
   sensor_msgs
 )
 
@@ -46,6 +47,11 @@ install(TARGETS lidar_node lidar_client
   ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
   LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+)
+catkin_install_python(PROGRAMS
+  scripts/scan_bag_to_csv.py
+  scripts/scan_to_csv.py
+  DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
 install(DIRECTORY launch rules rviz
   DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}

@@ -74,3 +74,25 @@ sudo reboot
 | range_max  | lidar's max measure distance,default:15.0 meters|
 | range_min  | lidar's min measure distance,default:0.001 meters|
 | angle_corp_string  | if you want to filter some point's you can change it,it is anti-clockwise for the lidar.eg. you can set the value "30,60,90,120",you can remove the 30°-60° and 90°-120° points in the view|
+
+
+Record CSV in another terminal:
+cd /home/ubuntu/Robit_SlamNav/NavOA_ws
+source /opt/ros/noetic/setup.bash
+source devel_isolated/setup.bash
+python3 src/lidar_ros/scripts/scan_to_csv.py
+
+
+##If you want a fixed number of scans:
+rosrun lidar_ros scan_to_csv.py _max_scans:=500
+
+rosrun lidar_ros scan_to_csv.py _output_csv:=/home/ubuntu/Robit_SlamNav/NavOA_ws/src/lidar_ros/scan_data.csv
+
+
+If your goal is to collect data for later server-side localization, record a bag instead of only echoing the topic. Minimum is /scan, but for localization tests you usually also want odometry, TF, and IMU:
+
+rosbag record -O lidar_test.bag /scan /tf /tf_static /odom_rf2o /imu_mux
+
+rosbag record -O scan_only.bag /scan
+
+rosbag info scan_only.bag

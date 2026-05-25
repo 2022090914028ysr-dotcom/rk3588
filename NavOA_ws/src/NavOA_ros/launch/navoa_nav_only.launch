@@ -53,6 +53,19 @@
   <!-- NavOA control and path splitting, without localization bringup. -->
   <include file="$(find NavOA_ros)/example/gazebo_limo/launch/NavOA_gazebo_limo.launch">
     <arg name="use_sim_time" value="$(arg use_sim_time)"/>
+    <arg name="vel_filter_scan_topic" value="/scan"/>
+    <arg name="vel_filter_cmd_out_topic" value="/cmd_vel"/>
+    <arg name="vel_filter_front_center_angle" value="1.57"/>
+    <arg name="vel_filter_enable_auto_reverse" value="false"/>
+    <arg name="vel_filter_enable_free_space_steer" value="true"/>
+    <arg name="return_to_previous_goal_enabled" value="false"/>
+    <arg name="goal_timeout_button_enabled" value="true"/>
+    <arg name="goal_timeout_button_topic" value="/app_controller/button"/>
+    <arg name="goal_timeout_button_id" value="9"/>
+    <arg name="goal_timeout_button_event_type" value="1"/>
+    <arg name="goal_timeout_button_release_event_type" value="0"/>
+    <arg name="goal_timeout_button_release_delay" value="0.10"/>
+    <arg name="goal_timeout_button_send_release" value="true"/>
   </include>
 
   <!-- Bridge /cmd_vel and IMU over /dev/ttyS6 to the other PC -->
@@ -63,6 +76,8 @@
     <param name="cmd_send_rate_hz" value="80.0" />
     <param name="tx_queue_size" value="200" />
     <param name="serial_flush_interval" value="0.05" />
+    <param name="cmd_vel_topic" value="/cmd_vel" />
+    <param name="button_topic" value="/app_controller/button" />
     <!-- Publish IMU from serial onto /imu_serial; mux will prioritize this -->
     <param name="imu_topic" value="/imu_serial" />
     <param name= "event_topic" value="/nav_serial/event" />
