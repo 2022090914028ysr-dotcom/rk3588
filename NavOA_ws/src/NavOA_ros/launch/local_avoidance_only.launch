@@ -60,9 +60,7 @@
     <param name="enable_turn_search_when_blocked" value="true" />
     <param name="turn_search_angular" value="0.35" />
   </node>
-
-
-
+  
   <!-- Optional keyboard teleop. Publishes into vel_filter input topic. -->
   <node if="$(arg start_teleop)" name="teleop_twist_keyboard" pkg="teleop_twist_keyboard" type="teleop_twist_keyboard.py" output="screen">
     <remap from="cmd_vel" to="$(arg cmd_in_topic)" />
@@ -71,20 +69,7 @@
   <node if="$(arg start_debug_monitor)" name="vel_filter_debug_monitor" pkg="NavOA_ros" type="vel_filter_debug_monitor.py" output="screen" launch-prefix="python3">
     <param name="debug_topic" value="$(arg debug_topic)" />
   </node>
-
-  <!-- Bridge /cmd_vel and IMU over /dev/ttyS6 to the other PC -->
-  <node pkg="NavOA_ros" type="serial_cmd_vel_imu_bridge.py" name="serial_cmd_vel_imu_bridge" output="screen">
-    <param name="serial_port" value="/dev/ttyS7" />
-    <param name="baudrate" value="460800" />
-    <param name="serial_timeout" value="0.02" />
-    <param name="cmd_send_rate_hz" value="80.0" />
-    <param name="tx_queue_size" value="200" />
-    <param name="serial_flush_interval" value="0.05" />
-    <param name="cmd_vel_topic" value="$(arg cmd_out_topic)" />
-    <!-- Publish IMU from serial onto /imu_serial; mux will prioritize this -->
-    <param name="imu_topic" value="/imu_serial" />
-    <param name= "event_topic" value="/nav_serial/event" />
-  </node>
+  
 
   <!-- IMU mux: prefer serial IMU (/imu_serial), fall back to ROS /imu -->
   <node pkg="NavOA_ros" type="imu_mux.py" name="imu_mux" output="screen">

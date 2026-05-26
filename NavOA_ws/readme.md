@@ -192,7 +192,7 @@ taskset -c 5,6,7 roslaunch cartographer_ros livox_2d.launch
 
 roslaunch NavOA_ros navoa_nav_only.launch
 
-roslaunch cartographer_ros cartographer_guard.launch
+roslaunch cartographer_ros cartographer_guard_imu.launch
 
 
 rosrun tf tf_echo map odom 1
