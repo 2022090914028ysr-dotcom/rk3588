@@ -11,7 +11,7 @@
 
   <arg name="use_sim_time" default="false"/>
   <arg name="enable_map_server" default="false"/>
-  <arg name="map_file" default="/home/ubuntu/Robit_SlamNav/NavOA_ws/src/map/meeting_room/meeting_room.yaml" />
+  <arg name="map_file" default="/home/ubuntu/Robit_SlamNav/NavOA_ws/src/carto_ws/map/meeting_room/test5.yaml" />
   <arg name="global_map_topic" default="/map"/>
   <arg name="move_base_cmd_topic" default="/move_base_cmd_vel"/>
   <arg name="launch_rviz" default="false"/>
@@ -56,8 +56,8 @@
     <arg name="vel_filter_scan_topic" value="/scan"/>
     <arg name="vel_filter_cmd_out_topic" value="/cmd_vel"/>
     <arg name="vel_filter_front_center_angle" value="1.57"/>
-    <arg name="vel_filter_enable_auto_reverse" value="false"/>
-    <arg name="vel_filter_enable_free_space_steer" value="true"/>
+    <arg name="vel_filter_enable_auto_reverse" value="true"/>
+    <arg name="vel_filter_enable_free_space_steer" value="false"/>
     <arg name="return_to_previous_goal_enabled" value="false"/>
     <arg name="goal_timeout_button_enabled" value="true"/>
     <arg name="goal_timeout_button_topic" value="/app_controller/button"/>

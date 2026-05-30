@@ -62,7 +62,7 @@
       <param name="steer_activation_distance" value="0.70" />
       <param name="steer_release_distance" value="0.90" />
       <param name="steer_forward_speed" value="0.05" />
-      <param name="enable_turn_search_when_blocked" value="true" />
+      <param name="enable_turn_search_when_blocked" value="false" />
       <param name="turn_search_angular" value="0.35" />
     </node>
 

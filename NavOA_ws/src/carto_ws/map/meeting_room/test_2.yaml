@@ -1,0 +1,7 @@
+image: /home/ubuntu/Robit_SlamNav/NavOA_ws/src/carto_ws/map/meeting_room/test_2.pgm
+resolution: 0.050000
+origin: [-9.556625, -12.305812, 0.000000]
+negate: 0
+occupied_thresh: 0.65
+free_thresh: 0.196
+
