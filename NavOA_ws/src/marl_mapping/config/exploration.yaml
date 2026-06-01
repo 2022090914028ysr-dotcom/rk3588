@@ -1,0 +1,27 @@
+# Exploration configuration
+# See exploration_node.py for parameter descriptions
+
+robot_name: "car1"
+map_frame: "map"
+base_frame: "base_footprint"
+
+# Map parameters
+map_size_cm: 2500      # 25m x 25m
+map_resolution: 5       # cm/pixel
+unit_size_cm: 5
+
+# Exploration
+max_steps: 500
+linear_speed: 0.20
+angular_speed: 0.60
+goal_tolerance: 0.3      # meters
+min_frontier_size: 5
+exploration_method: "nearest"   # nearest, largest, combined
+
+# RL (optional)
+use_rl: false
+rl_model_path: ""
+
+# Visualization & Data
+visualization: true
+save_data: true
