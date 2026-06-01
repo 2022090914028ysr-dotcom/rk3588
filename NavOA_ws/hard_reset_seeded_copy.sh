@@ -61,7 +61,7 @@ BRIDGE_READY_TIMEOUT="${BRIDGE_READY_TIMEOUT:-5}"
 #   node    = 旧行为：-start_trajectory_with_default_topics=false + 手动 /start_trajectory
 CARTO_RESTART_MODE="${CARTO_RESTART_MODE:-service}"
 CONFIG_BASENAME="${CONFIG_BASENAME:-livox_2d_localization.lua}"
-PBSTREAM="${PBSTREAM:-/home/ubuntu/Robit_SlamNav/NavOA_ws/src/carto_ws/map/meeting_room/test4.pbstream}"
+PBSTREAM="${PBSTREAM:-/home/ubuntu/Robit_SlamNav/NavOA_ws/src/carto_ws/map/meeting_room/test8.pbstream}"
 SCAN_TOPIC="${SCAN_TOPIC:-/scan}"
 ODOM_TOPIC="${ODOM_TOPIC:-/odom_rf2o}"
 MAP_FRAME="${MAP_FRAME:-map}"
@@ -299,6 +299,32 @@ cleanup_pre_trigger() {
     timeout 1 rosnode kill "${node}" 2>/dev/null || true
   done
   kill_pattern_robust '__hr_tag=bridge' 'leftover_bridge'
+}
+
+# ----- ghost 节点清理 -----------------------------------------------------
+# guard 用 os._exit(0) 退出不走 rospy 注销，master 里残留 ghost 注册；进程已死，
+# pkill 找不到、rosnode kill 连不上也摘不掉，唯一能从 master 注销死节点的是
+# rosnode cleanup。它会交互确认（"Purge (y/[n])?"），用 yes 自动应答；只清死节点，
+# 绝不动活节点（活 cartographer / navigation / bridge 等都安全）。
+purge_dead_nodes() {
+  yes | timeout 10 rosnode cleanup >>"${LOG_FILE}" 2>&1 || true
+}
+
+# 重定位后清理 hard_reset 残留：SIGKILL 扫活进程兜底 -> rosnode kill 尽力优雅杀
+# -> rosnode cleanup 从 master 摘掉所有 ghost。三层兜底，确保最强清理不留残。
+cleanup_hard_reset_ghosts() {
+  log "[cleanup] post-recovery: purging residual /hard_reset_* nodes ..."
+  # 1) SIGKILL 任何仍存活的 guard 进程（正常情况下 guard 已 os._exit 自死，扫不到）
+  kill_pattern_robust '__hr_tag=guard' 'residual_hard_reset_guard'
+  # 2) 对仍列出的 hard_reset 节点尽力 rosnode kill（活的会被杀；ghost 会失败但无妨）
+  local node
+  for node in $(rosnode list 2>/dev/null | grep -E '^/hard_reset_' || true); do
+    log "[cleanup]   rosnode kill ${node}"
+    timeout 2 rosnode kill "${node}" 2>/dev/null || true
+  done
+  # 3) 关键：从 master 注销所有 ghost（rosnode kill 对死进程无效，必须 cleanup）
+  purge_dead_nodes
+  log "[cleanup] post-recovery purge done"
 }
 
 on_exit() {
@@ -1001,4 +1027,11 @@ while true; do
   else
     log "[guard] WARNING: cartographer_node may have failed to restart"
   fi
+
+  # 9) 重定位完成后等 5s 再清理本轮 guard 触发后 os._exit 留下的 ghost 注册
+  #    （等新 carto/轨迹稳定，避免清理与重定位收尾抢 master）
+  sleep 5
+  _t0="$(ts_ms)"
+  cleanup_hard_reset_ghosts
+  time_log "trigger: cleanup_hard_reset_ghosts" "${_t0}"
 done

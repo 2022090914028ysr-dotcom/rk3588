@@ -7,7 +7,7 @@
      rviz is required="false" so closing rviz does not bring the whole stack down. -->
 <launch>
   <arg name="launch_rviz" default="true" />
-  <arg name="map_file" default="/home/ubuntu/Robit_SlamNav/NavOA_ws/src/carto_ws/map/meeting_room/test4.yaml" />
+  <arg name="map_file" default="/home/ubuntu/Robit_SlamNav/NavOA_ws/src/carto_ws/map/meeting_room/test8.yaml" />
   <param name="/use_sim_time" value="false" />
 
   <node name="lidar_node" pkg="lidar_ros" type="lidar_node" output="screen" respawn="false">

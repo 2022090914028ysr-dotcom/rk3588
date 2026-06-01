@@ -2,3 +2,10 @@ build/
 devel/
 build_isolated/
 devel_isolated/
+install/
+install_isolated/
+log/
+logs/
+*.pyc
+__pycache__/
+*.zip

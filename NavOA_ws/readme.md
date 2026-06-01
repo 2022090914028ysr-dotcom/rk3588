@@ -154,7 +154,7 @@ include_unfinished_submaps: true"
 ```
 rosrun map_server map_saver -f /home/ubuntu/Robit_SlamNav/NavOA_ws/src/carto_ws/map/meeting_room/test7
 
-# Must save as `.pbstream` format, and modify the save path to your own address.
+## Must save as `.pbstream` format, and modify the save path to your own address.
 
 cd /home/ubuntu/Robit_SlamNav/NavOA_ws/src/carto_ws
 ./save_map.sh meeting_room
