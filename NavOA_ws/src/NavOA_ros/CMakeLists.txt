@@ -127,6 +127,8 @@ include_directories(
   ${catkin_INCLUDE_DIRS}
 )
 
+find_package(Python3 COMPONENTS Interpreter REQUIRED)
+
 ## Declare a C++ library
 # add_library(${PROJECT_NAME}
 #   src/${PROJECT_NAME}/NavOA_ros.cpp
@@ -164,51 +166,74 @@ include_directories(
 # all install targets should use catkin DESTINATION variables
 # See http://ros.org/doc/api/catkin/html/adv_user_guide/variables.html
 
-## Mark executable scripts (Python etc.) for installation
-## in contrast to setup.py, you can choose the destination
-catkin_install_python(PROGRAMS
-  scripts/teleop_bridge.py
-  scripts/velocity_publisher.py
-  scripts/velocity_subscriber.py
-  scripts/data_logger.py
-  scripts/map_pose_to_csv.py
-  scripts/test_ref_speed.py
-  scripts/voice_goal_router.py
-  scripts/waypoint_capture_from_goal.py
-  scripts/localization_recovery.py
-  scripts/vel_filter_debug_monitor.py
-  
-  scripts/error_collector.py
+## Compile Python bytecode and install only compiled artifacts.
+file(GLOB PYTHON_SCRIPT_FILES RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}/scripts
+  ${CMAKE_CURRENT_SOURCE_DIR}/scripts/*.py)
+
+set(PYTHON_SOURCE_DIRS
+  ${CMAKE_CURRENT_SOURCE_DIR}/scripts
+  ${CMAKE_CURRENT_SOURCE_DIR}/src
+)
+
+add_custom_target(compile_python_bytecode
+  COMMAND ${Python3_EXECUTABLE} -m compileall -b -f -q ${PYTHON_SOURCE_DIRS}
+  WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+  COMMENT "Compile Python sources into bytecode (.pyc)"
+  VERBATIM
+)
+
+set(PYTHON_WRAPPER_DIR ${CMAKE_CURRENT_BINARY_DIR}/pywrappers)
+file(MAKE_DIRECTORY ${PYTHON_WRAPPER_DIR})
+
+set(PYTHON_WRAPPER_FILES "")
+foreach(PYTHON_SCRIPT ${PYTHON_SCRIPT_FILES})
+  get_filename_component(PYTHON_NAME ${PYTHON_SCRIPT} NAME_WE)
+  set(PYTHON_WRAPPER ${PYTHON_WRAPPER_DIR}/${PYTHON_NAME})
+  add_custom_command(
+    OUTPUT ${PYTHON_WRAPPER}
+    COMMAND ${CMAKE_COMMAND} -E make_directory ${PYTHON_WRAPPER_DIR}
+    COMMAND ${CMAKE_COMMAND} -E echo "#!/usr/bin/env sh" > ${PYTHON_WRAPPER}
+    COMMAND ${CMAKE_COMMAND} -E echo "DIR=\"\$(cd \"\$(dirname \"\$0\")\" && pwd)\"" >> ${PYTHON_WRAPPER}
+    COMMAND ${CMAKE_COMMAND} -E echo "exec \"${Python3_EXECUTABLE}\" \"\${DIR}/../share/${PROJECT_NAME}/scripts/${PYTHON_NAME}.pyc\" \"\$@\"" >> ${PYTHON_WRAPPER}
+    COMMAND ${CMAKE_COMMAND} -E chmod +x ${PYTHON_WRAPPER}
+    DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/scripts/${PYTHON_SCRIPT}
+  )
+  list(APPEND PYTHON_WRAPPER_FILES ${PYTHON_WRAPPER})
+endforeach()
+
+add_custom_target(generate_python_wrappers ALL
+  DEPENDS ${PYTHON_WRAPPER_FILES}
+)
+add_dependencies(generate_python_wrappers compile_python_bytecode)
+
+install(PROGRAMS ${PYTHON_WRAPPER_FILES}
   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
 
-## Mark executables for installation
-## See http://docs.ros.org/melodic/api/catkin/html/howto/format1/building_executables.html
-# install(TARGETS ${PROJECT_NAME}_node
-#   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
-# )
+install(DIRECTORY scripts
+  DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
+  FILES_MATCHING PATTERN "*.pyc"
+  PATTERN "*.py" EXCLUDE
+  PATTERN "__pycache__" EXCLUDE
+)
 
-## Mark libraries for installation
-## See http://docs.ros.org/melodic/api/catkin/html/howto/format1/building_libraries.html
-# install(TARGETS ${PROJECT_NAME}
-#   ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
-#   LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
-#   RUNTIME DESTINATION ${CATKIN_GLOBAL_BIN_DESTINATION}
-# )
+install(DIRECTORY src
+  DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
+  FILES_MATCHING PATTERN "*.pyc"
+  PATTERN "*.py" EXCLUDE
+  PATTERN "__pycache__" EXCLUDE
+)
 
-## Mark cpp header files for installation
-# install(DIRECTORY include/${PROJECT_NAME}/
-#   DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION}
-#   FILES_MATCHING PATTERN "*.h"
-#   PATTERN ".svn" EXCLUDE
-# )
+install(DIRECTORY cfg launch maps
+  DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
+  PATTERN "*.cpp" EXCLUDE
+  PATTERN "*.cc" EXCLUDE
+  PATTERN "*.c" EXCLUDE
+  PATTERN "*.h" EXCLUDE
+  PATTERN "*.hpp" EXCLUDE
+)
 
-## Mark other files for installation (e.g. launch and bag files, etc.)
-# install(FILES
-#   # myfile1
-#   # myfile2
-#   DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
-# )
+## No raw Python source files are installed for production.
 
 #############
 ## Testing ##
