@@ -149,7 +149,7 @@ Important: After finishing mapping and before killing the current SLAM terminal,
 #Save MAP-----------------------------
 ```
 rosservice call /write_state \
-"filename: '/home/ubuntu/Robit_SlamNav/NavOA_ws/src/carto_ws/map/meeting_room/test7.pbstream'
+"filename: '/home/ubuntu/Robit_SlamNav/NavOA_ws/src/carto_ws/map/meeting_room/test10.pbstream'
 include_unfinished_submaps: true"
 ```
 rosrun map_server map_saver -f /home/ubuntu/Robit_SlamNav/NavOA_ws/src/carto_ws/map/meeting_room/test7
@@ -166,11 +166,12 @@ source /opt/ros/noetic/setup.bash
 
 rm -rf build_isolated/ devel_isolated/
 
-source devel_isolated/setup.bash
 
 catkin_make_isolated --install --use-ninja
 
 catkin_make_isolated --use-ninja
+
+source devel_isolated/setup.bash
 
 conda activate control 
 

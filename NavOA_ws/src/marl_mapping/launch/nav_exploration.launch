@@ -31,6 +31,9 @@
     <param name="exploration_method" value="$(arg exploration_method)" />
     <param name="visualization"      value="true" />
     <param name="save_data"          value="true" />
+
+    <!-- Plan monitoring: watch GlobalPlanner for empty plans -->
+    <param name="plan_watch_enabled" value="true" />
   </node>
 
   <!-- ============================================================ -->
