@@ -1,0 +1,73 @@
+global_costmap:
+  global_frame: map
+  robot_base_frame: base_footprint
+  update_frequency: 5.0
+  publish_frequency: 2.0
+  transform_tolerance: 1  
+  
+  
+
+  plugins:
+    - {name: static_layer, type: "costmap_2d::StaticLayer"}
+    - {name: obstacle_layer_scan, type: "costmap_2d::ObstacleLayer"}
+    - {name: obstacle_layer_camscan, type: "costmap_2d::ObstacleLayer"}
+    - {name: inflation_layer, type: "costmap_2d::InflationLayer"}
+    
+
+  static_map: true  
+  rolling_window: false  
+  
+
+  static_layer:
+    map_topic: "/map"
+    subscribe_to_updates: false
+    track_unknown_space: true
+    trinary_costmap: true
+    lethal_cost_threshold: 50
+    unknown_cost_value: -1
+    
+    
+  # ---- scan 障碍层：360° 激光雷达感知 ----
+  # combination_method=1: max(master, scan)，静态 LETHAL 不会被 FREE 覆盖
+  obstacle_layer_scan:
+    enabled: true
+    combination_method: 1
+    observation_sources: scan
+    scan:
+      data_type: LaserScan
+      topic: /scan
+      marking: true
+      clearing: true
+      inf_is_valid: true
+      max_obstacle_height: 2.0
+      min_obstacle_height: 0.0
+      expected_update_rate: 0
+      obstacle_range: 3.0
+      raytrace_range: 3.5
+
+  # ---- camscan 障碍层：70° 相机，覆盖 scan 层之上 ----
+  # combination_method=1: 保护静态地图 + camscan 标记覆盖 scan 清除
+  obstacle_layer_camscan:
+    enabled: true
+    combination_method: 1
+    observation_sources: camscan
+    camscan:
+      data_type: LaserScan
+      topic: /camscan
+      marking: true
+      clearing: true
+      inf_is_valid: true
+      max_obstacle_height: 2.0
+      min_obstacle_height: 0.05
+      expected_update_rate: 0
+      obstacle_range: 2.5
+      raytrace_range: 3.0
+
+    
+  inflation_layer:
+    inflation_radius: 0.40
+    cost_scaling_factor: 2.0
+    inscribed_radius: 0.35
+    
+  # 可选：发布话题配置
+  always_send_full_costmap: true  

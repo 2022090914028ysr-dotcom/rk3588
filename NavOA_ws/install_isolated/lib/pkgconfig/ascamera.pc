@@ -1,0 +1,8 @@
+prefix=/home/ubuntu/Nav_Release/Robit_SlamNav/NavOA_ws/install_isolated
+
+Name: ascamera
+Description: Description of ascamera
+Version: 1.0.0
+Cflags: 
+Libs: -L${prefix}/lib 
+Requires: 

@@ -28,7 +28,7 @@
 
   
 
-  <arg name="map_file" default="/home/ubuntu/Robit_SlamNav/NavOA_ws/src/NavOA_ros/example/gazebo_limo/maps/quezhu/officeMap.yaml" />
+  <arg name="map_file" default="/home/ubuntu/Nav_Release/Robit_SlamNav/NavOA_ws/src/NavOA_ros/example/gazebo_limo/maps/quezhu/officeMap.yaml" />
   <include file="$(find NavOA_ros)/example/gazebo_limo/launch/global_planner.launch">
     <arg name="map_file" value="$(arg map_file)" /> 
   </include>

@@ -1,0 +1,28 @@
+<launch>
+  <arg name="use_sim_time" default="false" />
+  <!-- <arg name="map_file" default="/home/ubuntu/Nav_Release/Robit_SlamNav/NavOA_ws/src/NavOA_ros/example/gazebo_limo/maps/slamtoolbox_map.yaml" /> -->
+
+  <param name="use_sim_time" value="$(arg use_sim_time)" />
+
+  <!-- LiDAR driver -->
+  <include file="$(find lidar_ros)/launch/lidar.launch" />
+
+  <!-- Laser odometry and odom -> base_footprint TF -->
+  <include file="$(find rf2o_laser_odometry)/launch/rf2o_laser_odometry.launch" />
+  <include file="$(find rf2o_laser_odometry)/launch/ekf_fusion.launch" />
+
+  <!-- SLAM Toolbox localization node using a saved map -->
+  <node pkg="slam_toolbox" type="async_slam_toolbox_node" name="slam_toolbox" output="screen">
+    <rosparam command="load" file="$(find NavOA_ros)/param/slam_toolbox_localization_params.yaml" />
+    <param name="map_file_name" value="$(arg map_file)" />
+  </node>
+
+  <include file="$(find NavOA_ros)/launch/localization_recovery.launch" />
+
+  <!-- NavOA navigation node with the same map/base/lidar frames -->
+  <!-- <include file="$(find NavOA_ros)/example/gazebo_limo/launch/NavOA_gazebo_limo.launch">
+    <arg name="map_frame" value="map" />
+    <arg name="base_frame" value="base_footprint" />
+    <arg name="lidar_frame" value="laser_frame" />
+  </include> -->
+</launch>

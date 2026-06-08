@@ -1,0 +1,12 @@
+<launch>
+  <arg name="use_sim_time" default="false" />
+  <param name="use_sim_time" value="$(arg use_sim_time)" />
+
+  <node pkg="NavOA_ros" type="localization_recovery.py" name="localization_recovery" output="screen">
+    <rosparam command="load" file="$(find NavOA_ros)/param/localization_recovery_params.yaml" />
+    <param name="localization_mode" value="slam_toolbox" />
+    <param name="slam_toolbox_node_name" value="slam_toolbox" />
+    <param name="publish_initialpose" value="true" />
+    <param name="stop_robot_on_relocalization" value="false" />
+  </node>
+</launch>

@@ -14,7 +14,7 @@ import time
 
 
 class AutoNavGoalPublisher:
-    DEFAULT_MAP_PATH = "/home/ubuntu/Robit_SlamNav/NavOA_ws/src/NavOA_ros/example/gazebo_limo/maps/slamtoolbox_map.yaml"
+    DEFAULT_MAP_PATH = "/home/ubuntu/Nav_Release/Robit_SlamNav/NavOA_ws/src/NavOA_ros/example/gazebo_limo/maps/slamtoolbox_map.yaml"
 
     def __init__(self):
         # Map data

@@ -1,0 +1,7 @@
+<launch>
+  <node pkg="robot_localization" type="ekf_localization_node" name="ekf_se" clear_params="true">
+    <rosparam command="load" file="/home/ubuntu/Nav_Release/Robit_SlamNav/NavOA_ws/src/rf2o_laser_odometry/ekf_params.yaml" />
+    
+    <remap from="odometry/filtered" to="/odom"/>
+  </node>
+</launch>

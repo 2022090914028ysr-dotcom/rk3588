@@ -1,4 +1,4 @@
-image: /home/ubuntu/Robit_SlamNav/NavOA_ws/src/carto_ws/map/meeting_room/test5.pgm
+image: test5.pgm
 resolution: 0.050000
 origin: [-5.583267, -6.414801, 0.000000]
 negate: 0

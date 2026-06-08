@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
 import os
@@ -53,7 +53,7 @@ def main():
     carto_node = rospy.get_param('~cartographer_node_name', '/cartographer_node')
     wait_for_stability_secs = float(rospy.get_param('~stability_secs', 5.0))
 
-    rospy.loginfo(u"[map_odom_freezer] 将在 {:.1f}s 后冻结 TF {} -> {}，随后关闭 {}".format(
+    rospy.loginfo(u"[map_odom_freezer] waiting {:.1f}s for TF {} -> {} then killing {}".format(
         freeze_after_secs, parent_frame, child_frame, carto_node))
 
     buffer = tf2_ros.Buffer(cache_time=rospy.Duration(10.0))
@@ -63,7 +63,7 @@ def main():
     try:
         _ = lookup_transform(buffer, parent_frame, child_frame, timeout=freeze_after_secs + 10.0)
     except Exception as e:
-        rospy.logerr(u"[map_odom_freezer] 初始未能获得 TF {} -> {}: {}".format(parent_frame, child_frame, e))
+        rospy.logerr(u"[map_odom_freezer] initial transform not available {} -> {}: {}".format(parent_frame, child_frame, e))
         return
 
     # Wait for the desired time window
@@ -94,25 +94,25 @@ def main():
             rospy.sleep(0.05)
         chosen = first
     except Exception as e:
-        rospy.logwarn(u"[map_odom_freezer] 稳定性检测失败，使用当前 TF: {}".format(e))
+        rospy.logwarn(u"[map_odom_freezer] stability check failed, using current TF: {}".format(e))
         chosen = buffer.lookup_transform(parent_frame, child_frame, rospy.Time(0), rospy.Duration(0.5))
 
     # Publish static transform
     static_broadcaster = tf2_ros.StaticTransformBroadcaster()
     static_ts = transform_to_static(chosen)
     static_broadcaster.sendTransform(static_ts)
-    rospy.loginfo(u"[map_odom_freezer] 已发布静态 TF {} -> {}".format(parent_frame, child_frame))
+    rospy.loginfo(u"[map_odom_freezer] published static TF {} -> {}".format(parent_frame, child_frame))
 
     # Give time for /tf_static to latch
     rospy.sleep(0.5)
 
     # Kill cartographer node to free resources
     if kill_node(carto_node):
-        rospy.loginfo(u"[map_odom_freezer] 已请求关闭节点 {}".format(carto_node))
+        rospy.loginfo(u"[map_odom_freezer] successfully killed {}".format(carto_node))
     else:
-        rospy.logwarn(u"[map_odom_freezer] 未能自动关闭 {}，请手动处理".format(carto_node))
+        rospy.logwarn(u"[map_odom_freezer] failed to kill {} automatically".format(carto_node))
 
-    rospy.loginfo(u"[map_odom_freezer] 完成，保持节点存活以维持 /tf_static 发布")
+    rospy.loginfo(u"[map_odom_freezer] exiting; /tf_static should remain published")
     # Keep node alive so late subscribers also receive /tf_static
     rospy.spin()
 

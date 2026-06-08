@@ -5,11 +5,11 @@ public:
     float ki;
     float kd;
     float targetpoint;
-    // 上一次的误差
+    // 脡脧脪禄麓脦碌脛脦贸虏卯
     float prevError;
-    // 积分
+    // 禄媒路脰
     float intergral;
-    // 微分
+    // 脦垄路脰
     float derivative;
 
     PID(float kp, float ki, float kd);
@@ -17,15 +17,15 @@ public:
     void Set_PID(float kp, float ki, float kd);
 
     /**
-     * pid的计算函数
-     * @param target  目标值
-     * @param current 当前值
+     * pid碌脛录脝脣茫潞炉脢媒
+     * @param target  脛驴卤锚脰碌
+     * @param current 碌卤脟掳脰碌
      * @return  pwm
      */
     float compute(float target, float current);
 
     /**
-     *  重置所有的误差: 当设置的速度 和 上一次不一样
+     *  脰脴脰脙脣霉脫脨碌脛脦贸虏卯: 碌卤脡猫脰脙碌脛脣脵露脠 潞脥 脡脧脪禄麓脦虏禄脪禄脩霉
      */
     void reset();
 };

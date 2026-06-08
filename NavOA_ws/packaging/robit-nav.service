@@ -1,0 +1,15 @@
+[Unit]
+Description=Robit Navigation Runtime
+After=network.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+RemainAfterExit=no
+ExecStart=/bin/bash -lc 'source /opt/ros/noetic/setup.bash && source /opt/robit/nav/setup.bash && roslaunch cartographer_ros livox_2d_localization.launch && roslaunch NavOA_ros navoa_nav_only.launch'
+Restart=on-failure
+RestartSec=5
+WorkingDirectory=/opt/robit/nav
+
+[Install]
+WantedBy=multi-user.target

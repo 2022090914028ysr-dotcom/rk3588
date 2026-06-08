@@ -3,7 +3,7 @@ devel/
 build_isolated/
 devel_isolated/
 install/
-install_isolated/
+# install_isolated/
 log/
 logs/
 *.pyc

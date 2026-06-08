@@ -1,0 +1,59 @@
+local_costmap:
+  global_frame: odom
+  robot_base_frame: base_footprint
+  update_frequency: 10.0
+  publish_frequency: 10.0
+  transform_tolerance: 1
+
+
+  static_map: false
+  rolling_window: true
+  width: 6.0
+  height: 6.0
+  resolution: 0.05
+
+
+  plugins:
+
+    - {name: obstacle_layer_scan, type: "costmap_2d::ObstacleLayer"}
+    - {name: obstacle_layer_camscan, type: "costmap_2d::ObstacleLayer"}
+    - {name: inflation_layer, type: "costmap_2d::InflationLayer"}
+
+  # ---- scan ÕÏ°­²ã£º360¡ã ¼¤¹âÀ×´ï£¬marking+clearing ×ÔÓÉ ----
+  obstacle_layer_scan:
+    enabled: true
+    observation_sources: scan
+    scan:
+      data_type: LaserScan
+      topic: /scan
+      marking: true
+      clearing: true
+      inf_is_valid: true
+      max_obstacle_height: 2.0
+      min_obstacle_height: 0.0
+      expected_update_rate: 0
+      obstacle_range: 2.5
+      raytrace_range: 3.0
+
+  # ---- camscan ÕÏ°­²ã£º70¡ã Ïà»ú£¬ÔËÐÐÔÚ scan ²ãÖ®ºó ----
+  # camscan ²ãµÄ±ê¼Ç/Çå³ý»á¸²¸Ç scan ²ãµÄ²Ù×÷£¬Òò´Ë scan µÄÇå³ýÉäÏß
+  # ÎÞ·¨²Á³ý camscan ¼ì²âµ½µÄ°«ÕÏ°­Îï
+  obstacle_layer_camscan:
+    enabled: true
+    observation_sources: camscan
+    camscan:
+      data_type: LaserScan
+      topic: /camscan
+      marking: true
+      clearing: true
+      inf_is_valid: true
+      max_obstacle_height: 2.0
+      min_obstacle_height: 0.05   # Ìù½üµØÃæ£¬¼ì²â°«Ð¡ÕÏ°­Îï
+      expected_update_rate: 0
+      obstacle_range: 2.0          # Ïà»úÓÐÐ§Ì½²â¾àÀë
+      raytrace_range: 2.5
+
+  inflation_layer:
+    enabled: true
+    inflation_radius: 0.40
+    cost_scaling_factor: 2.0

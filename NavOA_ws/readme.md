@@ -15,6 +15,13 @@ cd NavOA_ws
 rosdepc install --from-paths src --ignore-src -r -y
 ```
 
+## Release Packaging (Production Deployment)
+
+This workspace is intended for development and should not be copied directly to robots.
+For production, build and install the compiled runtime package instead of deploying `/home/ubuntu/Nav_Release/Robit_SlamNav/NavOA_ws`.
+
+See `docs/release-deployment.md` for the recommended release workflow.
+
 ---
 
 ## Cartographer Environment Configuration
@@ -149,14 +156,14 @@ Important: After finishing mapping and before killing the current SLAM terminal,
 #Save MAP-----------------------------
 ```
 rosservice call /write_state \
-"filename: '/home/ubuntu/Robit_SlamNav/NavOA_ws/src/carto_ws/map/meeting_room/test7.pbstream'
+"filename: '/home/ubuntu/Nav_Release/Robit_SlamNav/NavOA_ws/src/carto_ws/map/meeting_room/test7.pbstream'
 include_unfinished_submaps: true"
 ```
-rosrun map_server map_saver -f /home/ubuntu/Robit_SlamNav/NavOA_ws/src/carto_ws/map/meeting_room/test7
+rosrun map_server map_saver -f /home/ubuntu/Nav_Release/Robit_SlamNav/NavOA_ws/src/carto_ws/map/meeting_room/test7
 
 ## Must save as `.pbstream` format, and modify the save path to your own address.
 
-cd /home/ubuntu/Robit_SlamNav/NavOA_ws/src/carto_ws
+cd /home/ubuntu/Nav_Release/Robit_SlamNav/NavOA_ws/src/carto_ws
 ./save_map.sh meeting_room
 
 #####################################################easy navigation launch file#####################################################
@@ -178,9 +185,9 @@ export DISPLAY=:0
 
 tmux attach -t robot_start
 
-taskset -c 1,2 python3  /home/ubuntu/Robit_SlamNav/NavOA_ws/src/NavOA_ros/scripts/pub.py
+taskset -c 1,2 python3  /home/ubuntu/Nav_Release/Robit_SlamNav/NavOA_ws/src/NavOA_ros/scripts/pub.py
 
-taskset -c 1,2 python3 /home/ubuntu/Robit_SlamNav/NavOA_ws/src/NavOA_ros/scripts/maplocation.py
+taskset -c 1,2 python3 /home/ubuntu/Nav_Release/Robit_SlamNav/NavOA_ws/src/NavOA_ros/scripts/maplocation.py
 
 taskset -c 4,5 roslaunch NavOA_ros NavOA_gazebo_limo_all.launch
 
@@ -191,6 +198,7 @@ taskset -c 5,6,7 roslaunch cartographer_ros livox_2d_localization.launch
 taskset -c 5,6,7 roslaunch cartographer_ros livox_2d.launch
 
 roslaunch NavOA_ros navoa_nav_only.launch
+
 
 roslaunch cartographer_ros cartographer_guard_imu.launch
 

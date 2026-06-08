@@ -77,7 +77,7 @@ sudo reboot
 
 
 Record CSV in another terminal:
-cd /home/ubuntu/Robit_SlamNav/NavOA_ws
+cd /home/ubuntu/Nav_Release/Robit_SlamNav/NavOA_ws
 source /opt/ros/noetic/setup.bash
 source devel_isolated/setup.bash
 python3 src/lidar_ros/scripts/scan_to_csv.py
@@ -86,7 +86,7 @@ python3 src/lidar_ros/scripts/scan_to_csv.py
 ##If you want a fixed number of scans:
 rosrun lidar_ros scan_to_csv.py _max_scans:=500
 
-rosrun lidar_ros scan_to_csv.py _output_csv:=/home/ubuntu/Robit_SlamNav/NavOA_ws/src/lidar_ros/scan_data.csv
+rosrun lidar_ros scan_to_csv.py _output_csv:=/home/ubuntu/Nav_Release/Robit_SlamNav/NavOA_ws/src/lidar_ros/scan_data.csv
 
 
 If your goal is to collect data for later server-side localization, record a bag instead of only echoing the topic. Minimum is /scan, but for localization tests you usually also want odometry, TF, and IMU:

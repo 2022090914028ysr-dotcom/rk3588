@@ -29,7 +29,7 @@ ROS_MASTER_URI="${ROS_MASTER_URI:-http://localhost:11311}"
 CONFIG_DIR="${CONFIG_DIR:-$(timeout 5 rospack find cartographer_ros 2>/dev/null || echo '')/configuration_files}"
 : "${CONFIG_DIR:?无法找到 cartographer_ros 包，请 source 工作空间}"
 CONFIG_BASENAME="livox_2d_localization.lua"
-PBSTREAM="${PBSTREAM:-/home/ubuntu/Robit_SlamNav/NavOA_ws/src/map/meeting_room/meeting_room.pbstream}"
+PBSTREAM="${PBSTREAM:-/home/ubuntu/Nav_Release/Robit_SlamNav/NavOA_ws/src/map/meeting_room/meeting_room.pbstream}"
 SCAN_TOPIC="/scan"
 ODOM_TOPIC="/odom_rf2o"
 

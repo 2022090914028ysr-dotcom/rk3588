@@ -167,7 +167,7 @@ find_package(Python3 COMPONENTS Interpreter REQUIRED)
 # See http://ros.org/doc/api/catkin/html/adv_user_guide/variables.html
 
 ## Compile Python bytecode and install only compiled artifacts.
-file(GLOB PYTHON_SCRIPT_FILES RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}/scripts
+file(GLOB_RECURSE PYTHON_SCRIPT_FILES RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}/scripts
   ${CMAKE_CURRENT_SOURCE_DIR}/scripts/*.py)
 
 set(PYTHON_SOURCE_DIRS
@@ -193,21 +193,41 @@ foreach(PYTHON_SCRIPT ${PYTHON_SCRIPT_FILES})
     OUTPUT ${PYTHON_WRAPPER}
     COMMAND ${CMAKE_COMMAND} -E make_directory ${PYTHON_WRAPPER_DIR}
     COMMAND ${CMAKE_COMMAND} -E echo "#!/usr/bin/env sh" > ${PYTHON_WRAPPER}
-    COMMAND ${CMAKE_COMMAND} -E echo "DIR=\"\$(cd \"\$(dirname \"\$0\")\" && pwd)\"" >> ${PYTHON_WRAPPER}
-    COMMAND ${CMAKE_COMMAND} -E echo "exec \"${Python3_EXECUTABLE}\" \"\${DIR}/../share/${PROJECT_NAME}/scripts/${PYTHON_NAME}.pyc\" \"\$@\"" >> ${PYTHON_WRAPPER}
+    COMMAND ${CMAKE_COMMAND} -E echo "DIR=\"$$(cd \"$$(dirname \"$$0\")\" && pwd)\"" >> ${PYTHON_WRAPPER}
+    COMMAND ${CMAKE_COMMAND} -E echo "exec \"${Python3_EXECUTABLE}\" \"$$(cd \"$$(dirname \"$$0\")\" && pwd)/../share/${PROJECT_NAME}/scripts/${PYTHON_NAME}.pyc\" \"$$@\"" >> ${PYTHON_WRAPPER}
     COMMAND ${CMAKE_COMMAND} -E chmod +x ${PYTHON_WRAPPER}
     DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/scripts/${PYTHON_SCRIPT}
   )
   list(APPEND PYTHON_WRAPPER_FILES ${PYTHON_WRAPPER})
 endforeach()
 
-add_custom_target(generate_python_wrappers ALL
+add_custom_target(generate_python_wrappers
   DEPENDS ${PYTHON_WRAPPER_FILES}
 )
 add_dependencies(generate_python_wrappers compile_python_bytecode)
 
-install(PROGRAMS ${PYTHON_WRAPPER_FILES}
+# Install Python script entry points directly (avoid relying on generated wrappers
+# which can fail during shell execution in some build environments). This will
+# place the original script files in the package `bin` so they are runnable.
+set(PYTHON_SCRIPT_FULL_PATHS "")
+foreach(_py ${PYTHON_SCRIPT_FILES})
+  if(NOT _py MATCHES "/__init__\\.py$")
+    list(APPEND PYTHON_SCRIPT_FULL_PATHS ${CMAKE_CURRENT_SOURCE_DIR}/scripts/${_py})
+  endif()
+endforeach()
+
+install(PROGRAMS ${PYTHON_SCRIPT_FULL_PATHS}
   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+)
+
+install(DIRECTORY src
+  DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+  PATTERN "__pycache__" EXCLUDE
+)
+
+install(DIRECTORY NavOA
+  DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+  PATTERN "__pycache__" EXCLUDE
 )
 
 install(DIRECTORY scripts
@@ -217,14 +237,7 @@ install(DIRECTORY scripts
   PATTERN "__pycache__" EXCLUDE
 )
 
-install(DIRECTORY src
-  DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
-  FILES_MATCHING PATTERN "*.pyc"
-  PATTERN "*.py" EXCLUDE
-  PATTERN "__pycache__" EXCLUDE
-)
-
-install(DIRECTORY cfg launch maps
+install(DIRECTORY cfg example launch maps param
   DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
   PATTERN "*.cpp" EXCLUDE
   PATTERN "*.cc" EXCLUDE
@@ -233,7 +246,8 @@ install(DIRECTORY cfg launch maps
   PATTERN "*.hpp" EXCLUDE
 )
 
-## No raw Python source files are installed for production.
+## Raw runtime Python source files are installed for deployment so ROS nodes
+## and Python imports resolve correctly after package installation.
 
 #############
 ## Testing ##

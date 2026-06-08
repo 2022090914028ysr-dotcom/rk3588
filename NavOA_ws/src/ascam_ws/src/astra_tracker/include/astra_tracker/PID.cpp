@@ -8,15 +8,15 @@ PID::PID(float kp, float ki, float kd) {
 }
 
 float PID::compute(float target, float current) {
-    // �������
+    // ¼ÆËãÎó²î
     float error = target - current;
-    // �����ۼ�
+    // Îó²îµÄÀÛ¼Æ
     intergral += error;
-    // ����������һ�����Ĳ���
+    // ±¾´ÎÎó²îºÍÉÏÒ»´ÎÎó²îµÄ²îÒì
     derivative = error - prevError;
-    // ����pid�Ĺ�ʽ
+    // Ì×ÓÃpidµÄ¹«Ê½
     targetpoint = kp * error + ki * intergral + kd * derivative;
-    // ��¼��һ�ε����
+    // ¼ÇÂ¼ÉÏÒ»´ÎµÄÎó²î
     prevError = error;
     return targetpoint;
 }

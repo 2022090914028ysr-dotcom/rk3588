@@ -1,0 +1,17 @@
+position_jump_threshold: 1.0
+rotation_jump_threshold: 1.0
+imu_accel_spike_threshold: 15.0
+imu_delta_accel_threshold: 7.0
+odom_inconsistency_threshold: 1.5
+scan_timeout: 2.0
+trigger_cooldown: 30.0
+recovery_hold: 20.0
+localization_mode: slam_toolbox
+global_localization_service: /global_localization
+slam_toolbox_node_name: slam_toolbox
+slam_toolbox_reset_service: /slam_toolbox/reset
+cartographer_reset_service: /cartographer_reset
+initialpose_topic: /initialpose
+publish_initialpose: true
+stop_robot_on_relocalization: false
+cmd_vel_topic: /cmd_vel

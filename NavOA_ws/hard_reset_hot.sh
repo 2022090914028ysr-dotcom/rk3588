@@ -1,23 +1,23 @@
 #!/usr/bin/env bash
 # ============================================================================
-# hard_reset_hot.sh ¡ª ÈÈÖØÖÃÊØ»¤½Å±¾£¨²»É±½Úµã£©
+# hard_reset_hot.sh ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ø»ï¿½ï¿½Å±ï¿½ï¿½ï¿½ï¿½ï¿½É±ï¿½Úµã£©
 #
-# Óë hard_reset_seeded.sh µÄÇø±ð£º
-#   - ²»É± cartographer_node ½ø³Ì
-#   - Í¨¹ý finish_trajectory + start_trajectory ·þÎñÔ­µØÖØÖÃ¹ì¼£
-#   - TF (map->odom) ²»ÖÐ¶Ï ¡ú RViz ²»¿¨
-#   - ÖØÖÃºó·¢²¼ /initialpose ×÷ÎªËÑË÷ÌáÊ¾£¨¸ßÐ­·½²î£¬²»Ô¼Êø£©
+# ï¿½ï¿½ hard_reset_seeded.sh ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+#   - ï¿½ï¿½É± cartographer_node ï¿½ï¿½ï¿½ï¿½
+#   - Í¨ï¿½ï¿½ finish_trajectory + start_trajectory ï¿½ï¿½ï¿½ï¿½Ô­ï¿½ï¿½ï¿½ï¿½ï¿½Ã¹ì¼£
+#   - TF (map->odom) ï¿½ï¿½ï¿½Ð¶ï¿½ ï¿½ï¿½ RViz ï¿½ï¿½ï¿½ï¿½
+#   - ï¿½ï¿½ï¿½Ãºó·¢²ï¿½ /initialpose ï¿½ï¿½Îªï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ê¾ï¿½ï¿½ï¿½ï¿½Ð­ï¿½ï¿½ï¿½î£¬ï¿½ï¿½Ô¼ï¿½ï¿½ï¿½ï¿½
 #
-# ÓÃ·¨£º
+# ï¿½Ã·ï¿½ï¿½ï¿½
 #   ./hard_reset_hot.sh
 # ============================================================================
 set -uo pipefail
 
 ROS_MASTER_URI="${ROS_MASTER_URI:-http://localhost:11311}"
 CONFIG_DIR="${CONFIG_DIR:-$(timeout 5 rospack find cartographer_ros 2>/dev/null || echo '')/configuration_files}"
-: "${CONFIG_DIR:?ÎÞ·¨ÕÒµ½ cartographer_ros °ü£¬ÇëÏÈ source ¹¤×÷¿Õ¼ä}"
+: "${CONFIG_DIR:?ï¿½Þ·ï¿½ï¿½Òµï¿½ cartographer_ros ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ source ï¿½ï¿½ï¿½ï¿½ï¿½Õ¼ï¿½}"
 
-LOG_DIR="${LOG_DIR:-/home/ubuntu/Robit_SlamNav/NavOA_ws/logs}"
+LOG_DIR="${LOG_DIR:-/home/ubuntu/Nav_Release/Robit_SlamNav/NavOA_ws/logs}"
 LOG_FILE="${LOG_FILE:-${LOG_DIR}/hard_reset_hot.log}"
 mkdir -p "${LOG_DIR}"
 : > "${LOG_FILE}"
@@ -33,7 +33,7 @@ log() {
 }
 
 CONFIG_BASENAME="${CONFIG_BASENAME:-livox_2d_localization.lua}"
-PBSTREAM="${PBSTREAM:-/home/ubuntu/Robit_SlamNav/NavOA_ws/src/map/meeting_room/meeting_room.pbstream}"
+PBSTREAM="${PBSTREAM:-/home/ubuntu/Nav_Release/Robit_SlamNav/NavOA_ws/src/map/meeting_room/meeting_room.pbstream}"
 SCAN_TOPIC="${SCAN_TOPIC:-/scan}"
 ODOM_TOPIC="${ODOM_TOPIC:-/odom_rf2o}"
 MAP_FRAME="${MAP_FRAME:-map}"
@@ -48,7 +48,7 @@ STABILIZING_WAIT="${STABILIZING_WAIT:-0.5}"
 export ROS_MASTER_URI
 
 # ============================================================================
-# ºóÌ¨Î»×Ë»º´æÊØ»¤£¨Óë hard_reset_seeded.sh Ò»ÖÂ£©
+# ï¿½ï¿½Ì¨Î»ï¿½Ë»ï¿½ï¿½ï¿½ï¿½Ø»ï¿½ï¿½ï¿½ï¿½ï¿½ hard_reset_seeded.sh Ò»ï¿½Â£ï¿½
 # ============================================================================
 start_pose_cache_daemon() {
   python3 - "$MAP_FRAME" "$BASE_FRAME" "$POSE_CACHE_FILE" "$LOG_FILE" >>"${LOG_FILE}" 2>&1 <<'PYEOF' &
@@ -96,7 +96,7 @@ PYEOF
 }
 
 # ============================================================================
-# ·ÖÊýÊØ»¤£¨Óë hard_reset_seeded.sh Ò»ÖÂ£©
+# ï¿½ï¿½ï¿½ï¿½ï¿½Ø»ï¿½ï¿½ï¿½ï¿½ï¿½ hard_reset_seeded.sh Ò»ï¿½Â£ï¿½
 # ============================================================================
 run_guard() {
   python3 - "$@" <<'PYEOF'
@@ -140,7 +140,7 @@ PYEOF
 }
 
 # ============================================================================
-# ½Úµã¼ì²âÓëÆô¶¯£¨½öÔÚ²»´æÔÚÊ±À­Æð£©
+# ï¿½Úµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ú²ï¿½ï¿½ï¿½ï¿½ï¿½Ê±ï¿½ï¿½ï¿½ï¿½
 # ============================================================================
 cartographer_running() {
   rosnode list 2>/dev/null | grep -q "/cartographer_node"
@@ -168,7 +168,7 @@ start_cartographer_if_needed() {
 }
 
 # ============================================================================
-# ÈÈÖØÖÃ£ºfinish_trajectory + start_trajectory£¨²»É±½Úµã£¬TF ²»ÖÐ¶Ï£©
+# ï¿½ï¿½ï¿½ï¿½ï¿½Ã£ï¿½finish_trajectory + start_trajectoryï¿½ï¿½ï¿½ï¿½É±ï¿½Úµã£¬TF ï¿½ï¿½ï¿½Ð¶Ï£ï¿½
 # ============================================================================
 do_hot_reset() {
   log "[guard] >>> Hot reset: finish_trajectory + start_trajectory ..."
@@ -223,7 +223,7 @@ start = rospy.ServiceProxy('/start_trajectory', StartTrajectory)
 start_req = StartTrajectoryRequest()
 start_req.configuration_directory = config_dir
 start_req.configuration_basename = config_basename
-start_req.use_initial_pose = False          # ²»¸øÏÈÑéÔ¼Êø
+start_req.use_initial_pose = False          # ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ô¼ï¿½ï¿½
 start_req.relative_to_trajectory_id = 0
 
 start_resp = start(start_req)
@@ -251,7 +251,7 @@ if cached:
     msg.pose.pose.orientation.z = qz
     msg.pose.pose.orientation.w = qw
 
-    # ¸ßÐ­·½²î£ºËÑË÷ÌáÊ¾£¬²»Ô¼Êø
+    # ï¿½ï¿½Ð­ï¿½ï¿½ï¿½î£ºï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ê¾ï¿½ï¿½ï¿½ï¿½Ô¼ï¿½ï¿½
     cov = [0.0] * 36
     cov[0] = 4.0   # var(x)
     cov[7] = 4.0   # var(y)
@@ -273,7 +273,7 @@ PYEOF
 }
 
 # ============================================================================
-# Ö÷Á÷³Ì
+# ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 # ============================================================================
 log "=============================================="
 log "[guard] HardResetHot (in-place reset, no kill)"
@@ -285,17 +285,17 @@ log "[guard]   config     : ${CONFIG_DIR}/${CONFIG_BASENAME}"
 log "[guard]   pose cache : ${POSE_CACHE_FILE}"
 log "=============================================="
 
-# Æô¶¯Î»×Ë»º´æÊØ»¤
+# ï¿½ï¿½ï¿½ï¿½Î»ï¿½Ë»ï¿½ï¿½ï¿½ï¿½Ø»ï¿½
 start_pose_cache_daemon
 
-# È·±£¶¨Î»½ÚµãÔÚÅÜ
+# È·ï¿½ï¿½ï¿½ï¿½Î»ï¿½Úµï¿½ï¿½ï¿½ï¿½ï¿½
 start_cartographer_if_needed
 
-# Ê×´Î³õÊ¼»¯ trajectory + ËÑË÷ÌáÊ¾
+# ï¿½×´Î³ï¿½Ê¼ï¿½ï¿½ trajectory + ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ê¾
 log "[guard] >>> Initial trajectory setup ..."
 do_hot_reset
 
-# ¼à¿ØÑ­»·
+# ï¿½ï¿½ï¿½Ñ­ï¿½ï¿½
 while true; do
   log ""
   log "[guard] >>> Monitoring ${SCORE_TOPIC} ..."
@@ -307,7 +307,7 @@ while true; do
 
   log "[guard] !!! TRIGGER (rc=${guard_rc})"
 
-  # È·±£½Úµã»¹ÔÚ£¨Òì³£ÍË³öÊ±×Ô¶¯À­Æð£©
+  # È·ï¿½ï¿½ï¿½Úµã»¹ï¿½Ú£ï¿½ï¿½ì³£ï¿½Ë³ï¿½Ê±ï¿½Ô¶ï¿½ï¿½ï¿½ï¿½ï¿½
   start_cartographer_if_needed
 
   log "[guard] Waiting ${RECOVERY_COOLDOWN}s before hot reset..."

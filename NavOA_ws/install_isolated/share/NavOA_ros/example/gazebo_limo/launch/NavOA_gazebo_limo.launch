@@ -1,0 +1,125 @@
+<launch>
+    <arg name="use_sim_time" default="false"/>
+    <param name="use_sim_time" value="$(arg use_sim_time)"/>
+    <!-- Ensure Python can import the embedded NavOA package -->
+    <env name="PYTHONPATH" value="$(find NavOA_ros)/NavOA:$(optenv PYTHONPATH)"/>
+    
+    <arg name="config_file" default='$(find NavOA_ros)/example/gazebo_limo/config/NavOA_planner_limo.yaml'/>
+    <arg name="map_frame" default='map'/>
+    <arg name="base_frame" default='base_footprint'/>
+    <arg name="lidar_frame" default='laser_frame'/>
+    <arg name="scan_range" default='0.1 5.0'/>
+    <arg name="ref_speed" default="0.4"/>
+    <arg name="scan_angle_range" default='-3.14 3.14'/>
+    <arg name="marker_size" default='0.05'/>
+    <arg name="marker_z" default='0.3'/>
+    <arg name="scan_downsample" default='2'/>
+    <arg name="dune_checkpoint" default='$(find NavOA_ros)/example/gazebo_limo/pretrain_limo/model_5000.pth'/>
+    <arg name="use_rknn" default="true"/>
+    <arg name="dune_rknn" default='$(find NavOA_ros)/example/gazebo_limo/pretrain_limo/model_5000_quant.rknn'/>
+    <arg name="rknn_target" default=""/>
+    <arg name="rknn_core" default="auto"/>
+    <arg name="refresh_initial_path" default='true'/>
+    <arg name="control_rate" default="50.0"/>
+    <arg name="vel_filter_scan_topic" default="/merged_scan"/>
+    <arg name="vel_filter_cmd_out_topic" default="/cmd_vel"/>
+    <arg name="vel_filter_front_center_angle" default="0.0"/>
+    <arg name="vel_filter_enable_auto_reverse" default="true"/>
+    <arg name="vel_filter_enable_free_space_steer" default="false"/>
+    <arg name="return_to_previous_goal_enabled" default="true"/>
+    <arg name="goal_timeout_button_enabled" default="false"/>
+    <arg name="goal_timeout_button_topic" default="/app_controller/button"/>
+    <arg name="goal_timeout_button_id" default="9"/>
+    <arg name="goal_timeout_button_event_type" default="1"/>
+    <arg name="goal_timeout_button_release_event_type" default="0"/>
+    <arg name="goal_timeout_button_release_delay" default="0.10"/>
+    <arg name="goal_timeout_button_send_release" default="true"/>
+
+    <node name="path_segment_publisher" pkg="NavOA_ros" type="path_segment_publisher.py" output="screen" launch-prefix="python3"/>
+    <node name="vel_filter" pkg="NavOA_ros" type="vel_filter.py" output="screen" launch-prefix="python3">
+      <param name="scan_topic" value="$(arg vel_filter_scan_topic)" />
+        <param name="cmd_in_topic" value="/cmd_vel_tem" />
+      <param name="cmd_out_topic" value="$(arg vel_filter_cmd_out_topic)" />
+        <param name="cmd_timeout" value="0.5" />
+        <param name="publish_rate" value="100.0" />
+        <param name="enable_forward_safety" value="true" />
+      <param name="front_center_angle" value="$(arg vel_filter_front_center_angle)" />
+        <param name="forward_stop_distance" value="0.40" />
+        <param name="forward_slow_distance" value="0.60" />
+      <param name="forward_stop_release_distance" value="0.75" />
+        <param name="front_half_angle" value="0.70" />
+        <param name="reverse_obstacle_distance" value="0.45" />
+      <param name="enable_auto_reverse" value="$(arg vel_filter_enable_auto_reverse)" />
+        <param name="auto_reverse_speed" value="-0.15" />
+        <param name="max_forward_speed" value="0.3" />
+        <param name="max_angular_speed" value="0.5" />
+        <param name="stop_turn_when_forward_blocked" value="true" />
+      <param name="enable_free_space_steer" value="$(arg vel_filter_enable_free_space_steer)" />
+      <param name="steer_scan_half_angle" value="1.57" />
+      <param name="steer_deadzone" value="0.30" />
+      <param name="steer_gain" value="1.2" />
+      <param name="steer_max_angular" value="0.5" />
+      <param name="steer_activation_distance" value="0.70" />
+      <param name="steer_release_distance" value="0.90" />
+      <param name="steer_forward_speed" value="0.05" />
+      <param name="enable_turn_search_when_blocked" value="false" />
+      <param name="turn_search_angular" value="0.35" />
+    </node>
+
+    <node name='NavOA_control' pkg="NavOA_ros" type="NavOA_node.py" output="screen" launch-prefix="python3">
+        <param name="require_explicit_goal" value="true" />
+      <param name="return_to_previous_goal_enabled" value="$(arg return_to_previous_goal_enabled)" />
+      <param name="goal_timeout_button_enabled" value="$(arg goal_timeout_button_enabled)" />
+      <param name="goal_timeout_button_topic" value="$(arg goal_timeout_button_topic)" />
+      <param name="goal_timeout_button_id" value="$(arg goal_timeout_button_id)" />
+      <param name="goal_timeout_button_event_type" value="$(arg goal_timeout_button_event_type)" />
+      <param name="goal_timeout_button_release_event_type" value="$(arg goal_timeout_button_release_event_type)" />
+      <param name="goal_timeout_button_release_delay" value="$(arg goal_timeout_button_release_delay)" />
+      <param name="goal_timeout_button_send_release" value="$(arg goal_timeout_button_send_release)" />
+        <param name="slow_down_radius" value="5.0" />
+        <param name="max_speed_scale" value="2" />
+        <param name="min_speed_near_goal" value="0.08" />
+        <param name="config_file" value="$(arg config_file)"/>
+        <param name="map_frame" value="$(arg map_frame)"/>
+        <param name="base_frame" value="$(arg base_frame)"/>
+        <param name="lidar_frame" value="$(arg lidar_frame)"/>
+        <param name="ref_speed" value="$(arg ref_speed)"/>
+        <param name="scan_range" value="$(arg scan_range)"/>
+        <param name="scan_angle_range" value="$(arg scan_angle_range)"/>
+        <param name="marker_size" value="$(arg marker_size)"/>
+        <param name="scan_downsample" value="$(arg scan_downsample)"/>
+        <param name="dune_checkpoint" value="$(arg dune_checkpoint)"/>
+        <param name="use_rknn" value="$(arg use_rknn)"/>
+        <param name="dune_rknn" value="$(arg dune_rknn)"/>
+        <param name="rknn_target" value="$(arg rknn_target)"/>
+        <param name="rknn_core" value="$(arg rknn_core)"/>
+        <param name="refresh_initial_path" value="$(arg refresh_initial_path)"/>
+        <param name="control_rate" value="$(arg control_rate)"/>
+        <remap from="/scan" to="/scan"/>
+        <!-- <remap from="/scan" to="/merged_scan"/> -->
+            <remap from="/NavOA_cmd_vel" to="/cmd_vel_tem"/>
+            <!-- Keep NavOA output off /cmd_vel; vel_filter is the only writer to /cmd_vel. -->
+            <!-- <remap from="/NavOA_cmd_vel" to="/cmd_vel"/> -->
+          <!-- <remap from="/NavOA_goal" to="/move_base_simple/goal"/> -->
+          <remap from="/NavOA_goal" to="/split_goal"/>
+        
+        <!-- <remap from="/initial_path" to="/move_base/GlobalPlanner/plan"/> -->
+
+    </node>
+    <!-- <include file="$(find NavOA_ros)/launch/cartographer_reset_service.launch">
+      <arg name="map_frame" value="map" />
+      <arg name="base_frame" value="base_footprint" />
+      <arg name="normal_configuration_basename" value="limo_localization_fast.lua" />
+      <arg name="relocalization_configuration_basename" value="limo_localization_fast.lua" />
+      <arg name="relocalization_hold" value="20.0" />
+    </include>
+
+    <include file="$(find NavOA_ros)/launch/localization_recovery.launch">
+      <param name="localization_mode" value="cartographer" />
+      <param name="base_frame" value="base_footprint" />
+      <param name="publish_initialpose" value="true" />
+      <param name="cartographer_reset_service" value="/cartographer_reset" />
+    </include> -->
+    <!-- <node name="rviz" pkg="rviz" type="rviz" args="-d $(find NavOA_ros)/example/gazebo_limo/rviz/limo_gazebo.rviz" /> -->
+
+</launch>

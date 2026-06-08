@@ -34,7 +34,7 @@ CONFIG_DIR="${CONFIG_DIR:-$(timeout 5 rospack find cartographer_ros 2>/dev/null 
 : "${CONFIG_DIR:?Cannot find cartographer_ros package, source your ROS workspace}"
 
 # ----- 日志 -----
-LOG_DIR="${LOG_DIR:-/home/ubuntu/Robit_SlamNav/NavOA_ws/logs}"
+LOG_DIR="${LOG_DIR:-/home/ubuntu/Nav_Release/Robit_SlamNav/NavOA_ws/logs}"
 LOG_FILE="${LOG_FILE:-${LOG_DIR}/hard_reset_seeded.log}"
 mkdir -p "${LOG_DIR}"
 : > "${LOG_FILE}"
@@ -61,7 +61,7 @@ BRIDGE_READY_TIMEOUT="${BRIDGE_READY_TIMEOUT:-5}"
 #   node    = 旧行为：-start_trajectory_with_default_topics=false + 手动 /start_trajectory
 CARTO_RESTART_MODE="${CARTO_RESTART_MODE:-service}"
 CONFIG_BASENAME="${CONFIG_BASENAME:-livox_2d_localization.lua}"
-PBSTREAM="${PBSTREAM:-/home/ubuntu/Robit_SlamNav/NavOA_ws/src/carto_ws/map/meeting_room/test8.pbstream}"
+PBSTREAM="${PBSTREAM:-/home/ubuntu/Nav_Release/Robit_SlamNav/NavOA_ws/src/carto_ws/map/meeting_room/test8.pbstream}"
 SCAN_TOPIC="${SCAN_TOPIC:-/scan}"
 ODOM_TOPIC="${ODOM_TOPIC:-/odom_rf2o}"
 MAP_FRAME="${MAP_FRAME:-map}"

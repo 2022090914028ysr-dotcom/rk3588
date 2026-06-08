@@ -1,0 +1,98 @@
+<launch>
+  <!--
+    Nav-only bringup for running alongside an external localization stack (e.g. carto_ws).
+    Starts:
+      - move_base (global planner + costmaps)
+      - NavOA controller stack (NavOA_gazebo_limo.launch)
+    Does NOT start:
+      - cartographer localization
+      - lidar/odom drivers
+  -->
+
+  <arg name="use_sim_time" default="false"/>
+  <arg name="enable_map_server" default="false"/>
+  <arg name="map_file" default="/home/ubuntu/Nav_Release/Robit_SlamNav/NavOA_ws/src/carto_ws/map/meeting_room/test8.yaml" />
+  <arg name="global_map_topic" default="/map"/>
+  <arg name="move_base_cmd_topic" default="/move_base_cmd_vel"/>
+  <arg name="launch_rviz" default="false"/>
+  <arg name="rviz_config" default="$(find NavOA_ros)/example/gazebo_limo/rviz/robit_map.rviz"/>
+
+  <param name="use_sim_time" value="$(arg use_sim_time)"/>
+
+  <!-- Keep map_server off by default to avoid duplicate /map when external localization already publishes it. -->
+  <node if="$(arg enable_map_server)" name="map_server" pkg="map_server" type="map_server" args="$(arg map_file)"/>
+
+  <node pkg="move_base" type="move_base" respawn="false" name="move_base" output="screen">
+    <!-- NavOA handles final motion commands via vel_filter; keep move_base cmd_vel separate. -->
+    <remap from="/cmd_vel" to="$(arg move_base_cmd_topic)" />
+    <param name="oscillation_timeout" value="0.0" />
+    <param name="oscillation_distance" value="0.0" />
+    <param name="max_planning_retries" value="-1" />
+    <param name="transform_tolerance" value="1.0" />
+    <param name="controller_frequency" value="5.0" />
+    <param name="controller_patience" value="15.0" />
+    <param name="planner_patience" value="5.0" />
+    <param name="base_global_planner" value="global_planner/GlobalPlanner" />
+    <param name="planner_frequency" value="2.0" />
+    <param name="recovery_behavior_enabled" value="false" />
+    <param name="clearing_rotation_allowed" value="false" />
+
+    <rosparam file="$(find NavOA_ros)/example/gazebo_limo/config/costmap_common_params.yaml" command="load" ns="global_costmap" />
+    <rosparam file="$(find NavOA_ros)/example/gazebo_limo/config/costmap_common_params.yaml" command="load" ns="local_costmap" />
+    <rosparam file="$(find NavOA_ros)/example/gazebo_limo/config/local_costmap_params.yaml" command="load" />
+    <rosparam file="$(find NavOA_ros)/example/gazebo_limo/config/global_costmap_params.yaml" command="load" />
+    <rosparam file="$(find NavOA_ros)/example/gazebo_limo/config/global_planner_params.yaml" command="load" />
+    <rosparam file="$(find NavOA_ros)/param/base_local_planner_params.yaml" command="load" />
+
+    <!-- Force static layer to use external localization map topic. -->
+    <param name="global_costmap/static_layer/map_topic" value="$(arg global_map_topic)" />
+    <param name="global_costmap/static_layer/first_map_only" value="false" />
+    <param name="global_costmap/static_layer/subscribe_to_updates" value="true" />
+  </node>
+
+  <!-- NavOA control and path splitting, without localization bringup. -->
+  <include file="$(find NavOA_ros)/example/gazebo_limo/launch/NavOA_gazebo_limo.launch">
+    <arg name="use_sim_time" value="$(arg use_sim_time)"/>
+    <arg name="vel_filter_scan_topic" value="/scan"/>
+    <arg name="vel_filter_cmd_out_topic" value="/cmd_vel"/>
+    <arg name="vel_filter_front_center_angle" value="1.57"/>
+    <arg name="vel_filter_enable_auto_reverse" value="true"/>
+    <arg name="vel_filter_enable_free_space_steer" value="false"/>
+    <arg name="return_to_previous_goal_enabled" value="false"/>
+    <arg name="goal_timeout_button_enabled" value="true"/>
+    <arg name="goal_timeout_button_topic" value="/app_controller/button"/>
+    <arg name="goal_timeout_button_id" value="9"/>
+    <arg name="goal_timeout_button_event_type" value="1"/>
+    <arg name="goal_timeout_button_release_event_type" value="0"/>
+    <arg name="goal_timeout_button_release_delay" value="0.10"/>
+    <arg name="goal_timeout_button_send_release" value="true"/>
+  </include>
+
+  <!-- Bridge /cmd_vel and IMU over /dev/ttyS6 to the other PC -->
+  <node pkg="NavOA_ros" type="serial_cmd_vel_imu_bridge.py" name="serial_cmd_vel_imu_bridge" output="screen">
+    <param name="serial_port" value="/dev/ttyS7" />
+    <param name="baudrate" value="460800" />
+    <param name="serial_timeout" value="0.02" />
+    <param name="cmd_send_rate_hz" value="80.0" />
+    <param name="tx_queue_size" value="200" />
+    <param name="serial_flush_interval" value="0.05" />
+    <param name="cmd_vel_topic" value="/cmd_vel" />
+    <param name="button_topic" value="/app_controller/button" />
+    <!-- Publish IMU from serial onto /imu_serial; mux will prioritize this -->
+    <param name="imu_topic" value="/imu_serial" />
+    <param name= "event_topic" value="/nav_serial/event" />
+  </node>
+
+  <!-- IMU mux: prefer serial IMU (/imu_serial), fall back to ROS /imu -->
+  <node pkg="NavOA_ros" type="imu_mux.py" name="imu_mux" output="screen">
+    <param name="primary_topic" value="/imu_serial" />
+    <param name="fallback_topic" value="/imu" />
+    <param name="output_topic" value="/imu_mux" />
+    <param name="timeout" value="0.2" />
+  </node>
+
+  <!-- Use NavOA RViz for map/navigation visualization. -->
+  <node if="$(arg launch_rviz)" name="rviz" pkg="rviz" type="rviz" output="screen"
+        args="-d $(arg rviz_config)" />
+
+</launch>

@@ -1,4 +1,4 @@
-image: /home/ubuntu/Robit_SlamNav/NavOA_ws/src/carto_ws/map/Office_map.pgm
+image: /home/ubuntu/Nav_Release/Robit_SlamNav/NavOA_ws/src/carto_ws/map/Office_map.pgm
 resolution: 0.05
 origin: [-15.3777, -15.782, 0.0]
 negate: 0

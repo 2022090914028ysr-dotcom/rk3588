@@ -1,0 +1,16 @@
+mode: localization
+map_frame: map
+odom_frame: odom
+base_frame: base_footprint
+scan_topic: /scan
+use_sim_time: false
+map_save_period_sec: 0.0
+publish_period_sec: 0.05
+transform_publish_period: 0.05
+tf_buffer_timeout: 0.1
+max_laser_range: 12.0
+min_laser_range: 0.01
+use_scan_tf: true
+occupancy_grid_resolution: 0.05
+scan_subscriber_queue_size: 5
+map_file_name: /home/ubuntu/Nav_Release/Robit_SlamNav/NavOA_ws/src/NavOA_ros/example/gazebo_limo/maps/slamtoolbox_map.yaml

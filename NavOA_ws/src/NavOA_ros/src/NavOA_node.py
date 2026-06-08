@@ -1,9 +1,19 @@
 #!/usr/bin/env python
-import rospy
-
 import os
+import sys
+from pathlib import Path
+
 # Disable ROS logging config
 os.environ['ROS_PYTHON_LOG_CONFIG_FILE'] = ''
+
+# Ensure we can import NavOA_core from the local src folder.
+_script_dir = Path(__file__).resolve().parent
+_pkg_dir = _script_dir
+if not (_pkg_dir / "NavOA_core.py").exists():
+    _pkg_dir = _script_dir.parent
+_src_dir = _pkg_dir / "src"
+if _src_dir.exists():
+    sys.path.insert(0, str(_src_dir))
 
 # Set up basic logging
 import logging

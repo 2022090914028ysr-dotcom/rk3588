@@ -1,0 +1,6 @@
+<launch>
+    <!-- Velocity Subscriber Node -->
+    <node name="velocity_subscriber" pkg="NavOA_ros" type="velocity_subscriber.py" output="screen">
+        <param name="robot_initialized" value="true" />
+    </node>
+</launch>

@@ -1,5 +1,5 @@
-#!/usr/bin/env python
-# coding: utf-8
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
 
 import math
 import threading
@@ -12,7 +12,7 @@ from nav_msgs.msg import Path
 
 
 def angle_between(v1: Tuple[float, float], v2: Tuple[float, float]) -> float:
-    """返回两向量的夹角（弧度）。"""
+    """Return the angle between two 2D vectors."""
     x1, y1 = v1
     x2, y2 = v2
     n1 = math.hypot(x1, y1)
@@ -36,7 +36,7 @@ class WaypointManager:
         self.goal_tolerance = rospy.get_param('~goal_tolerance', 0.5)
         self.min_spacing = rospy.get_param('~min_spacing', 1.0)
         self.curve_angle_deg = rospy.get_param('~curve_angle_deg', 35.0)
-        self.sample_every_n = rospy.get_param('~sample_every_n', 0)  # 0 表示不按固定步长采样
+        self.sample_every_n = rospy.get_param('~sample_every_n', 0)  # 0 means no downsampling
 
         self._tf_listener = tf.TransformListener()
         self._goal_pub = rospy.Publisher(self.goal_pub_topic, PoseStamped, queue_size=1)
@@ -58,13 +58,13 @@ class WaypointManager:
                 rospy.logwarn('[waypoint_manager] received path with <2 poses, ignoring')
                 return
 
-            # 提取关键点
+            # extract keypoints
             keypoints = self._extract_keypoints(poses)
             if len(keypoints) == 0:
                 rospy.logwarn('[waypoint_manager] no keypoints extracted, using endpoints')
                 keypoints = [poses[0], poses[-1]]
 
-            # 更新并立刻发布第一个目标
+            # update waypoint list and publish first goal
             self._waypoints = keypoints
             self._current_idx = 0
             rospy.loginfo('[waypoint_manager] extracted %d waypoints, publishing first', len(keypoints))
@@ -74,11 +74,11 @@ class WaypointManager:
         curve_th = math.radians(self.curve_angle_deg)
         selected: List[PoseStamped] = []
 
-        # 总是包含首点
+        # always include first pose
         selected.append(poses[0])
         last_added_xy = (poses[0].pose.position.x, poses[0].pose.position.y)
 
-        # 可选固定步长采样
+        # optionally sample every N poses
         if self.sample_every_n and self.sample_every_n > 0:
             for i in range(self.sample_every_n, len(poses) - 1, self.sample_every_n):
                 p = poses[i].pose.position
@@ -87,7 +87,7 @@ class WaypointManager:
                     selected.append(poses[i])
                     last_added_xy = xy
 
-        # 曲率/转角采样
+        # detect curvature / turn points
         for i in range(1, len(poses) - 1):
             p_prev = poses[i - 1].pose.position
             p_curr = poses[i].pose.position
@@ -102,14 +102,14 @@ class WaypointManager:
                 selected.append(poses[i])
                 last_added_xy = xy_curr
 
-        # 总是包含末点
+        # always include last pose
         selected.append(poses[-1])
         return selected
 
     def _publish_current_goal(self):
         if 0 <= self._current_idx < len(self._waypoints):
             goal = self._waypoints[self._current_idx]
-            # 保持原 path 坐标系发布
+            # preserve original path timestamps/frame
             goal.header.stamp = rospy.Time.now()
             goal.header.frame_id = self._path_frame or goal.header.frame_id or 'map'
             self._goal_pub.publish(goal)
@@ -122,7 +122,7 @@ class WaypointManager:
             try:
                 with self._lock:
                     if 0 <= self._current_idx < len(self._waypoints):
-                        # 读取当前机器人位姿（转换到 path frame）
+                        # get current robot pose in path frame
                         base_frame = self.base_frame
                         path_frame = self._path_frame or 'map'
                         self._tf_listener.waitForTransform(path_frame, base_frame, rospy.Time(0), rospy.Duration(0.2))
@@ -134,13 +134,13 @@ class WaypointManager:
                         d = distance(robot_xy, goal_xy)
 
                         if d <= self.goal_tolerance:
-                            # 切换到下一个目标
+                            # advance to next goal
                             self._current_idx += 1
                             if self._current_idx < len(self._waypoints):
                                 self._publish_current_goal()
                             else:
                                 rospy.loginfo('[waypoint_manager] all waypoints reached')
-                    # else: 没有路点或索引越界，等待新路径
+                    # else: no active waypoints - waiting for path
             except (tf.Exception, tf.LookupException, tf.ConnectivityException, tf.ExtrapolationException):
                 pass
             rate.sleep()

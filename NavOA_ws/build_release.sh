@@ -24,15 +24,37 @@ if [ -z "${ROS_DISTRO:-}" ]; then
   exit 1
 fi
 
-# 3. Clean and Compile Stage
-echo -e "\n[1/5] Building ROS workspace via Isolated Ninja Pipeline (Release Mode)..."
+# 3. Pre-build Encoding Sanity (fix any ISO-8859 or other non-UTF-8 source files)
+echo -e "\n[3/6] Scanning source tree for non-UTF-8 encoded text files and converting to UTF-8..."
+NON_UTF8_FILES=$(find "${ROOT_DIR}/src" -type f \( -name "*.yaml" -o -name "*.yml" -o -name "*.launch" -o -name "*.xml" -o -name "*.py" -o -name "*.cpp" -o -name "*.h" -o -name "*.txt" -o -name "*.cfg" -o -name "*.json" \) -exec sh -c '
+  for f; do
+    enc=$(file -b "$f")
+    if echo "$enc" | grep -qiE "ISO-8859|CP1252|LATIN"; then
+      echo "$f"
+    fi
+  done
+' sh {} + 2>/dev/null)
+if [ -n "$NON_UTF8_FILES" ]; then
+  echo "Found non-UTF-8 files, converting to UTF-8:"
+  echo "$NON_UTF8_FILES"
+  echo "$NON_UTF8_FILES" | while read -r f; do
+    echo "  Converting: $f"
+    iconv -f ISO-8859-1 -t UTF-8 "$f" -o "${f}.utf8" && mv "${f}.utf8" "$f"
+  done
+  echo "Conversion complete."
+else
+  echo "No non-UTF-8 text files found in source tree."
+fi
+
+# 4. Compile Stage
+echo -e "\n[4/6] Building ROS workspace via Isolated Ninja Pipeline (Release Mode)..."
 cd "${ROOT_DIR}"
 
 # Force isolated ninja build using flags optimized for embedded execution speed
 catkin_make_isolated --use-ninja --install -DCMAKE_BUILD_TYPE=Release
 
-# 4. Construct Deployment File Tree
-echo -e "\n[2/5] Preparing packaging staging tree at: ${PACKAGE_ROOT}"
+# 5. Construct Deployment File Tree
+echo -e "\n[5/6] Preparing packaging staging tree at: ${PACKAGE_ROOT}"
 rm -rf "${FAKE_ROOT}"
 mkdir -p "${PACKAGE_ROOT}"
 
@@ -41,12 +63,20 @@ if [ ! -d "${INSTALL_DIR}" ]; then
   exit 1
 fi
 
-echo "[3/5] Copying compiled binaries and obfuscated artifacts..."
+echo "Copying compiled binaries and installed artifacts..."
 # Copy everything from install_isolated directly into the staging package directory
 cp -a "${INSTALL_DIR}/." "${PACKAGE_ROOT}/"
 
-# 5. Build Control Configuration
-echo "[4/5] Constructing Debian control manifests..."
+# Install workspace map assets into the install tree so local roslaunch defaults can resolve them.
+MAP_SOURCE_DIR="${ROOT_DIR}/src/carto_ws/map"
+if [ -d "${MAP_SOURCE_DIR}" ]; then
+  echo "Installing cartographer map assets from ${MAP_SOURCE_DIR} to ${PACKAGE_ROOT}/share/carto_ws/map"
+  mkdir -p "${PACKAGE_ROOT}/share/carto_ws/map"
+  cp -a "${MAP_SOURCE_DIR}/." "${PACKAGE_ROOT}/share/carto_ws/map/"
+fi
+
+# 6. Construct Debian control manifests and Compile deb
+echo -e "\n[6/6] Constructing Debian control manifests and packaging..."
 mkdir -p "${FAKE_ROOT}/DEBIAN"
 cat > "${FAKE_ROOT}/DEBIAN/control" <<'EOF'
 Package: robit-nav
@@ -60,8 +90,7 @@ Description: Robit ROS navigation runtime package
  A production package containing the compiled, obfuscated navigation runtime for the RK3588 platform. Contains no high-level raw source blocks.
 EOF
 
-# 6. Immutable Binary Compression
-echo "[5/5] Compiling debian payload container via fakeroot..."
+echo "Compiling debian payload container via fakeroot..."
 fakeroot dpkg-deb --build "${FAKE_ROOT}" "${DEB_FILE}"
 
 # Post-build garbage collection
