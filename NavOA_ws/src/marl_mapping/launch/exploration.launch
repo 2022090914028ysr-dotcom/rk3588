@@ -21,9 +21,15 @@
   <arg name="goal_tolerance" default="1" />
   <arg name="goal_timeout" default="60.0" />
   <arg name="idle_wait" default="1.0" />
+  <arg name="post_reach_wait" default="2.5" />
   <arg name="min_frontier_size" default="5" />
   <arg name="exploration_method" default="largest" />
   <arg name="inflation_cells" default="6" />
+
+  <arg name="regional_explore" default="true" />
+  <arg name="local_radius" default="60" />  <!-- grid cells, ~3m at 0.05 res -->
+  <arg name="frontier_update_interval" default="5.0" />  <!-- sec, periodic recalculation -->
+  <arg name="goal_check_radius" default="30" />  <!-- grid cells, ~1.5m -->
 
   <arg name="visualization" default="true" />
   <arg name="save_data" default="true" />
@@ -39,9 +45,14 @@
     <param name="goal_tolerance" value="$(arg goal_tolerance)" />
     <param name="goal_timeout" value="$(arg goal_timeout)" />
     <param name="idle_wait" value="$(arg idle_wait)" />
+    <param name="post_reach_wait" value="$(arg post_reach_wait)" />
     <param name="min_frontier_size" value="$(arg min_frontier_size)" />
     <param name="exploration_method" value="$(arg exploration_method)" />
     <param name="inflation_cells" value="$(arg inflation_cells)" />
+    <param name="regional_explore" value="$(arg regional_explore)" />
+    <param name="local_radius" value="$(arg local_radius)" />
+    <param name="frontier_update_interval" value="$(arg frontier_update_interval)" />
+    <param name="goal_check_radius" value="$(arg goal_check_radius)" />
     <param name="visualization" value="$(arg visualization)" />
     <param name="save_data" value="$(arg save_data)" />
     <param name="plan_watch_enabled" value="true" />

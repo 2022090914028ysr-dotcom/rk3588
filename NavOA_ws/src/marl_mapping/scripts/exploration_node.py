@@ -39,6 +39,7 @@ class ExplorationNode:
         self.goal_tolerance = rospy.get_param('~goal_tolerance', 0.5)    # meters
         self.goal_timeout = rospy.get_param('~goal_timeout', 60.0)       # seconds
         self.idle_wait = rospy.get_param('~idle_wait', 1.0)
+        self.post_reach_wait = rospy.get_param('~post_reach_wait', 2.5)  # sec to wait after reaching goal
 
         # ---- Plan monitoring (watch global planner for empty plans) ----
         self.plan_watch_enabled = rospy.get_param('~plan_watch_enabled', True)
@@ -83,6 +84,14 @@ class ExplorationNode:
         self._stuck_since = None            # timestamp when no reachable goal found
         self._stuck_retry_interval = 5.0    # retry frontier detection every N sec
         self._max_stuck_duration = 120.0    # give up completely after this long
+        self._post_reach_time = None        # timestamp when last goal was reached
+        self._last_goal_world = None        # world coords of the last successfully sent goal
+        self._local_radius = rospy.get_param('~local_radius', 60)  # grid cells (~3m at 0.05 res)
+        self._use_regional_explore = rospy.get_param('~regional_explore', True)
+        # Periodic frontier recalculation during navigation
+        self._frontier_update_interval = rospy.get_param('~frontier_update_interval', 5.0)  # sec
+        self._last_frontier_update = None       # rospy.Time of last recalculation
+        self._goal_check_radius = rospy.get_param('~goal_check_radius', 30)  # cells (~1.5m)
 
         # ---- TF (for transforming robot pose to map frame) ----
         self.tf_buffer = tf2_ros.Buffer()
@@ -239,28 +248,71 @@ class ExplorationNode:
             robot_map = self._get_robot_pose_map()
             if robot_map is None:
                 return  # can't determine robot pose, skip this tick
-            d = math.hypot(robot_map[0] - self.current_goal_world[0],
-                           robot_map[1] - self.current_goal_world[1])
-            elapsed = (rospy.Time.now() - self.goal_sent_time).to_sec()
-            if d < self.goal_tolerance:
-                rospy.loginfo("[Explore] Goal reached (%.2fm)", d)
-                self.current_goal_world = None
-                self.goal_sent_time = None
-                # Mark as visited, reset retry counter (we made progress)
-                if self._last_goal_grid:
-                    self.visited_goals.add(self._last_goal_grid)
-                self._frontier_reset_count = 0
-                return
-            if elapsed > self.goal_timeout:
-                rospy.logwarn("[Explore] Goal timeout %.0fs, skip", elapsed)
-                self.current_goal_world = None
-                self.goal_sent_time = None
-                # Mark as visited to avoid repeating
-                if self._last_goal_grid:
-                    self.visited_goals.add(self._last_goal_grid)
-                    self._failed_frontiers.add(self._last_goal_grid)
-                return
-            return  # still moving
+
+            # ---- Periodic frontier recalculation ----
+            # Re-detect frontiers from the latest map while moving.
+            # If the target frontier cluster has vanished (area now fully
+            # explored), abort the stale goal and pick a new one immediately.
+            now = rospy.Time.now()
+            if (self._last_frontier_update is None or
+                    (now - self._last_frontier_update).to_sec() >= self._frontier_update_interval):
+                self._last_frontier_update = now
+                if (self._last_goal_grid is not None and
+                        self.obstacle_map is not None and
+                        self.explored_map is not None):
+                    f = detect_frontiers(self.obstacle_map, self.explored_map,
+                                         min_frontier_size=self.min_frontier_size)
+                    gx, gy = self._last_goal_grid
+                    still_exists = any((cx - gx)**2 + (cy - gy)**2 <= self._goal_check_radius**2
+                                       for (cx, cy, _sz, _wb) in f)
+                    if not still_exists:
+                        rospy.logwarn("[Explore] Frontier near goal (%d,%d) "
+                                      "vanished — aborting, will reselect", gx, gy)
+                        self.current_goal_world = None
+                        self.goal_sent_time = None
+                        if self._last_goal_grid:
+                            self.visited_goals.add(self._last_goal_grid)
+                        # Fall through to goal selection below
+                    else:
+                        rospy.loginfo_throttle(10.0,
+                            "[Explore] Frontier still alive near goal (%d,%d), continuing",
+                            gx, gy)
+
+            # If goal was just cleared above, skip the rest of goal checking
+            if self.current_goal_world is not None:
+                d = math.hypot(robot_map[0] - self.current_goal_world[0],
+                               robot_map[1] - self.current_goal_world[1])
+                elapsed = (rospy.Time.now() - self.goal_sent_time).to_sec()
+                if d < self.goal_tolerance:
+                    rospy.loginfo("[Explore] Goal reached (%.2fm) — "
+                                  "waiting %.1fs for map update",
+                                  d, self.post_reach_wait)
+                    self.current_goal_world = None
+                    self.goal_sent_time = None
+                    # Mark as visited, reset retry counter (we made progress)
+                    if self._last_goal_grid:
+                        self.visited_goals.add(self._last_goal_grid)
+                    self._frontier_reset_count = 0
+                    self._post_reach_time = rospy.Time.now()
+                    return
+                if elapsed > self.goal_timeout:
+                    rospy.logwarn("[Explore] Goal timeout %.0fs, skip", elapsed)
+                    self.current_goal_world = None
+                    self.goal_sent_time = None
+                    # Mark as visited to avoid repeating
+                    if self._last_goal_grid:
+                        self.visited_goals.add(self._last_goal_grid)
+                        self._failed_frontiers.add(self._last_goal_grid)
+                    return
+                return  # still moving
+
+        # --- post-reach wait: let Cartographer update the map ---
+        if self._post_reach_time is not None:
+            elapsed = (rospy.Time.now() - self._post_reach_time).to_sec()
+            if elapsed < self.post_reach_wait:
+                return  # still waiting for map to settle
+            self._post_reach_time = None
+            rospy.loginfo("[Explore] Post-reach wait done, selecting next goal")
 
         # --- pick new goal ---
         goal_xy = self._select_goal()
@@ -316,12 +368,12 @@ class ExplorationNode:
 
         # Filter out visited frontiers (within 10 grid cells ~0.5m)
         if self.visited_goals:
-            f = [(cx, cy, sz) for (cx, cy, sz) in f
+            f = [(cx, cy, sz, wb) for (cx, cy, sz, wb) in f
                  if all((cx - vx)**2 + (cy - vy)**2 >= 100
                         for (vx, vy) in self.visited_goals)]
         # Filter out frontiers that previously failed path planning
         if self._failed_frontiers:
-            f = [(cx, cy, sz) for (cx, cy, sz) in f
+            f = [(cx, cy, sz, wb) for (cx, cy, sz, wb) in f
                  if all((cx - fx)**2 + (cy - fy)**2 >= 100
                         for (fx, fy) in self._failed_frontiers)]
 
@@ -346,12 +398,32 @@ class ExplorationNode:
         if self.vis_enabled:
             self._pub_frontier_markers(f)
 
-        # Sort frontiers by configured method, pick best non-obstacle one.
-        # Path reachability is NOT pre-checked here (would block the
-        # control loop).  plan_callback monitors the global planner and
-        # auto-switches goals when empty plans are detected.
-        sorted_f = self._sort_frontiers_by_method((rx, ry), f)
-        for cx, cy, sz in sorted_f:
+        # ---- Regional exploration: prefer frontiers near last goal ----
+        # This prevents the robot from jumping across the map after a
+        # frontier cluster disappears mid-navigation.  By prioritizing
+        # frontiers close to the area we just reached, we achieve a
+        # depth-first local exploration pattern.
+        if (self._use_regional_explore and
+                self._last_goal_world is not None and
+                self._last_goal_grid is not None):
+            lgx, lgy = self._last_goal_grid
+            nearby = [(cx, cy, sz, wb) for (cx, cy, sz, wb) in f
+                      if (cx - lgx)**2 + (cy - lgy)**2 <= self._local_radius**2]
+            if nearby:
+                rospy.loginfo("[Explore] Regional: %d frontiers within "
+                              "%d cells of last goal (%d,%d)",
+                              len(nearby), self._local_radius, lgx, lgy)
+                # Sort nearby frontiers by the configured method
+                f = self._sort_frontiers_by_method((rx, ry), nearby)
+            else:
+                rospy.loginfo("[Explore] No frontiers near last goal, "
+                              "falling back to global selection")
+                f = self._sort_frontiers_by_method((rx, ry), f)
+        else:
+            # Global selection (original behavior)
+            f = self._sort_frontiers_by_method((rx, ry), f)
+
+        for cx, cy, sz, wb in f:
             fx, fy = self._snap_to_free_cell(cx, cy)
             # Quick obstacle check (no service call)
             if self.obstacle_map is not None:
@@ -368,8 +440,14 @@ class ExplorationNode:
     def _sort_frontiers_by_method(self, robot_pos, frontiers):
         """Sort frontiers by the configured exploration method.
 
-        Returns a list of (cx, cy, sz) tuples sorted so that the
-        'best' frontier comes first.
+        frontiers: list of (cx, cy, size, white_border) tuples.
+        Returns the list sorted so the 'best' frontier comes first.
+
+        Methods:
+          nearest  – closest Euclidean distance to robot
+          largest  – biggest frontier cluster (by cell count)
+          whitest  – most adjacent explored-free (white) cells
+          combined – score = size * white_border / distance
         """
         rx, ry = robot_pos
         if self.exploration_method == 'nearest':
@@ -377,10 +455,18 @@ class ExplorationNode:
                           key=lambda f: (f[0] - rx)**2 + (f[1] - ry)**2)
         elif self.exploration_method == 'largest':
             return sorted(frontiers, key=lambda f: f[2], reverse=True)
-        elif self.exploration_method == 'combined':
+        elif self.exploration_method == 'whitest':
+            # Frontier with most adjacent white (explored-free) cells.
+            # Tie-break by size for stability.
             return sorted(frontiers,
-                          key=lambda f: f[2] / max((f[0] - rx)**2 +
-                                                    (f[1] - ry)**2, 1.0),
+                          key=lambda f: (f[3], f[2]), reverse=True)
+        elif self.exploration_method == 'combined':
+            # Score = size * white_border / distance.
+            # Favours large frontiers with lots of known free space nearby.
+            return sorted(frontiers,
+                          key=lambda f: (f[2] * max(f[3], 1) /
+                                         max((f[0] - rx)**2 +
+                                             (f[1] - ry)**2, 1.0)),
                           reverse=True)
         return frontiers
 
@@ -465,6 +551,7 @@ class ExplorationNode:
 
         self.current_goal_world = (wx, wy)
         self._last_goal_grid = (goal_xy[0], goal_xy[1])
+        self._last_goal_world = (wx, wy)
         self.goal_sent_time = rospy.Time.now()
         self.plan_empty_count = 0    # reset plan-watch debounce
 
@@ -487,7 +574,7 @@ class ExplorationNode:
 
     def _pub_frontier_markers(self, frontiers):
         ma = MarkerArray()
-        for i, (cx, cy, sz) in enumerate(frontiers):
+        for i, (cx, cy, sz, _wb) in enumerate(frontiers):
             wx, wy = self._grid_to_world(cx, cy)
             m = Marker()
             m.header.frame_id = self.map_frame; m.header.stamp = rospy.Time.now()

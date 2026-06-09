@@ -21,8 +21,12 @@ def detect_frontiers(obstacle_map, explored_map, min_frontier_size=5):
         min_frontier_size: minimum cluster size to consider
 
     Returns:
-        list of (cx, cy, size) for each frontier cluster center
+        list of (cx, cy, size, white_border) for each frontier cluster.
+        white_border = number of explored-free cells adjacent to this
+        frontier cluster (higher = more "mature" / better known area).
     """
+    h, w = obstacle_map.shape
+
     # Compute raw frontiers
     kernel = np.ones((3, 3), dtype=np.uint8)
     safe_obstacle = cv2.dilate(obstacle_map.astype(np.uint8), kernel, iterations=2)
@@ -34,6 +38,9 @@ def detect_frontiers(obstacle_map, explored_map, min_frontier_size=5):
         dilated_unknown > 0
     ).astype(np.uint8)
 
+    # White (explored-free) map for border counting
+    white = ((explored_map > 0) & (obstacle_map == 0)).astype(np.uint8)
+
     # Find connected components
     num_labels, labels, stats, centroids = cv2.connectedComponentsWithStats(
         frontier, connectivity=8
@@ -42,9 +49,27 @@ def detect_frontiers(obstacle_map, explored_map, min_frontier_size=5):
     frontiers = []
     for i in range(1, num_labels):  # Skip background (label 0)
         area = stats[i, cv2.CC_STAT_AREA]
-        if area >= min_frontier_size:
-            cx, cy = centroids[i]
-            frontiers.append((int(cx), int(cy), area))
+        if area < min_frontier_size:
+            continue
+        cx, cy = int(centroids[i][0]), int(centroids[i][1])
+
+        # ---- Count adjacent white (explored-free) cells ----
+        # Operate on the cluster's bounding box + 1px padding for speed
+        x1 = max(0, stats[i, cv2.CC_STAT_LEFT] - 1)
+        y1 = max(0, stats[i, cv2.CC_STAT_TOP] - 1)
+        x2 = min(w, stats[i, cv2.CC_STAT_LEFT] + stats[i, cv2.CC_STAT_WIDTH] + 1)
+        y2 = min(h, stats[i, cv2.CC_STAT_TOP] + stats[i, cv2.CC_STAT_HEIGHT] + 1)
+
+        local_labels = labels[y1:y2, x1:x2]
+        cluster_mask = (local_labels == i).astype(np.uint8)
+        cluster_dilated = cv2.dilate(cluster_mask, kernel, iterations=1)
+
+        local_white = white[y1:y2, x1:x2]
+        # White cells in the dilated ring that are NOT the cluster itself
+        border = local_white & cluster_dilated & (1 - cluster_mask)
+        white_border = int(np.sum(border))
+
+        frontiers.append((cx, cy, area, white_border))
 
     # Sort by size (largest first)
     frontiers.sort(key=lambda x: x[2], reverse=True)
