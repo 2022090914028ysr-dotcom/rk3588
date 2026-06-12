@@ -193,6 +193,8 @@ taskset -c 4,5 roslaunch NavOA_ros NavOA_gazebo_limo_all.launch
 
 taskset -c 6,7 roslaunch NavOA_ros NavOA_gazebo_limo.launch
 
+source /opt/robit/nav/setup.bash 
+
 taskset -c 5,6,7 roslaunch cartographer_ros livox_2d_localization.launch
 
 taskset -c 5,6,7 roslaunch cartographer_ros livox_2d.launch

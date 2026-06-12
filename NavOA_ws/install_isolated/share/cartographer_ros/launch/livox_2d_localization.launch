@@ -2,7 +2,7 @@
 <launch>
   <arg name="map_dir" default="$(find cartographer_ros)/../carto_ws/map/meeting_room" />
   <arg name="load_state_filename" default="$(arg map_dir)/test9.pbstream" />
-  <arg name="launch_rviz" default="true" />
+  <arg name="launch_rviz" default="false" />
   <param name="/use_sim_time" value="false" />
 
   <node name="lidar_node" pkg="lidar_ros" type="lidar_node" output="screen" respawn="false">

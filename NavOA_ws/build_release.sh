@@ -75,7 +75,16 @@ if [ -d "${MAP_SOURCE_DIR}" ]; then
   cp -a "${MAP_SOURCE_DIR}/." "${PACKAGE_ROOT}/share/carto_ws/map/"
 fi
 
-# 6. Construct Debian control manifests and Compile deb
+# Install the runtime wrapper script
+echo "Installing service wrapper script..."
+install -m 0755 "${ROOT_DIR}/packaging/run_robit_nav.sh" "${PACKAGE_ROOT}/run_robit_nav.sh"
+
+# Install the systemd service unit
+echo "Installing systemd service unit..."
+mkdir -p "${FAKE_ROOT}/etc/systemd/system"
+cp -a "${ROOT_DIR}/packaging/robit-nav.service" "${FAKE_ROOT}/etc/systemd/system/robit-nav.service"
+
+# 6. Construct Debian control manifests and packaging
 echo -e "\n[6/6] Constructing Debian control manifests and packaging..."
 mkdir -p "${FAKE_ROOT}/DEBIAN"
 cat > "${FAKE_ROOT}/DEBIAN/control" <<'EOF'
@@ -84,11 +93,36 @@ Version: 1.0.0
 Section: robotics
 Priority: optional
 Architecture: arm64
-Depends: ros-noetic-ros-core
+Depends: ros-noetic-ros-core, systemd
 Maintainer: Robit Release Team <noreply@example.com>
 Description: Robit ROS navigation runtime package
  A production package containing the compiled, obfuscated navigation runtime for the RK3588 platform. Contains no high-level raw source blocks.
 EOF
+
+# Post-install script: enable and start the service
+cat > "${FAKE_ROOT}/DEBIAN/postinst" <<'POSTINST'
+#!/bin/sh
+set -e
+if command -v systemctl >/dev/null 2>&1; then
+  systemctl daemon-reload
+  systemctl enable robit-nav.service
+  systemctl restart robit-nav.service
+fi
+exit 0
+POSTINST
+chmod 0755 "${FAKE_ROOT}/DEBIAN/postinst"
+
+# Pre-remove script: stop and disable the service
+cat > "${FAKE_ROOT}/DEBIAN/prerm" <<'PRERM'
+#!/bin/sh
+set -e
+if command -v systemctl >/dev/null 2>&1; then
+  systemctl stop robit-nav.service || true
+  systemctl disable robit-nav.service || true
+fi
+exit 0
+PRERM
+chmod 0755 "${FAKE_ROOT}/DEBIAN/prerm"
 
 echo "Compiling debian payload container via fakeroot..."
 fakeroot dpkg-deb --build "${FAKE_ROOT}" "${DEB_FILE}"

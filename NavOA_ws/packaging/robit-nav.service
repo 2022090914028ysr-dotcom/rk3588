@@ -6,10 +6,13 @@ Wants=network-online.target
 [Service]
 Type=simple
 RemainAfterExit=no
-ExecStart=/bin/bash -lc 'source /opt/ros/noetic/setup.bash && source /opt/robit/nav/setup.bash && roslaunch cartographer_ros livox_2d_localization.launch && roslaunch NavOA_ros navoa_nav_only.launch'
+ExecStart=/opt/robit/nav/run_robit_nav.sh start
+ExecStop=/opt/robit/nav/run_robit_nav.sh stop
 Restart=on-failure
 RestartSec=5
 WorkingDirectory=/opt/robit/nav
+StandardOutput=journal
+StandardError=journal
 
 [Install]
 WantedBy=multi-user.target
