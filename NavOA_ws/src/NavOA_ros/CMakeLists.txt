@@ -175,7 +175,7 @@ set(PYTHON_SOURCE_DIRS
   ${CMAKE_CURRENT_SOURCE_DIR}/src
 )
 
-add_custom_target(compile_python_bytecode
+add_custom_target(compile_python_bytecode ALL
   COMMAND ${Python3_EXECUTABLE} -m compileall -b -f -q ${PYTHON_SOURCE_DIRS}
   WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
   COMMENT "Compile Python sources into bytecode (.pyc)"

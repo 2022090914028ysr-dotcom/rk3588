@@ -268,7 +268,7 @@ if __name__ == '__main__':
 
         if not args.local:
             # environment at generation time
-            CMAKE_PREFIX_PATH = r'/opt/robit/nav;/home/ubuntu/Nav_Release/Robit_SlamNav/NavOA_ws/devel_isolated/yahboomcar_mediapipe;/home/ubuntu/Nav_Release/Robit_SlamNav/NavOA_ws/install_isolated;/opt/ros/noetic'.split(';')
+            CMAKE_PREFIX_PATH = r'/home/ubuntu/Nav_Release/Robit_SlamNav/NavOA_ws/install_isolated;/opt/ros/noetic'.split(';')
         else:
             # don't consider any other prefix path than this one
             CMAKE_PREFIX_PATH = []

@@ -18,4 +18,5 @@ echo "Starting Robit Navigation Stack..."
 roslaunch rosbridge_server rosbridge_websocket.launch port:=9090 &
 roslaunch cartographer_ros livox_2d_localization.launch &
 roslaunch NavOA_ros navoa_nav_only.launch &
+rosrun NavOA_ros status_state.py &
 wait || true
