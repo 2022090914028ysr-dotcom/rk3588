@@ -61,7 +61,7 @@ class SerialCmdVelImuBridge(object):
             raise RuntimeError("pyserial is required for serial_cmd_vel_imu_bridge")
 
         # Parameters
-        self.port = rospy.get_param("~serial_port", "/dev/ttyS7")
+        self.port = rospy.get_param("~serial_port", "/dev/ttyS1")
         self.baudrate = rospy.get_param("~baudrate", 460800)
         self.serial_timeout = rospy.get_param("~serial_timeout", 0.02)
         self.cmd_send_rate_hz = rospy.get_param("~cmd_send_rate_hz", 30.0)
@@ -141,7 +141,7 @@ class SerialCmdVelImuBridge(object):
           0.200000,0.000000,0.000000\n
         """
         vx = msg.linear.x
-        vy = 0.0
+        vy = msg.linear.y
         w = msg.angular.z
         line = "CMD_VEL,{:.6f},{:.6f},{:.6f}\n".format(vx, vy, w)
         rospy.loginfo_throttle(

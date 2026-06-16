@@ -57,8 +57,6 @@ class NavOA_core:
             self.control_rate = 50.0
         self.flip_angle = rospy.get_param("~flip_angle", False)
         self.include_initial_path_direction = rospy.get_param("~include_initial_path_direction", False)
-        self.slow_down_radius = float(rospy.get_param("~slow_down_radius", "1.0"))
-        self.min_speed_near_goal = float(rospy.get_param("~min_speed_near_goal", "0.05"))
         self.goal = None
         
         if self.planner_config_file is None:
@@ -249,16 +247,9 @@ class NavOA_core:
                 tf.ConnectivityException,
                 tf.ExtrapolationException,
             ):
-                rospy.loginfo_throttle(
-                    1,
-                    "waiting for tf for the transform from {} to {}".format(
-                        self.base_frame, self.map_frame
-                    ),
-                )
                 continue
 
             if self.robot_state is None:
-                rospy.logwarn_throttle(1, "waiting for robot state")
                 continue
 
             # --- External control interrupt handling ---
@@ -315,15 +306,7 @@ class NavOA_core:
                     )
                     self._return_to_previous_goal()
 
-            rospy.loginfo_once(
-                "robot state received {}".format(self.robot_state.tolist())
-            )
-
             if self.require_explicit_goal and (not self._explicit_goal_active):
-                rospy.logwarn_throttle(
-                    1.0,
-                    "[NavOA] require_explicit_goal enabled; waiting for /NavOA_goal or /NavOA_waypoints or /initial_path",
-                )
                 self.vel_pub.publish(Twist())
                 r.sleep()
                 continue
@@ -336,21 +319,13 @@ class NavOA_core:
 
 
             if self.NavOA_planner.initial_path is None or self.planning_finished:
-                rospy.logwarn_throttle(1, "waiting for NEW NavOA initial path or Goal")
-   
                 self.vel_pub.publish(Twist())
                 r.sleep()
                 continue
 
-            rospy.loginfo_once("initial Path Received")
             self.ref_path_pub.publish(
                 self.generate_path_msg(self.NavOA_planner.initial_path)
             )
-
-            if self.obstacle_points is None:
-                rospy.logwarn_throttle(
-                    1, "No obstacle points, only path tracking task will be performed"
-                )
 
             # --- 增加异常捕获，防止规划器崩溃 ---
             try:
@@ -361,43 +336,14 @@ class NavOA_core:
 
                 # --- 核心修改：到达终点后设置完成标志位 ---
                 if info["arrive"]:
-                    rospy.loginfo_throttle(1.0, "[NavOA] Target Reached! Stopping.")
-                    
-                    # 1. 强制发送停车指令
                     self.vel_pub.publish(Twist())
-                    
-                    # 2. 保存到达时间，用于返回上一目标点
                     self.goal_reached_time = rospy.Time.now()
                     self.goal_timeout_button_sent = False
-
-                    # 3. 清除当前目标变量
                     self.goal = None
-
-                    # 4. Clear explicit-goal latch so we won't move again until a new goal/path arrives
                     self._explicit_goal_active = False
-                    
-                    # 5. 设置标志位为 True。这将导致下一次循环进入 "waiting for NEW path" 状态
-                    #    直到 path_callback 或 goal_callback 将其重置为 False
                     self.planning_finished = True
-                    
                     r.sleep()
                     continue
-                # --------------------------------
-
-                dist_to_goal = (
-                    np.linalg.norm(self.goal[:2, 0] - self.robot_state[:2, 0])
-                    if self.goal is not None
-                    else float('nan')
-                )
-                rospy.loginfo_throttle(
-                    1.0,
-                    "[NavOA] raw action v=%.3f w=%.3f dist=%.3f",
-                    action[0, 0],
-                    action[1, 0],
-                    dist_to_goal,
-                )
-
-                action = self.apply_goal_speed_limit(action)
 
                 # publish the path and velocity
                 self.plan_pub.publish(self.generate_path_msg(info["opt_state_list"]))
@@ -407,15 +353,6 @@ class NavOA_core:
                 self.point_markers_pub_dune.publish(self.generate_dune_points_markers_msg())
                 self.point_markers_pub_nrmp.publish(self.generate_nrmp_points_markers_msg())
                 self.robot_marker_pub.publish(self.generate_robot_marker_msg())
-
-                if info["stop"]:
-                    rospy.logwarn_throttle(
-                        0.5,
-                        "NavOA stop with the min distance "
-                        + str(self.NavOA_planner.min_distance.detach().item())
-                        + " threshold "
-                        + str(self.NavOA_planner.collision_threshold),
-                    )
             
             except Exception:
                 rospy.logerr_throttle(
@@ -457,7 +394,6 @@ class NavOA_core:
 
         if len(points) == 0:
             self.obstacle_points = None
-            rospy.loginfo_once("No valid scan points")
             return None
 
         point_array = np.hstack(points)
@@ -472,8 +408,6 @@ class NavOA_core:
 
             trans_matrix, rot_matrix = get_transform(np.c_[x, y, yaw].reshape(3, 1))
             self.obstacle_points = rot_matrix @ point_array + trans_matrix
-            rospy.loginfo_once("Scan obstacle points Received")
-
             return self.obstacle_points
 
         except (
@@ -481,12 +415,6 @@ class NavOA_core:
             tf.ConnectivityException,
             tf.ExtrapolationException,
         ):
-            rospy.loginfo_throttle(
-                1,
-                "waiting for tf for the transform from {} to {}".format(
-                    self.lidar_frame, self.map_frame
-                ),
-            )
             return None
 
     def path_callback(self, path):
@@ -531,9 +459,6 @@ class NavOA_core:
             return
 
         if self.NavOA_planner.initial_path is None or self.refresh_initial_path:
-            rospy.loginfo_throttle(0.1, "initial path update from given path")
-            
-            # ---------------- 修复：捕获规划器崩溃 & 重置完成标志 ----------------
             try:
                 self.NavOA_planner.set_initial_path(initial_point_list)
                 self.NavOA_planner.reset()
@@ -581,10 +506,8 @@ class NavOA_core:
             waypoints_list.append(points)
 
         if self.NavOA_planner.initial_path is None or self.refresh_initial_path:
-            rospy.loginfo_throttle(0.1, "initial path update from waypoints")
             self.NavOA_planner.update_initial_path_from_waypoints(waypoints_list)
             self.NavOA_planner.reset()
-            # 收到新航点，激活规划逻辑
             self.planning_finished = False
             self._explicit_goal_active = True
             self.goal_timeout_button_sent = False
@@ -609,14 +532,10 @@ class NavOA_core:
         self.goal_reached_time = rospy.Time(0)
         self.goal_timeout_button_sent = False
 
-        print(f"set NavOA goal: {[x, y, theta]}")
-
-        # Check if robot state is available before updating path
         if self.robot_state is None:
             rospy.logwarn("Cannot set goal: robot state not yet available. Waiting for odometry...")
             return
 
-        rospy.loginfo_throttle(0.1, "initial path update from goal position")
         self.NavOA_planner.update_initial_path_from_goal(self.robot_state, self.goal)
         self.NavOA_planner.reset()
 
@@ -701,24 +620,6 @@ class NavOA_core:
             action.angular.z = steer
 
             return action
-
-    def apply_goal_speed_limit(self, action):
-        if action is None or self.goal is None or self.robot_state is None:
-            return action
-
-        dist = np.linalg.norm(self.goal[:2, 0] - self.robot_state[:2, 0])
-
-        if dist >= self.slow_down_radius:
-            return action
-
-        scale = max(self.min_speed_near_goal / max(abs(action[0, 0]), 1e-6), dist / self.slow_down_radius)
-        scale = min(scale, 1.0)
-
-        scaled_action = action.copy()
-        scaled_action[0, 0] = action[0, 0] * scale
-        scaled_action[1, 0] = action[1, 0] * scale
-
-        return scaled_action
 
     def _return_to_previous_goal(self):
         if self.previous_goal is None or self.robot_state is None:

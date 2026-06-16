@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <launch>
-  <arg name="load_state_filename" default="/home/ubuntu/Robit_SlamNav/NavOA_ws/src/carto_ws/map/meeting_room/finance1.pbstream" />
+  <arg name="load_state_filename" default="/home/ubuntu/Robit_SlamNav/NavOA_ws/src/carto_ws/map/meeting_room/selfmap.pbstream" />
   <arg name="launch_rviz" default="true" />
   <param name="/use_sim_time" value="false" />
 
@@ -18,16 +18,20 @@
   </node>
   
 
-  <node pkg="tf" type="static_transform_publisher" name="base_link_to_laser"
-    args="0.0 0.0 0.2 -1.57 0.0 0.0 /base_footprint /laser_frame 40" />
+  <!-- Latched static TF: tf2_ros publishes once to /tf_static, so cartographer's
+       TF buffer never misses base_footprint->laser_frame, even on first startup. -->
+  <node pkg="tf2_ros" type="static_transform_publisher" name="base_link_to_laser"
+    args="0 0 0.2 -1.57 0 0 base_footprint laser_frame" />
 
  <include file="$(find rf2o_laser_odometry)/launch/rf2o_laser_odometry.launch" />
+
+ <node pkg="NavOA_ros" name="multi_ultrasonic_scan" type="multi_ultrasonic_scan.py" output="screen" />
 
   <!-- Static map server: serves the pre-built map on /map.
        This is the clean global map from the pbstream, with NO ghost submaps from
        recovery trajectories. move_base global costmap uses this for path planning.
        cartographer_occupancy_grid_node is kept for debug visualization only (/carto_submap_viz). -->
-  <arg name="map_file" default="/home/ubuntu/Robit_SlamNav/NavOA_ws/src/carto_ws/map/meeting_room/finance1.yaml" />
+  <arg name="map_file" default="/home/ubuntu/Robit_SlamNav/NavOA_ws/src/carto_ws/map/meeting_room/selfmap.yaml" />
   <node name="map_server" pkg="map_server" type="map_server"
         args="$(arg map_file)" output="screen">
     <!-- map_server publishes on /map and /map_metadata by default -->
@@ -36,7 +40,7 @@
 
   <node name="cartographer_node" pkg="cartographer_ros" type="cartographer_node" 
         args="-configuration_directory $(find cartographer_ros)/configuration_files
-               -configuration_basename livox_2d_localization.lua
+               -configuration_basename livox_2d_localization_old.lua
                -load_state_filename $(arg load_state_filename)" output="screen">
     <remap from="scan" to="/scan" />
     <remap from="odom" to="/odom_rf2o" />
@@ -53,8 +57,8 @@
     <remap from="map" to="/carto_submap_viz" />
   </node>
 
-    <node if="$(arg launch_rviz)" name="rviz" pkg="rviz" type="rviz" required="true"
-      args="-d $(find cartographer_ros)/configuration_files/demo_2d.rviz" />
+    <!-- <node if="$(arg launch_rviz)" name="rviz" pkg="rviz" type="rviz" required="true"
+      args="-d $(find cartographer_ros)/configuration_files/demo_2d.rviz" /> -->
 
         
 </launch>

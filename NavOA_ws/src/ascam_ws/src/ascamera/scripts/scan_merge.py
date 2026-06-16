@@ -1,6 +1,15 @@
 #!/usr/bin/env python
-"""Merge two LaserScan topics into /mergescan.
-Resample both to common angle grid, then per-angle min (closest obstacle wins).
+"""Merge multiple LaserScan topics into /mergescan.
+All inputs resampled to common angle grid, per-angle min (closest obstacle wins).
+
+Supports 2-way (legacy) or N-way merge via ~topics / ~angle_offsets params.
+
+Legacy (2-way):
+    ~topic_a, ~topic_b, ~angle_offset_a, ~angle_offset_b
+
+New (N-way):
+    ~topics:         ["/voscan", "/camscan", "/scan"]
+    ~angle_offsets:  [-0.7854, 0.0, 0.0]
 """
 
 import rospy
@@ -8,32 +17,20 @@ from sensor_msgs.msg import LaserScan
 import numpy as np
 
 
-def scan_to_angles(scan):
-    """Return array of angles (rad) for each range index."""
-    n = len(scan.ranges)
-    return np.linspace(scan.angle_min, scan.angle_max, n)
-
-
-def get_range_at_angle(scan, angles_arr, target_angle):
-    """Get interpolated range at target_angle from scan (0 if out of FOV or invalid)."""
-    if target_angle < scan.angle_min or target_angle > scan.angle_max:
-        return 0.0
-    idx = (target_angle - scan.angle_min) / scan.angle_increment
-    i0 = int(np.floor(idx))
-    i1 = i0 + 1
-    if i0 < 0 or i1 >= len(scan.ranges):
-        return 0.0
-    r0 = scan.ranges[i0] if scan.ranges[i0] >= scan.range_min else 0.0
-    r1 = scan.ranges[i1] if scan.ranges[i1] >= scan.range_min else 0.0
-    frac = idx - i0
-    r = r0 + (r1 - r0) * frac
-    return max(r, 0.0)
-
-
 def rotate_scan(scan, offset):
-    """Return a new LaserScan with ranges rotated by offset radians."""
-    if offset == 0:
+    """Return a new LaserScan with ranges rotated by offset radians.
+
+    For full 360 deg scans, np.roll is used (circular shift).
+    For partial-FOV scans, np.roll would wrap data incorrectly, so we pad
+    the ranges with inf on both sides to create a 360 deg virtual array before
+    rolling, preserving the original FOV boundary.
+    """
+    if offset == 0.0:
         return scan
+
+    fov = scan.angle_max - scan.angle_increment - scan.angle_min  # actual data span
+    is_full = (2.0 * np.pi - fov) < scan.angle_increment * 2  # ~360 deg?
+
     out = LaserScan()
     out.header = scan.header
     out.angle_min = scan.angle_min + offset
@@ -43,119 +40,142 @@ def rotate_scan(scan, offset):
     out.scan_time = scan.scan_time
     out.range_min = scan.range_min
     out.range_max = scan.range_max
-    shift = int(round(offset / scan.angle_increment))
-    out.ranges = list(np.roll(np.array(scan.ranges, dtype=np.float32), shift))
+
+    ranges_arr = np.array(scan.ranges, dtype=np.float32)
+
+    if is_full:
+        shift = int(round(offset / scan.angle_increment))
+        out.ranges = list(np.roll(ranges_arr, shift))
+    else:
+        # Pad to 360 deg with inf, roll, then keep only the moved FOV
+        total_beams = int(round(2.0 * np.pi / scan.angle_increment))
+        padded = np.full(total_beams, float('inf'), dtype=np.float32)
+        start_idx = int(round((scan.angle_min + np.pi) / scan.angle_increment))
+        padded[start_idx:start_idx + len(ranges_arr)] = ranges_arr
+        shift = int(round(offset / scan.angle_increment))
+        padded = np.roll(padded, shift)
+        out.ranges = list(padded[start_idx:start_idx + len(ranges_arr)])
+
     out.intensities = list(scan.intensities)
     return out
 
 
+def sample_scan(scan, angle):
+    """Sample a rotated scan at a given angle, return float (m) or inf (no data)."""
+    if angle < scan.angle_min or angle > scan.angle_max:
+        return float('inf')
+    idx = (angle - scan.angle_min) / scan.angle_increment
+    i0 = int(np.clip(idx, 0, len(scan.ranges) - 1))
+    i1 = min(i0 + 1, len(scan.ranges) - 1)
+    r0 = scan.ranges[i0] if scan.range_min < scan.ranges[i0] < float('inf') else float('inf')
+    r1 = scan.ranges[i1] if scan.range_min < scan.ranges[i1] < float('inf') else float('inf')
+    if r0 == float('inf') and r1 == float('inf'):
+        return float('inf')
+    if r0 == float('inf'):
+        return r1
+    if r1 == float('inf'):
+        return r0
+    return r0 + (r1 - r0) * (idx - i0)
+
+
+# ---------------------------------------------------------------------------
 class ScanMerger:
     def __init__(self):
         rospy.init_node('scan_merger', anonymous=True)
 
-        self.topic_a = rospy.get_param('~topic_a', '/scan')
-        self.topic_b = rospy.get_param('~topic_b', '/camscan')
-        self.output_frame = rospy.get_param('~output_frame', 'base_footprint')
+        # ---- resolve topics -------------------------------------------------
+        topics_param = rospy.get_param('~topics', None)
+        if topics_param is not None:
+            # N-way mode
+            self.topics = topics_param
+            self.offsets = rospy.get_param('~angle_offsets',
+                                           [0.0] * len(self.topics))
+            if len(self.offsets) != len(self.topics):
+                rospy.logerr("len(angle_offsets) != len(topics)")
+                raise ValueError("angle_offsets must match topics")
+        else:
+            # legacy 2-way mode
+            self.topics = [
+                rospy.get_param('~topic_a', '/scan'),
+                rospy.get_param('~topic_b', '/camscan'),
+            ]
+            self.offsets = [
+                rospy.get_param('~angle_offset_a', 0.0),
+                rospy.get_param('~angle_offset_b', -1.5708),
+            ]
 
-        self.scan_a = None
-        self.scan_b = None
-        self.last_a = rospy.Time(0)
-        self.last_b = rospy.Time(0)
+        self.output_frame = rospy.get_param('~output_frame', 'base_footprint')
         self.timeout = rospy.Duration(rospy.get_param('~timeout', 1.0))
         self.resolution = rospy.get_param('~merge_resolution', 0.005)  # rad
-        self.offset_a = rospy.get_param('~angle_offset_a', 0.0)
-        self.offset_b = rospy.get_param('~angle_offset_b', -1.5708)  # camscan -90 deg
         self.pub_rate = rospy.get_param('~pub_rate', 50.0)
 
-        self.sub_a = rospy.Subscriber(self.topic_a, LaserScan, self.cb_a)
-        self.sub_b = rospy.Subscriber(self.topic_b, LaserScan, self.cb_b)
+        # per-topic state
+        self.N = len(self.topics)
+        self.scans = [None] * self.N       # latest LaserScan
+        self.last_stamps = [rospy.Time(0)] * self.N
+
+        self.subs = []
+        for i, t in enumerate(self.topics):
+            sub = rospy.Subscriber(t, LaserScan,
+                                   lambda msg, idx=i: self.cb(msg, idx))
+            self.subs.append(sub)
+
         self.pub = rospy.Publisher('/mergescan', LaserScan, queue_size=10)
 
-        rospy.loginfo("ScanMerger: %s + %s -> /mergescan (angle-aligned)", self.topic_a, self.topic_b)
+        rospy.loginfo("ScanMerger %d-way: %s -> /mergescan",
+                      self.N, " + ".join(self.topics))
+        for i in range(self.N):
+            rospy.loginfo("  [%d] %s  offset=%.4f rad", i, self.topics[i], self.offsets[i])
 
-    def cb_a(self, msg):
-        self.scan_a = msg
-        self.last_a = msg.header.stamp
+    # -----------------------------------------------------------------------
+    def cb(self, msg, idx):
+        self.scans[idx] = msg
+        self.last_stamps[idx] = msg.header.stamp
 
-    def cb_b(self, msg):
-        self.scan_b = msg
-        self.last_b = msg.header.stamp
-
+    # -----------------------------------------------------------------------
     def merge_and_publish(self):
         now = rospy.Time.now()
-        a_ok = (now - self.last_a) < self.timeout and self.scan_a is not None
-        b_ok = (now - self.last_b) < self.timeout and self.scan_b is not None
 
-        if not a_ok and not b_ok:
+        # gather active (non-timed-out) scans, apply rotation
+        active = []
+        for i in range(self.N):
+            if (now - self.last_stamps[i]) < self.timeout and self.scans[i] is not None:
+                active.append(rotate_scan(self.scans[i], self.offsets[i]))
+
+        if not active:
             return
 
-        if a_ok and b_ok:
-            # apply per-topic rotation
-            sa = rotate_scan(self.scan_a, self.offset_a)
-            sb = rotate_scan(self.scan_b, self.offset_b)
-
-            # common angle range: union of both FOVs
-            ang_min = min(sa.angle_min, sb.angle_min)
-            ang_max = max(sa.angle_max, sb.angle_max)
+        if len(active) == 1:
+            out = active[0]
+        else:
+            # union FOV
+            ang_min = min(s.angle_min for s in active)
+            ang_max = max(s.angle_max for s in active)
             n = int((ang_max - ang_min) / self.resolution) + 1
-            out_angles = np.linspace(ang_min, ang_max, n)
 
-            ranges_a = np.array(sa.ranges, dtype=np.float32)
-            ranges_b = np.array(sb.ranges, dtype=np.float32)
-            ang_a = scan_to_angles(self.scan_a)
-            ang_b = scan_to_angles(self.scan_b)
-
-            merged = np.zeros(n, dtype=np.float32)
-            for i, ang in enumerate(out_angles):
-                # get range from scan A
-                if ang >= sa.angle_min and ang <= sa.angle_max:
-                    idx = (ang - sa.angle_min) / sa.angle_increment
-                    i0 = int(np.clip(idx, 0, len(ranges_a) - 1))
-                    i1 = min(i0 + 1, len(ranges_a) - 1)
-                    ra = float(ranges_a[i0]) if ranges_a[i0] > 0 else 0.0
-                    if i1 != i0:
-                        rb_val = float(ranges_a[i1]) if ranges_a[i1] > 0 else 0.0
-                        ra = ra + (rb_val - ra) * (idx - i0) if ra and rb_val else max(ra, rb_val)
-                else:
-                    ra = 0.0
-
-                # get range from scan B
-                if ang >= sb.angle_min and ang <= sb.angle_max:
-                    idx = (ang - sb.angle_min) / sb.angle_increment
-                    i0 = int(np.clip(idx, 0, len(ranges_b) - 1))
-                    i1 = min(i0 + 1, len(ranges_b) - 1)
-                    rb = float(ranges_b[i0]) if ranges_b[i0] > 0 else 0.0
-                    if i1 != i0:
-                        rb2 = float(ranges_b[i1]) if ranges_b[i1] > 0 else 0.0
-                        rb = rb + (rb2 - rb) * (idx - i0) if rb and rb2 else max(rb, rb2)
-                else:
-                    rb = 0.0
-
-                # merge: min of valid, prefer non-zero
-                if ra > 0 and rb > 0:
-                    merged[i] = min(ra, rb)
-                else:
-                    merged[i] = max(ra, rb)
+            merged = np.full(n, float('inf'), dtype=np.float32)
+            for i, ang in enumerate(np.linspace(ang_min, ang_max, n)):
+                best = float('inf')
+                for s in active:
+                    r = sample_scan(s, ang)
+                    if s.range_min < r < best:
+                        best = r
+                merged[i] = best  # inf if no sensor covers this angle
 
             out = LaserScan()
-            out.header.stamp = now
             out.header.frame_id = self.output_frame
             out.angle_min = ang_min
             out.angle_max = ang_max
             out.angle_increment = (ang_max - ang_min) / float(n - 1) if n > 1 else 0
-            out.range_min = min(sa.range_min, sb.range_min)
-            out.range_max = max(sa.range_max, sb.range_max)
-            out.scan_time = max(sa.scan_time, sb.scan_time)
+            out.range_min = min(s.range_min for s in active)
+            out.range_max = max(s.range_max for s in active)
+            out.scan_time = max(s.scan_time for s in active if hasattr(s, 'scan_time'))
             out.ranges = merged.tolist()
-
-        elif a_ok:
-            out = rotate_scan(self.scan_a, self.offset_a)
-        else:
-            out = rotate_scan(self.scan_b, self.offset_b)
 
         out.header.stamp = now
         self.pub.publish(out)
 
+    # -----------------------------------------------------------------------
     def run(self):
         r = rospy.Rate(self.pub_rate)
         while not rospy.is_shutdown():
@@ -168,3 +188,4 @@ if __name__ == '__main__':
         ScanMerger().run()
     except rospy.ROSInterruptException:
         pass
+

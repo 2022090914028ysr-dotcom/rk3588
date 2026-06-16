@@ -61,7 +61,7 @@ BRIDGE_READY_TIMEOUT="${BRIDGE_READY_TIMEOUT:-5}"
 #   node    = 旧行为：-start_trajectory_with_default_topics=false + 手动 /start_trajectory
 CARTO_RESTART_MODE="${CARTO_RESTART_MODE:-service}"
 CONFIG_BASENAME="${CONFIG_BASENAME:-livox_2d_localization.lua}"
-PBSTREAM="${PBSTREAM:-/home/ubuntu/Robit_SlamNav/NavOA_ws/src/carto_ws/map/meeting_room/test4.pbstream}"
+PBSTREAM="${PBSTREAM:-/home/ubuntu/Robit_SlamNav/NavOA_ws/src/carto_ws/map/meeting_room/test12.pbstream}"
 SCAN_TOPIC="${SCAN_TOPIC:-/scan}"
 ODOM_TOPIC="${ODOM_TOPIC:-/odom_rf2o}"
 MAP_FRAME="${MAP_FRAME:-map}"

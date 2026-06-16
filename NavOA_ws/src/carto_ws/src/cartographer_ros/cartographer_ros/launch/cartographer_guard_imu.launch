@@ -1,0 +1,42 @@
+<?xml version="1.0"?>
+<launch>
+  <arg name="configuration_directory" default="$(find cartographer_ros)/configuration_files" />
+  <arg name="configuration_basename" default="livox_2d_localization_old.lua" />
+  <arg name="load_state_filename" default="/home/ubuntu/Robit_SlamNav/NavOA_ws/src/carto_ws/map/meeting_room/selfmap.pbstream" />
+
+  <node pkg="cartographer_ros"
+        type="cartographer_guard_imu.py"
+        name="cartographer_guard_imu"
+        output="screen">
+
+    <!-- IMU topic -->
+    <param name="imu_topic" value="/imu_serial" />
+
+    <!-- Fall detection: roll/pitch only -->
+    <param name="fall_roll_threshold_deg"     value="20.0" />
+    <param name="fall_pitch_threshold_deg"    value="30.0" />
+    <param name="upright_roll_threshold_deg"  value="5.0" />
+    <param name="upright_pitch_threshold_deg" value="10.0" />
+    <param name="upright_confirm_frames"      value="5" />
+    <param name="min_pending_duration"        value="1.5" />
+    <param name="reset_cooldown"              value="10.0" />
+
+    <!-- Hard reset -->
+    <param name="cartographer_node_name"      value="/cartographer_node" />
+    <param name="cartographer_grid_node_name" value="/cartographer_occupancy_grid_node" />
+    <param name="reset_launch_package"        value="cartographer_ros" />
+    <param name="reset_launch_file"           value="cartographer_localization_runtime.launch" />
+    <param name="config_dir"                  value="$(arg configuration_directory)" />
+    <param name="config_file"                 value="$(arg configuration_basename)" />
+    <param name="load_state_filename"         value="$(arg load_state_filename)" />
+
+    <!-- Optional seeded hard restart mode -->
+    <param name="recovery_mode"               value="seeded_hard_restart" />
+    <param name="map_frame"                   value="map" />
+    <param name="robot_frame"                 value="base_footprint" />
+    <param name="start_service"               value="/start_trajectory" />
+    <param name="seed_pose_max_age"           value="30.0" />
+    <param name="seed_start_timeout"          value="20.0" />
+
+  </node>
+</launch>

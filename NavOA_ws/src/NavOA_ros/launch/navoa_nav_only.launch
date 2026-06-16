@@ -11,7 +11,7 @@
 
   <arg name="use_sim_time" default="false"/>
   <arg name="enable_map_server" default="false"/>
-  <arg name="map_file" default="/home/ubuntu/Robit_SlamNav/NavOA_ws/src/carto_ws/map/meeting_room/finance1.yaml" />
+  <arg name="map_file" default="/home/ubuntu/Robit_SlamNav/NavOA_ws/src/carto_ws/map/meeting_room/selfmap.yaml" />
   <arg name="global_map_topic" default="/map"/>
   <arg name="move_base_cmd_topic" default="/move_base_cmd_vel"/>
   <arg name="launch_rviz" default="false"/>
@@ -53,11 +53,9 @@
   <!-- NavOA control and path splitting, without localization bringup. -->
   <include file="$(find NavOA_ros)/example/gazebo_limo/launch/NavOA_gazebo_limo.launch">
     <arg name="use_sim_time" value="$(arg use_sim_time)"/>
-    <arg name="vel_filter_scan_topic" value="/scan"/>
+
     <arg name="vel_filter_cmd_out_topic" value="/cmd_vel"/>
-    <arg name="vel_filter_front_center_angle" value="1.57"/>
-    <arg name="vel_filter_enable_auto_reverse" value="true"/>
-    <arg name="vel_filter_enable_free_space_steer" value="false"/>
+    <arg name="ultrasonic_evade_lateral_speed" value="1.5"/>
     <arg name="return_to_previous_goal_enabled" value="false"/>
     <arg name="goal_timeout_button_enabled" value="true"/>
     <arg name="goal_timeout_button_topic" value="/app_controller/button"/>
@@ -68,9 +66,11 @@
     <arg name="goal_timeout_button_send_release" value="true"/>
   </include>
 
+  <node pkg="NavOA_ros" type="status_state.py" name="status_state" output="screen">  </node>
+
   <!-- Bridge /cmd_vel and IMU over /dev/ttyS6 to the other PC -->
   <node pkg="NavOA_ros" type="serial_cmd_vel_imu_bridge.py" name="serial_cmd_vel_imu_bridge" output="screen">
-    <param name="serial_port" value="/dev/ttyS7" />
+    <param name="serial_port" value="/dev/ttyS1" />
     <param name="baudrate" value="460800" />
     <param name="serial_timeout" value="0.02" />
     <param name="cmd_send_rate_hz" value="80.0" />

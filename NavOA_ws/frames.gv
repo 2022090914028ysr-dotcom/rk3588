@@ -1,12 +1,8 @@
 digraph G {
-"map" -> "base_footprint"[label="Broadcaster: /cartographer_node\nAverage rate: 55.402 Hz\nMost recent transform: 1780121824.480 ( 0.005 sec old)\nBuffer length: 4.982 sec\n"];
-"base_footprint" -> "laser_frame"[label="Broadcaster: /base_link_to_laser\nAverage rate: 24.796 Hz\nMost recent transform: 1780121824.486 ( -0.001 sec old)\nBuffer length: 4.920 sec\n"];
+"ascamera_hp60c_camera_link_0" -> "ascamera_hp60c_color_0"[label="Broadcaster: /ascamera_hp60c\nAverage rate: 10000.000 Hz\nMost recent transform: 0.000 ( 1781179078.658 sec old)\nBuffer length: 0.000 sec\n"];
+"ascamera_hp60c_camera_link_0" -> "ascamera_hp60c_depth_0"[label="Broadcaster: /ascamera_hp60c\nAverage rate: 10000.000 Hz\nMost recent transform: 0.000 ( 1781179078.658 sec old)\nBuffer length: 0.000 sec\n"];
 edge [style=invis];
  subgraph cluster_legend { style=bold; color=black; label ="view_frames Result";
-"Recorded at time: 1780121824.485"[ shape=plaintext ] ;
- }->"map";
-edge [style=invis];
- subgraph cluster_legend { style=bold; color=black; label ="view_frames Result";
-"Recorded at time: 1780121824.485"[ shape=plaintext ] ;
- }->"odom";
+"Recorded at time: 1781179078.658"[ shape=plaintext ] ;
+ }->"ascamera_hp60c_camera_link_0";
 }

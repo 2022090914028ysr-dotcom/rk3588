@@ -1,7 +1,7 @@
 # mpc
 receding: 5
 step_time: 0.3
-ref_speed: 0.15
+ref_speed: 1.5
 device: 'cpu'
 time_print: False
 collision_threshold: -1.0
@@ -9,7 +9,7 @@ collision_threshold: -1.0
 # robot
 robot:
   kinematics: 'diff'
-  max_speed: [0.4, 1]
+  max_speed: [0.25, 0.5]
   max_acce: [0.5, 1]
   length: 0.75
   width: 0.5
@@ -20,7 +20,7 @@ ipath:
   waypoints: []
   curve_style: 'line'   # 'dubins' or reeds or line
   min_radius: 0.0
-  loop: True
+  loop: false
   arrive_threshold: 1.0
   close_threshold: 0.1
   arrive_index_threshold: 3
@@ -35,8 +35,8 @@ pan:
 
 # adjust parameters
 adjust:
-  q_s: 0.3
+  q_s: 0.35
   p_u: 2.5
-  eta: 10.0
-  d_max: 0.15
+  eta: 15
+  d_max: 0.13
   d_min: 0.01

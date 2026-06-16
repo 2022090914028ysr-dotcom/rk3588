@@ -14,7 +14,7 @@ import numpy as np
 import cv2
 import rospy
 
-from geometry_msgs.msg import PoseStamped, TransformStamped
+from geometry_msgs.msg import PoseStamped, PointStamped, TransformStamped, Point
 from nav_msgs.msg import OccupancyGrid, Odometry, Path
 
 from visualization_msgs.msg import Marker, MarkerArray
@@ -63,6 +63,13 @@ class ExplorationNode:
         self.data_dir = rospy.get_param('~data_dir',
                                          os.path.expanduser('~/exploration_data'))
 
+        # ---- Map canvas expansion (for Rviz Publish Point outside map) ----
+        # Pad the incoming /map with unknown cells on all sides so Rviz
+        # has a larger surface to click on via Publish Point.
+        # 0 = no padding (original behaviour).
+        # 400 cells at 0.05 res = 20 m extra on each side.
+        self._map_padding_cells = rospy.get_param('~map_padding_cells', 0)
+
         # ---- State ----
         self.obstacle_map = None
         self.explored_map = None
@@ -93,6 +100,22 @@ class ExplorationNode:
         self._last_frontier_update = None       # rospy.Time of last recalculation
         self._goal_check_radius = rospy.get_param('~goal_check_radius', 30)  # cells (~1.5m)
 
+        # ---- Exploration region (Rviz "Publish Point" tool) ----
+        # Click points in Rviz to define a polygon region.
+        # Frontiers outside this region are ignored.
+        # Click additional points at any time to expand the region.
+        self._enable_region_filter = rospy.get_param('~enable_region_filter', False)
+        self._clicked_point_topic = rospy.get_param('~clicked_point_topic', '/clicked_point')
+        self._region_default_radius = rospy.get_param('~region_default_radius', 3.0)  # meters, for single-point circle
+        # "convex_hull" — order-independent, always convex
+        # "polygon"    — points connected in click order, can be concave;
+        #                 polygon only activates when the last point is
+        #                 within _region_close_threshold of the first point
+        self._region_shape_mode = rospy.get_param('~region_shape_mode', 'convex_hull')
+        self._region_close_threshold = rospy.get_param('~region_close_threshold', 2.0)  # meters
+        self.exploration_region_points = []      # list of (wx, wy) world coords
+        self.exploration_region_mask = None      # binary mask at map resolution
+
         # ---- TF (for transforming robot pose to map frame) ----
         self.tf_buffer = tf2_ros.Buffer()
         self.tf_listener = tf2_ros.TransformListener(self.tf_buffer)
@@ -109,6 +132,10 @@ class ExplorationNode:
             '/exploration/frontiers', MarkerArray, queue_size=1)
         self.goal_marker_pub = rospy.Publisher(
             '/exploration/goal_marker', Marker, queue_size=1)
+        self.region_marker_pub = rospy.Publisher(
+            '/exploration/region', Marker, queue_size=1, latch=True)
+        self.expanded_map_pub = rospy.Publisher(
+            '/exploration/expanded_map', OccupancyGrid, queue_size=1, latch=True)
 
         # ---- Subscribers ----
         rospy.Subscriber(self.map_topic, OccupancyGrid,
@@ -119,6 +146,8 @@ class ExplorationNode:
                                           self.plan_callback, queue_size=1)
         self.costmap_sub = rospy.Subscriber(self.costmap_topic, OccupancyGrid,
                                              self.costmap_callback, queue_size=1)
+        self.clicked_point_sub = rospy.Subscriber(self._clicked_point_topic, PointStamped,
+                                                   self._clicked_point_callback, queue_size=5)
 
         # ---- Timer ----
         rospy.Timer(rospy.Duration(self.idle_wait), self.exploration_loop)
@@ -136,15 +165,49 @@ class ExplorationNode:
     #  Callbacks
     # ================================================================
     def map_callback(self, msg):
-        # Work directly with raw cartographer map -- NO resizing
-        self.map_width = msg.info.width
-        self.map_height = msg.info.height
-        self.map_res = msg.info.resolution
-        self.map_origin = [msg.info.origin.position.x,
-                           msg.info.origin.position.y,
-                           msg.info.origin.position.z]
+        # Work directly with raw cartographer map, then optionally pad
+        # the canvas with unknown cells so Rviz Publish Point works
+        # over a larger area.
+        raw_w = msg.info.width
+        raw_h = msg.info.height
+        res = msg.info.resolution
+        ox = msg.info.origin.position.x
+        oy = msg.info.origin.position.y
+        oz = msg.info.origin.position.z
 
-        raw = np.array(msg.data).reshape((self.map_height, self.map_width))
+        pad = self._map_padding_cells
+        if pad > 0:
+            # Expand the canvas: add `pad` unknown cells on all four sides
+            self.map_width = raw_w + 2 * pad
+            self.map_height = raw_h + 2 * pad
+            self.map_res = res
+            self.map_origin = [ox - pad * res,
+                               oy - pad * res,
+                               oz]
+            # Large canvas filled with -1 (unknown)
+            raw = np.full((self.map_height, self.map_width), -1, dtype=np.int8)
+            raw[pad:pad + raw_h, pad:pad + raw_w] = (
+                np.array(msg.data, dtype=np.int8).reshape((raw_h, raw_w)))
+
+            # Publish expanded map for Rviz (subscribe in Rviz to
+            # /exploration/expanded_map instead of /map)
+            expanded = OccupancyGrid()
+            expanded.header = msg.header
+            expanded.info.resolution = self.map_res
+            expanded.info.width = self.map_width
+            expanded.info.height = self.map_height
+            expanded.info.origin.position.x = self.map_origin[0]
+            expanded.info.origin.position.y = self.map_origin[1]
+            expanded.info.origin.position.z = self.map_origin[2]
+            expanded.info.origin.orientation.w = 1.0
+            expanded.data = raw.flatten().tolist()
+            self.expanded_map_pub.publish(expanded)
+        else:
+            self.map_width = raw_w
+            self.map_height = raw_h
+            self.map_res = res
+            self.map_origin = [ox, oy, oz]
+            raw = np.array(msg.data, dtype=np.int8).reshape((raw_h, raw_w))
 
         # obstacle: value > 50 (occupied), explored: value >= 0 (known)
         self.obstacle_map = (raw > 50).astype(np.uint8)
@@ -171,12 +234,27 @@ class ExplorationNode:
         obs = np.sum(self.obstacle_map)
         total = self.obstacle_map.size
         exp = np.sum(self.explored_map) - obs
-        self.explored_ratio = exp / max(total - obs, 1)
+        # Compute explored_ratio over the *original* map area only
+        # (padding cells are always unknown and would skew the ratio)
+        if pad > 0:
+            obs_orig = int(np.sum(self.obstacle_map[pad:pad + raw_h,
+                                                     pad:pad + raw_w]))
+            total_orig = raw_h * raw_w
+            exp_orig = int(np.sum(self.explored_map[pad:pad + raw_h,
+                                                     pad:pad + raw_w])) - obs_orig
+            self.explored_ratio = exp_orig / max(total_orig - obs_orig, 1)
+        else:
+            self.explored_ratio = exp / max(total - obs, 1)
 
         rospy.loginfo_throttle(30, "[Explore] Map: %dx%d res=%.3f origin=(%.1f,%.1f) %.1f%%",
                                self.map_width, self.map_height, self.map_res,
                                self.map_origin[0], self.map_origin[1],
                                self.explored_ratio * 100)
+
+        # Rebuild exploration region mask when map updates
+        # (map origin / resolution / dimensions may have changed)
+        if self._enable_region_filter and self.exploration_region_points:
+            self._build_exploration_mask()
 
     def odom_callback(self, msg):
         self.robot_pos = [msg.pose.pose.position.x,
@@ -184,6 +262,182 @@ class ExplorationNode:
                           msg.pose.pose.position.z]
         q = msg.pose.pose.orientation
         self.robot_quat = [q.x, q.y, q.z, q.w]
+
+    def _clicked_point_callback(self, msg):
+        """Handle Rviz "Publish Point" clicks to define/expand exploration region.
+
+        Transforms the clicked point to map_frame, adds it to the region
+        point list, rebuilds the binary mask, and publishes a polygon
+        marker for visualization in Rviz.
+        """
+        if not self._enable_region_filter:
+            return
+
+        # Transform to map frame if needed
+        try:
+            if msg.header.frame_id and msg.header.frame_id != self.map_frame:
+                trans = self.tf_buffer.lookup_transform(
+                    self.map_frame, msg.header.frame_id,
+                    msg.header.stamp, rospy.Duration(1.0))
+                # Simple transform (no rotation for PointStamped — we just
+                # need the translation offset)
+                wx = msg.point.x + trans.transform.translation.x
+                wy = msg.point.y + trans.transform.translation.y
+            else:
+                wx = msg.point.x
+                wy = msg.point.y
+        except (tf2_ros.LookupException, tf2_ros.ConnectivityException,
+                tf2_ros.ExtrapolationException) as e:
+            rospy.logwarn("[Explore] TF error on clicked point: %s", e)
+            return
+
+        self.exploration_region_points.append((wx, wy))
+        n = len(self.exploration_region_points)
+        rospy.loginfo("[Explore] Region point #%d added: world(%.2f, %.2f)",
+                      n, wx, wy)
+
+        # Rebuild mask & republish polygon
+        self._build_exploration_mask()
+        self._pub_region_marker()
+
+    def _build_exploration_mask(self):
+        """Build a binary mask from accumulated clicked points.
+
+        - 0 points: mask = None (no filtering, all frontiers allowed)
+        - 1 point:  circle with radius _region_default_radius
+        - 2 points: axis-aligned rectangle
+        - 3+ points: convex-hull or polygon (see region_shape_mode)
+
+        Mask shape matches the current /map.  A value of 1 means the
+        cell is inside the allowed exploration region.
+        """
+        if (not self._enable_region_filter or
+                not self.exploration_region_points or
+                self.map_width == 0 or self.map_height == 0):
+            self.exploration_region_mask = None
+            return
+
+        # Require at least 4 points to define a meaningful polygon region
+        if len(self.exploration_region_points) < 4:
+            self.exploration_region_mask = None
+            return
+
+        # Convert world coords to grid coords (no clamping — cv2.fillPoly
+        # naturally clips to image bounds, allowing points outside the
+        # current map to define a region that covers future map expansion)
+        grid_pts = []
+        for wx, wy in self.exploration_region_points:
+            gx = int((wx - self.map_origin[0]) / self.map_res)
+            gy = int((wy - self.map_origin[1]) / self.map_res)
+            grid_pts.append([gx, gy])
+        grid_pts = np.array(grid_pts, dtype=np.int32)
+
+        mask = np.zeros((self.map_height, self.map_width), dtype=np.uint8)
+        n = len(grid_pts)
+
+        if self._region_shape_mode == 'polygon':
+            # Check that the polygon loop is closed:
+            # the last point must be within _region_close_threshold
+            # of the first point, otherwise wait for more points.
+            x0, y0 = self.exploration_region_points[0]
+            xn, yn = self.exploration_region_points[-1]
+            dist = math.hypot(xn - x0, yn - y0)
+            if dist > self._region_close_threshold:
+                self.exploration_region_mask = None
+                rospy.loginfo_throttle(10.0,
+                    "[Explore] Polygon not closed yet: last point "
+                    "%.2fm from first (threshold %.2fm). "
+                    "Keep adding points to close the loop.",
+                    dist, self._region_close_threshold)
+                return
+            # Polygon closed — fill the shape formed by click order
+            cv2.fillPoly(mask, [grid_pts], 1)
+        else:
+            # convex_hull (default): order-independent, always convex
+            hull = cv2.convexHull(grid_pts)
+            cv2.fillPoly(mask, [hull], 1)
+
+        self.exploration_region_mask = mask
+        rospy.loginfo("[Explore] Region mask built (%s): %d points, "
+                      "%d cells inside",
+                      self._region_shape_mode, n, int(np.sum(mask)))
+
+    def _pub_region_marker(self):
+        """Publish a LINE_STRIP marker showing the exploration region polygon.
+
+        Only meaningful when >= 3 points exist (polygon).  For 1-2 points
+        we publish a simplified representation.
+        """
+        if not self._enable_region_filter:
+            return
+
+        m = Marker()
+        m.header.frame_id = self.map_frame
+        m.header.stamp = rospy.Time.now()
+        m.ns = "exploration_region"
+        m.id = 0
+        m.action = Marker.ADD
+        m.pose.orientation.w = 1.0
+        m.scale.x = 0.08  # line width
+        m.color.a = 0.6
+        m.color.b = 1.0
+
+        pts = self.exploration_region_points
+        if len(pts) == 0:
+            m.action = Marker.DELETE
+            self.region_marker_pub.publish(m)
+            return
+
+        if len(pts) == 1:
+            # Single point: show a circle approximation
+            m.type = Marker.LINE_STRIP
+            cx, cy = pts[0]
+            r = self._region_default_radius
+            n_seg = 32
+            for i in range(n_seg + 1):
+                angle = 2.0 * math.pi * i / n_seg
+                p = Point()
+                p.x = cx + r * math.cos(angle)
+                p.y = cy + r * math.sin(angle)
+                p.z = 0.15
+                m.points.append(p)
+        elif len(pts) == 2:
+            # Rectangle corners
+            m.type = Marker.LINE_STRIP
+            (x1, y1), (x2, y2) = pts
+            corners = [(x1, y1), (x2, y1), (x2, y2), (x1, y2), (x1, y1)]
+            for cx, cy in corners:
+                p = Point()
+                p.x = cx; p.y = cy; p.z = 0.15
+                m.points.append(p)
+        else:
+            # polygon mode: connect points in click order (can be concave)
+            # convex_hull mode: compute convex hull for order-independent coverage
+            m.type = Marker.LINE_STRIP
+            if self._region_shape_mode == 'polygon':
+                # Draw vertices in click order, close the loop
+                for wx, wy in pts:
+                    p = Point()
+                    p.x = wx; p.y = wy; p.z = 0.15
+                    m.points.append(p)
+                if len(m.points) > 0:
+                    m.points.append(m.points[0])
+            else:
+                # convex_hull: compute hull from world coords
+                scale = 10000.0
+                wp = np.array([[int(p[0] * scale), int(p[1] * scale)] for p in pts],
+                              dtype=np.int32)
+                hull = cv2.convexHull(wp)
+                for pt in hull:
+                    p = Point()
+                    p.x = pt[0][0] / scale
+                    p.y = pt[0][1] / scale
+                    p.z = 0.15
+                    m.points.append(p)
+                if len(m.points) > 0:
+                    m.points.append(m.points[0])
+
+        self.region_marker_pub.publish(m)
 
     def costmap_callback(self, msg):
         """Store move_base global costmap for accurate reachability."""
@@ -314,6 +568,18 @@ class ExplorationNode:
             self._post_reach_time = None
             rospy.loginfo("[Explore] Post-reach wait done, selecting next goal")
 
+        # --- wait for exploration region to be defined (polygon mode only) ---
+        # convex_hull mode: region is optional — explore freely if not set
+        # polygon mode: region is mandatory — must close the loop first
+        if (self._enable_region_filter and
+                self._region_shape_mode == 'polygon' and
+                self.exploration_region_mask is None):
+            pts_needed = max(0, 4 - len(self.exploration_region_points))
+            rospy.loginfo_throttle(5.0,
+                "[Explore] Waiting for region definition "
+                "(%d more point(s) needed)...", pts_needed)
+            return
+
         # --- pick new goal ---
         goal_xy = self._select_goal()
         if goal_xy is None:
@@ -366,6 +632,16 @@ class ExplorationNode:
         f = detect_frontiers(self.obstacle_map, self.explored_map,
                              min_frontier_size=self.min_frontier_size)
 
+        # ---- Filter by exploration region mask (Rviz Publish Point) ----
+        if self.exploration_region_mask is not None:
+            before = len(f)
+            f = [(cx, cy, sz, wb) for (cx, cy, sz, wb) in f
+                 if (0 <= cx < self.map_width and 0 <= cy < self.map_height
+                     and self.exploration_region_mask[cy, cx] > 0)]
+            rospy.loginfo_throttle(15.0,
+                "[Explore] Region filter: %d/%d frontiers inside region",
+                len(f), before)
+
         # Filter out visited frontiers (within 10 grid cells ~0.5m)
         if self.visited_goals:
             f = [(cx, cy, sz, wb) for (cx, cy, sz, wb) in f
@@ -392,6 +668,15 @@ class ExplorationNode:
                           self._max_frontier_resets)
             f = detect_frontiers(self.obstacle_map, self.explored_map,
                                  min_frontier_size=self.min_frontier_size)
+            # Re-apply region filter after rescan (bugfix: was leaking
+            # frontiers from outside the user-defined region)
+            if self.exploration_region_mask is not None:
+                before = len(f)
+                f = [(cx, cy, sz, wb) for (cx, cy, sz, wb) in f
+                     if (0 <= cx < self.map_width and 0 <= cy < self.map_height
+                         and self.exploration_region_mask[cy, cx] > 0)]
+                rospy.loginfo("[Explore] Region filter (rescan): %d/%d inside",
+                              len(f), before)
             if not f:
                 return None
 

@@ -4,7 +4,7 @@ build_space: build
 catkin_make_args: []
 cmake_args: []
 devel_layout: linked
-devel_space: devel
+devel_space: /home/ubuntu/Robit_SlamNav/NavOA_ws/devel
 extend_path: null
 extends: null
 install: false

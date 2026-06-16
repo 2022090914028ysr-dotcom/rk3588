@@ -1,20 +1,18 @@
-include "limo_2d.lua"
+include "livox_2d.lua"
 
--- ==================== 核心修复 ====================
--- Use external odometry transform from odom -> base_footprint instead of letting Cartographer publish it.
-options.provide_odom_frame = false
-options.published_frame = "odom"
+options.publish_tracked_pose = true
+options.use_odometry = true          -- rf2o is not running in localization mode (if true rf2o is running)
+options.provide_odom_frame = false     -- Cartographer provides map→odom→base_footprint TF without external odometry
+options.published_frame = "odom" --for rf2o make it odom_frame = "odom"                 --for rf2o make it odom
 
--- [删除] 下面这行会导致崩溃，因为你的 Cartographer 版本不识别它
--- options.num_background_threads = 2 
-
+-- =====================================================
 -- [新增] 请改用这行！这是限制算法内部线程的正确位置
-MAP_BUILDER.num_background_threads = 2
+MAP_BUILDER.num_background_threads = 4
 
 -- ==================== 以下保持原样 ====================
 
 -- 前端搜索范围
-TRAJECTORY_BUILDER_2D.real_time_correlative_scan_matcher.linear_search_window = 0.25
+TRAJECTORY_BUILDER_2D.real_time_correlative_scan_matcher.linear_search_window = 0.3
 TRAJECTORY_BUILDER_2D.real_time_correlative_scan_matcher.angular_search_window = math.rad(20.)
 
 -- 权重配置
@@ -38,17 +36,18 @@ TRAJECTORY_BUILDER.pure_localization_trimmer = {
   max_submaps_to_keep = 2,
 }
 
--- 更多恢复能力：更频繁的全局匹配和更快的优化
-POSE_GRAPH.optimize_every_n_nodes = 20
-POSE_GRAPH.global_sampling_ratio = 0.05
+-- 优化频率
+POSE_GRAPH.optimize_every_n_nodes = 20 
+
+-- 采样率
+POSE_GRAPH.global_sampling_ratio = 0.015 
 
 -- 约束构建
 POSE_GRAPH.constraint_builder.fast_correlative_scan_matcher.linear_search_window = 5.0
 POSE_GRAPH.constraint_builder.fast_correlative_scan_matcher.angular_search_window = math.rad(30.)
 POSE_GRAPH.constraint_builder.fast_correlative_scan_matcher.branch_and_bound_depth = 7
 
--- 允许更早触发全局重定位，但仍保持局部约束稳定
-POSE_GRAPH.constraint_builder.global_localization_min_score = 0.40
+POSE_GRAPH.constraint_builder.global_localization_min_score = 0.45
 POSE_GRAPH.constraint_builder.min_score = 0.55
 
 POSE_GRAPH.constraint_builder.sampling_ratio = 0.3

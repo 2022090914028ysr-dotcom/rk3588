@@ -7,7 +7,7 @@ import math
 import rospy
 from geometry_msgs.msg import Twist
 from sensor_msgs.msg import LaserScan
-from std_msgs.msg import String
+from std_msgs.msg import Float32, String
 
 
 class VelocityFilter:
@@ -45,6 +45,9 @@ class VelocityFilter:
         self.max_forward_speed = float(rospy.get_param('~max_forward_speed', 0.0))
         self.max_angular_speed = float(rospy.get_param('~max_angular_speed', 0.0))
 
+        # Global angular velocity scale (applied to all modes).
+        self.wz_scale = float(rospy.get_param('~wz_scale', 1.0))
+
         # If enabled: when an obstacle is closer than the stop distance and an incoming
         # command requests forward motion, override to a small reverse speed.
         # This is useful when the upstream planner keeps commanding forward.
@@ -78,6 +81,79 @@ class VelocityFilter:
         # Keep 0.0 by default for safety.
         self.min_scan_range = float(rospy.get_param('~min_scan_range', 0.0))
 
+        # ---- ultrasonic virtual-bumper (separate from merged scan) ----
+        self.enable_ultrasonic_bumper = bool(
+            rospy.get_param('~enable_ultrasonic_bumper', True)
+        )
+        self.ultrasonic_stop_distance = float(
+            rospy.get_param('~ultrasonic_stop_distance', 0.25)
+        )
+        self.ultrasonic_slow_distance = float(
+            rospy.get_param('~ultrasonic_slow_distance', 0.45)
+        )
+        self.ultrasonic_side_stop_distance = float(
+            rospy.get_param('~ultrasonic_side_stop_distance', 0.20)
+        )
+        # Distance above which the original algorithm command is blended in
+        # (vx/wz not overridden). Below this: pure evasion with fixed forward speed.
+        self.ultrasonic_blend_distance = float(
+            rospy.get_param('~ultrasonic_blend_distance', 0.13)
+        )
+        # evasive action speeds when ultrasonic triggers lateral evasion
+        self.ultrasonic_evade_forward_speed = float(
+            rospy.get_param('~ultrasonic_evade_forward_speed', 0.05)
+        )
+        self.ultrasonic_evade_lateral_speed = float(
+            rospy.get_param('~ultrasonic_evade_lateral_speed', 0.10)
+        )
+        # Linear evade: speed scales linearly with proximity (closer → faster).
+        self.ultrasonic_linear_evade = bool(
+            rospy.get_param('~ultrasonic_linear_evade', True)
+        )
+
+        # Expanded side-stop distance used specifically when the robot is reversing.
+        # Larger than ultrasonic_side_stop_distance → detects side obstacles earlier
+        # and strafes away while reversing.  0 = disable.
+        self.reverse_side_stop_distance = float(
+            rospy.get_param('~reverse_side_stop_distance', 0.35)
+        )
+        # Hold lateral velocity for this long after reverse evasion ends (seconds).
+        self.reverse_side_hold_duration = float(
+            rospy.get_param('~reverse_side_hold_duration', 0.5)
+        )
+        self._reverse_last_vy = 0.0
+        self._reverse_hold_until = rospy.Time(0)
+
+        # ---- camscan bias: when /camscan sees a front obstacle but /scan doesn't ----
+        self.enable_camscan_bias = bool(
+            rospy.get_param('~enable_camscan_bias', True)
+        )
+        self.camscan_topic = rospy.get_param('~camscan_topic', '/camscan')
+        self.camscan_front_threshold = float(
+            rospy.get_param('~camscan_front_threshold', 0.4)
+        )
+        self.camscan_bias_gain = float(
+            rospy.get_param('~camscan_bias_gain', 0.5)
+        )
+        # Raw lidar scan topic (un-merged) for camscan bias comparison
+        self.raw_scan_topic = rospy.get_param('~raw_scan_topic', '/scan')
+        # per-sensor latest distances (meters), inf = no reading
+        self._us_dist = {"front": float('inf'), "left": float('inf'), "right": float('inf')}
+        self._us_last_time = {"front": rospy.Time(0), "left": rospy.Time(0), "right": rospy.Time(0)}
+        self._us_timeout = rospy.Duration(
+            rospy.get_param('~ultrasonic_timeout', 1.0)
+        )
+
+        # camscan front tracking
+        self._camscan_front_dist = float('inf')
+        self._camscan_last_time = rospy.Time(0)
+        self._camscan_timeout = rospy.Duration(
+            rospy.get_param('~camscan_timeout', 1.0)
+        )
+        # raw /scan front tracking (for camscan-vs-lidar comparison)
+        self._raw_scan_front_dist = float('inf')
+        self._raw_scan_last_time = rospy.Time(0)
+
         self.front_min_range = float('inf')
         self.obstacle_close = False
         self.left_clearance = float('inf')
@@ -94,8 +170,21 @@ class VelocityFilter:
 
         rospy.Subscriber(self.cmd_in_topic, Twist, self.callback)
         rospy.Subscriber(self.scan_topic, LaserScan, self.scan_callback)
+
+        # ultrasonic virtual-bumper subscriptions
+        if self.enable_ultrasonic_bumper:
+            rospy.Subscriber("/ultrasonic/front", Float32, self._us_front_cb)
+            rospy.Subscriber("/ultrasonic/left", Float32, self._us_left_cb)
+            rospy.Subscriber("/ultrasonic/right", Float32, self._us_right_cb)
+
+        # camscan subscription (for glass/transparent obstacle detection)
+        if self.enable_camscan_bias:
+            rospy.Subscriber(self.camscan_topic, LaserScan, self._camscan_callback)
+            rospy.Subscriber(self.raw_scan_topic, LaserScan, self._raw_scan_callback)
+
         self.pub = rospy.Publisher(self.cmd_out_topic, Twist, queue_size=10)
         self.debug_pub = rospy.Publisher(self.debug_topic, String, queue_size=10)
+        self.status_pub = rospy.Publisher('/vel_filter/status', String, queue_size=10)
         self._timer = rospy.Timer(
             rospy.Duration(1.0 / max(self.publish_rate, 1.0)), self._publish_timer
         )
@@ -128,6 +217,40 @@ class VelocityFilter:
             f"out_vx={cmd_out.linear.x:.3f} out_w={cmd_out.angular.z:.3f}"
         )
         self.debug_pub.publish(String(data=msg))
+
+    def _publish_status(self, twist, source):
+        """Publish human-readable motion status: source + trend."""
+        vx = twist.linear.x
+        vy = twist.linear.y
+        wz = twist.angular.z
+
+        # classify motion trend
+        if vx > 0.01:
+            if wz > 0.05:
+                trend = 'forward_left'
+            elif wz < -0.05:
+                trend = 'forward_right'
+            elif vy > 0.005:
+                trend = 'strafe_left'
+            elif vy < -0.005:
+                trend = 'strafe_right'
+            else:
+                trend = 'forward'
+        elif vx < -0.01:
+            trend = 'reverse'
+        elif abs(vy) > 0.005:
+            trend = 'strafe_left' if vy > 0 else 'strafe_right'
+        elif abs(wz) > 0.01:
+            trend = 'turn_left' if wz > 0 else 'turn_right'
+        else:
+            trend = 'stop'
+
+        # source label
+        src = 'ultrasonic' if source.startswith('us_') else 'navoa'
+
+        msg = (f"source={src} mode={source} trend={trend} "
+               f"vx={vx:.3f} vy={vy:.3f} wz={wz:.3f}")
+        self.status_pub.publish(String(data=msg))
 
     def _publish_timer(self, _evt):
         now = rospy.Time.now()
@@ -193,6 +316,266 @@ class VelocityFilter:
             elif min_r > self.forward_stop_release_distance:
                 self._forward_stop_latched = False
 
+    # ---- ultrasonic callbacks (virtual bumper) -----------------------------
+    def _us_front_cb(self, msg):
+        self._us_dist['front'] = msg.data
+        self._us_last_time['front'] = rospy.Time.now()
+
+    def _us_left_cb(self, msg):
+        self._us_dist['left'] = msg.data
+        self._us_last_time['left'] = rospy.Time.now()
+
+    def _us_right_cb(self, msg):
+        self._us_dist['right'] = msg.data
+        self._us_last_time['right'] = rospy.Time.now()
+
+    def _us_get_valid(self, name):
+        """Return distance (m) if fresh, else inf."""
+        now = rospy.Time.now()
+        if (now - self._us_last_time[name]) < self._us_timeout:
+            d = self._us_dist[name]
+            if math.isfinite(d) and d > 0.0:
+                return d
+        return float('inf')
+
+    # ---- camscan callback (glass / transparent obstacle detection) ---------
+    def _camscan_callback(self, msg: LaserScan):
+        """Extract minimum front distance from /camscan."""
+        if not msg.ranges or msg.angle_increment == 0.0:
+            self._camscan_front_dist = float('inf')
+            return
+        min_valid = max(float(getattr(msg, 'range_min', 0.0) or 0.0), self.min_scan_range)
+        min_r = float('inf')
+        angle = msg.angle_min
+        for r in msg.ranges:
+            if r is not None and math.isfinite(r) and r >= min_valid:
+                rel = self._angle_diff(angle, self.front_center_angle)
+                if -self.front_half_angle <= rel <= self.front_half_angle:
+                    if r < min_r:
+                        min_r = r
+            angle += msg.angle_increment
+        self._camscan_front_dist = min_r
+        self._camscan_last_time = rospy.Time.now()
+
+    def _camscan_front_valid(self):
+        """Return camscan front distance if fresh, else inf."""
+        if (rospy.Time.now() - self._camscan_last_time) < self._camscan_timeout:
+            d = self._camscan_front_dist
+            if math.isfinite(d) and d > 0.0:
+                return d
+        return float('inf')
+
+    def _raw_scan_callback(self, msg: LaserScan):
+        """Extract minimum front distance from raw /scan (lidar only, 60° FOV)."""
+        if not msg.ranges or msg.angle_increment == 0.0:
+            self._raw_scan_front_dist = float('inf')
+            return
+        min_valid = max(float(getattr(msg, 'range_min', 0.0) or 0.0), self.min_scan_range)
+        min_r = float('inf')
+        angle = msg.angle_min
+        for r in msg.ranges:
+            if r is not None and math.isfinite(r) and r >= min_valid:
+                rel = self._angle_diff(angle, self.front_center_angle)
+                if -self.front_half_angle <= rel <= self.front_half_angle:
+                    if r < min_r:
+                        min_r = r
+            angle += msg.angle_increment
+        self._raw_scan_front_dist = min_r
+        self._raw_scan_last_time = rospy.Time.now()
+
+    def _raw_scan_front_valid(self):
+        """Return raw /scan front distance if fresh, else inf."""
+        if (rospy.Time.now() - self._raw_scan_last_time) < self._camscan_timeout:
+            d = self._raw_scan_front_dist
+            if math.isfinite(d) and d > 0.0:
+                return d
+        return float('inf')
+
+    def _apply_camscan_bias(self, twist):
+        """When /camscan sees a front obstacle (< threshold) but raw /scan
+        does not (e.g. glass wall, lidar blind spot), add a lateral bias
+        derived from rotation trend and ultrasonic side distances."""
+        if not self.enable_camscan_bias:
+            return twist
+
+        cam_front = self._camscan_front_valid()
+        if not math.isfinite(cam_front) or cam_front >= self.camscan_front_threshold:
+            return twist  # camscan sees nothing close in front
+
+        # Only act when raw /scan does NOT see the same obstacle (60° FOV front)
+        raw_front = self._raw_scan_front_valid()
+        if math.isfinite(raw_front) and raw_front < self.camscan_front_threshold:
+            return twist  # lidar already sees it → normal processing handles it
+
+        # --- compute rotation bias: follow the turn direction ---
+        rot_bias = 0.0
+        if twist.angular.z > 0.03:
+            rot_bias = 1.0   # turning left → bias left (vy +)
+        elif twist.angular.z < -0.03:
+            rot_bias = -1.0  # turning right → bias right (vy -)
+
+        # --- compute ultrasonic bias: evade the closer side ---
+        us_bias = 0.0
+        if self.enable_ultrasonic_bumper:
+            d_left = self._us_get_valid('left')
+            d_right = self._us_get_valid('right')
+            left_ok = math.isfinite(d_left)
+            right_ok = math.isfinite(d_right)
+            if left_ok and right_ok:
+                diff = d_right - d_left  # positive = right is farther → go right
+                us_bias = math.copysign(1.0, diff) if abs(diff) > 0.03 else 0.0
+            elif left_ok:
+                us_bias = -1.0  # only left → bias right
+            elif right_ok:
+                us_bias = 1.0   # only right → bias left
+
+        # --- combine biases ---
+        bias = rot_bias + us_bias
+        if abs(bias) < 0.01:
+            return twist
+
+        # Scale and apply
+        vy_add = math.copysign(self.camscan_bias_gain, bias)
+        twist.linear.y += vy_add
+        twist.angular.z = 0.0
+
+        return twist
+
+    def _compute_linear_evade_speed(self, distance):
+        """Linear evade speed: closer → faster, 0 at threshold, max at 0 distance.
+
+        speed = max_speed * (threshold - distance) / threshold
+        """
+        if not self.ultrasonic_linear_evade:
+            return abs(self.ultrasonic_evade_lateral_speed)
+        threshold = self.ultrasonic_side_stop_distance
+        if threshold <= 0.0 or distance >= threshold:
+            return 0.0
+        scale = (threshold - distance) / threshold
+        return abs(self.ultrasonic_evade_lateral_speed) * max(0.0, min(1.0, scale))
+
+    def _apply_ultrasonic_bumper(self, twist):
+        """Ultrasonic virtual bumper with active evasion.
+
+        Three evasive actions based on which sensor triggers:
+          - Front blocked  -> reverse
+          - Left blocked   -> strafe right (linear.y negative)
+          - Right blocked  -> strafe left  (linear.y positive)
+        Both sides blocked + front clear → stop rotation, slow reverse.
+        All three blocked → reverse.
+        """
+        if not self.enable_ultrasonic_bumper:
+            return twist, 'pass_through'
+
+        d_front = self._us_get_valid('front')
+        d_left  = self._us_get_valid('left')
+        d_right = self._us_get_valid('right')
+
+        front_blocked = math.isfinite(d_front) and d_front < self.ultrasonic_stop_distance
+        left_blocked  = math.isfinite(d_left)  and d_left  < self.ultrasonic_side_stop_distance
+        right_blocked = math.isfinite(d_right) and d_right < self.ultrasonic_side_stop_distance
+
+        # ---- no trigger: maybe just slow-down ----
+        if not (front_blocked or left_blocked or right_blocked):
+            # Hold lateral velocity briefly after reverse evasion ends
+            now = rospy.Time.now()
+            if (self.reverse_side_stop_distance > 0.0 and
+                    now < self._reverse_hold_until and
+                    abs(self._reverse_last_vy) > 0.001):
+                twist.linear.y = self._reverse_last_vy
+                return twist, 'us_reverse_hold'
+
+            if math.isfinite(d_front) and d_front < self.ultrasonic_slow_distance:
+                if twist.linear.x > 0.0:
+                    scale = (d_front - self.ultrasonic_stop_distance) / (
+                        self.ultrasonic_slow_distance - self.ultrasonic_stop_distance
+                    )
+                    scale = max(0.0, min(1.0, scale))
+                    twist.linear.x *= scale
+                    return twist, 'us_slow_forward'
+            return twist, 'pass_through'
+
+        # ---- determine evasive action ----
+        mode = 'pass_through'
+
+        if front_blocked:
+            # reverse — front obstacle, must reverse
+            if self.enable_auto_reverse and self.allow_reverse:
+                orig_wz = twist.angular.z  # capture algorithm turn direction before zeroing
+                twist.linear.x = -abs(float(self.auto_reverse_speed))
+                twist.angular.z = 0.0
+                mode = 'us_reverse'
+
+                # Expand left/right detection range while reversing,
+                # so the robot can simultaneously strafe away from side obstacles.
+                if self.reverse_side_stop_distance > 0.0:
+                    rev_left  = (math.isfinite(d_left) and
+                                 d_left < self.reverse_side_stop_distance)
+                    rev_right = (math.isfinite(d_right) and
+                                 d_right < self.reverse_side_stop_distance)
+
+                    if rev_left and rev_right:
+                        # Both sides close — strafe toward the closer side
+                        if d_right > d_left:
+                            twist.linear.y = abs(self.ultrasonic_evade_lateral_speed)
+                        else:
+                            twist.linear.y = -abs(self.ultrasonic_evade_lateral_speed)
+                    elif rev_left:
+                        twist.linear.y = abs(self.ultrasonic_evade_lateral_speed)
+                    elif rev_right:
+                        twist.linear.y = -abs(self.ultrasonic_evade_lateral_speed)
+                    else:
+                        # Both sides clear — follow algorithm's turn direction
+                        if orig_wz > 0.03:
+                            twist.linear.y = abs(self.ultrasonic_evade_lateral_speed)
+                        elif orig_wz < -0.03:
+                            twist.linear.y = -abs(self.ultrasonic_evade_lateral_speed)
+
+                # Record vy and arm hold timer for when reverse ends
+                self._reverse_last_vy = twist.linear.y
+                self._reverse_hold_until = rospy.Time.now() + rospy.Duration(
+                    self.reverse_side_hold_duration
+                )
+            else:
+                twist.linear.x = 0.0
+                twist.angular.z = 0.0
+                mode = 'us_front_stop'
+
+        elif left_blocked and right_blocked:
+            speed_left = self._compute_linear_evade_speed(d_left)
+            speed_right = self._compute_linear_evade_speed(d_right)
+            twist.linear.y = speed_left - speed_right
+            # Blend algorithm vx based on closest side distance
+            closest_side = min(d_left, d_right)
+            if closest_side < self.ultrasonic_blend_distance:
+                # Very close: scale down forward speed
+                scale = closest_side / max(self.ultrasonic_blend_distance, 0.01)
+                twist.linear.x *= max(0.0, scale)
+            # Keep algorithm's wz during lateral translation
+            mode = 'us_narrow_pass'
+
+        elif left_blocked:
+            speed = self._compute_linear_evade_speed(d_left)
+            twist.linear.y = speed
+            # Blend algorithm vx based on distance
+            if d_left < self.ultrasonic_blend_distance:
+                scale = d_left / max(self.ultrasonic_blend_distance, 0.01)
+                twist.linear.x *= max(0.0, scale)
+            # Keep algorithm's wz during lateral translation
+            mode = 'us_evade_left'
+
+        elif right_blocked:
+            speed = self._compute_linear_evade_speed(d_right)
+            twist.linear.y = -speed
+            # Blend algorithm vx based on distance
+            if d_right < self.ultrasonic_blend_distance:
+                scale = d_right / max(self.ultrasonic_blend_distance, 0.01)
+                twist.linear.x *= max(0.0, scale)
+            # Keep algorithm's wz during lateral translation
+            mode = 'us_evade_right'
+
+        return twist, mode
+
     def _apply_free_space_steer(self, twist: Twist, forward_blocked: bool) -> None:
         if not self.enable_free_space_steer:
             return
@@ -217,120 +600,31 @@ class VelocityFilter:
             twist.linear.x = min(twist.linear.x, self.steer_forward_speed)
 
         twist.angular.z = target_angular
-        rospy.loginfo_throttle(
-            1.0,
-            "避障转向: front=%.3fm left=%.3fm right=%.3fm ang=%.3f stop_latched=%s",
-            self.front_min_range,
-            self.left_clearance,
-            self.right_clearance,
-            twist.angular.z,
-            str(self._forward_stop_latched),
-        )
 
     def callback(self, msg: Twist):
         self._last_cmd_time = rospy.Time.now()
 
         modified = copy.deepcopy(msg)
-        forward_blocked = False
         self._last_mode = 'pass_through'
 
-        d = self.front_min_range
-        if self.enable_free_space_steer and math.isfinite(d):
-            if d < self.steer_activation_distance:
-                self._steer_block_latched = True
-            elif d > self.steer_release_distance:
-                self._steer_block_latched = False
+        # ---- ultrasonic virtual bumper (highest priority) ----
+        if self.enable_ultrasonic_bumper:
+            modified, us_mode = self._apply_ultrasonic_bumper(modified)
+            if us_mode != 'pass_through':
+                # ultrasonic overrides everything when triggered
+                modified.angular.z *= self.wz_scale
+                modified = self._apply_deadband(modified)
+                self._latest_output = modified
+                self._last_mode = us_mode
+                self._publish_debug(msg, modified)
+                self._publish_status(modified, us_mode)
+                return
 
+        # ---- camscan bias: when camscan sees front obstacle but lidar doesn't ----
+        modified = self._apply_camscan_bias(modified)
 
-
-        # Forward safety (stop/slow when obstacle is in front)
-        if self.enable_forward_safety and modified.linear.x > 0.0:
-            original_x = modified.linear.x
-            d = self.front_min_range
-
-
-            if self._forward_stop_latched or (math.isfinite(d) and d < self.forward_stop_distance):
-                forward_blocked = True
-                if self.enable_auto_reverse and self.allow_reverse:
-                    modified.linear.x = -abs(float(self.auto_reverse_speed))
-                    modified.angular.z = 0.0
-                    self._last_mode = 'auto_reverse'
-                    rospy.logwarn_throttle(
-                        1.0,
-                        "前方障碍过近(最小距离=%.3fm < stop=%.2fm)，触发自动倒车: 原始前进=%.3f 倒车=%.3f",
-                        d,
-                        self.forward_stop_distance,
-                        original_x,
-                        modified.linear.x,
-                    )
-                else:
-                    modified.linear.x = 0.0
-                    if self.stop_turn_when_forward_blocked:
-                        modified.angular.z = 0.0
-                    self._last_mode = 'front_stop'
-                    rospy.logwarn_throttle(
-                        1.0,
-                        "前方障碍过近或锁存(最小距离=%.3fm, stop=%.2fm, release=%.2fm)，前进指令已钳制为 0: 原始=%.3f",
-                        d,
-                        self.forward_stop_distance,
-                        self.forward_stop_release_distance,
-                        original_x,
-                    )
-            elif (
-                math.isfinite(d)
-                and d < self.forward_slow_distance
-                and self.forward_slow_distance > self.forward_stop_distance
-            ):
-                scale = (d - self.forward_stop_distance) / (
-                    self.forward_slow_distance - self.forward_stop_distance
-                )
-                scale = max(0.0, min(1.0, scale))
-                limited = original_x * scale
-                limited = max(0.0, min(original_x, limited))
-                if self.min_forward_speed > 0.0:
-                    limited = max(min(limited, original_x), min(self.min_forward_speed, original_x))
-                modified.linear.x = limited
-                self._last_mode = 'slow_forward'
-                rospy.loginfo_throttle(
-                    1.0,
-                    "前方接近障碍(最小距离=%.3fm)，前进限速: 原始=%.3f 修改后=%.3f",
-                    d,
-                    original_x,
-                    modified.linear.x,
-                )
-
-            if self._steer_block_latched:
-                forward_blocked = True
-                modified.linear.x = min(modified.linear.x, self.steer_forward_speed)
-                self._last_mode = 'steer_latched'
-
-            self._apply_free_space_steer(modified, forward_blocked)
-
-        # Reverse gating (never amplify reverse speed)
-        if modified.linear.x < 0.0:
-            original_x = modified.linear.x
-
-            if not self.allow_reverse:
-                modified.linear.x = 0.0
-                rospy.loginfo_throttle(2.0, "倒车已禁用，已钳制为 0: 原始值=%.3f", original_x)
-            elif self.reverse_requires_obstacle and (not self.obstacle_close):
-                modified.linear.x = 0.0
-                rospy.loginfo_throttle(
-                    2.0,
-                    "未检测到前方近障碍物(最小距离=%.3fm)，倒车指令已钳制为 0: 原始值=%.3f",
-                    self.front_min_range,
-                    original_x,
-                )
-            else:
-                modified.linear.x = max(original_x, -abs(self.max_reverse_speed))
-                self._last_mode = 'reverse_limited'
-                rospy.loginfo_throttle(
-                    2.0,
-                    "检测到前方近障碍物(最小距离=%.3fm)，允许倒车并限幅: 原始=%.3f 修改后=%.3f",
-                    self.front_min_range,
-                    original_x,
-                    modified.linear.x,
-                )
+        # Global angular scale (applied before clamp)
+        modified.angular.z *= self.wz_scale
 
         # Clamp outputs (after all safety logic)
         if self.max_forward_speed > 0.0 and modified.linear.x > self.max_forward_speed:
@@ -342,9 +636,9 @@ class VelocityFilter:
 
         modified = self._apply_deadband(modified)
         self._latest_output = modified
-        if forward_blocked and abs(modified.angular.z) > 0.0:
-            self._last_mode = 'turn_to_free_space'
+        self._last_mode = 'pass_through'
         self._publish_debug(msg, modified)
+        self._publish_status(modified, 'pass_through')
 
 
 if __name__ == '__main__':

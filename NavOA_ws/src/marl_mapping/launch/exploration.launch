@@ -23,13 +23,21 @@
   <arg name="idle_wait" default="1.0" />
   <arg name="post_reach_wait" default="2.5" />
   <arg name="min_frontier_size" default="5" />
-  <arg name="exploration_method" default="largest" />
+  <arg name="exploration_method" default="whitest" />
   <arg name="inflation_cells" default="6" />
 
   <arg name="regional_explore" default="true" />
   <arg name="local_radius" default="60" />  <!-- grid cells, ~3m at 0.05 res -->
   <arg name="frontier_update_interval" default="5.0" />  <!-- sec, periodic recalculation -->
   <arg name="goal_check_radius" default="30" />  <!-- grid cells, ~1.5m -->
+
+  <!-- Exploration region filter (Rviz "Publish Point" tool) -->
+  <arg name="enable_region_filter" default="true" />
+  <arg name="clicked_point_topic" default="/clicked_point" />
+  <arg name="region_default_radius" default="3.0" />  <!-- meters, radius for single-point circle -->
+  <arg name="region_shape_mode" default="polygon" />  <!-- "convex_hull" or "polygon" -->
+  <arg name="region_close_threshold" default="1.5" />  <!-- meters, polygon closes when last point is this close to first -->
+  <arg name="map_padding_cells" default="400" />  <!-- cells, extra canvas border for Rviz clicking (0=off) -->
 
   <arg name="visualization" default="true" />
   <arg name="save_data" default="true" />
@@ -53,6 +61,12 @@
     <param name="local_radius" value="$(arg local_radius)" />
     <param name="frontier_update_interval" value="$(arg frontier_update_interval)" />
     <param name="goal_check_radius" value="$(arg goal_check_radius)" />
+    <param name="enable_region_filter" value="$(arg enable_region_filter)" />
+    <param name="clicked_point_topic" value="$(arg clicked_point_topic)" />
+    <param name="region_default_radius" value="$(arg region_default_radius)" />
+    <param name="region_shape_mode" value="$(arg region_shape_mode)" />
+    <param name="region_close_threshold" value="$(arg region_close_threshold)" />
+    <param name="map_padding_cells" value="$(arg map_padding_cells)" />
     <param name="visualization" value="$(arg visualization)" />
     <param name="save_data" value="$(arg save_data)" />
     <param name="plan_watch_enabled" value="true" />

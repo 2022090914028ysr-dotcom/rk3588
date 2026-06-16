@@ -39,15 +39,13 @@ try:
     from rknnlite.api import RKNNLite
     RKNN = RKNNLite
     # print(f"[DUNE] Using RKNNLite API, constants available: {hasattr(RKNN, 'NPU_CORE_AUTO')}")
-except ImportError as e:
-    print(f"[DUNE] RKNNLite import failed: {e}")
+except ImportError:
+    # print(f"[DUNE] RKNNLite import failed: {e}")
     try:
         # Fall back to old RKNN API
         from rknn.api import RKNN
-        print("[DUNE] Using legacy RKNN API")
     except ImportError:
         RKNN = None
-        print("[DUNE] RKNN not available")
         
         
 class DUNE(torch.nn.Module):
@@ -80,7 +78,6 @@ class DUNE(torch.nn.Module):
         self.rknn_path = rknn_path if rknn_path is not None else checkpoint
         self.rknn = None
         self._rknn_ready = False
-        self._dbg_counter = 0  # light-weight debug ticker
         self.rknn_target = rknn_target
         self.rknn_core = rknn_core
 
@@ -117,12 +114,6 @@ class DUNE(torch.nn.Module):
         self.obstacle_points = obs_points_list[0] # current obstacle points considered in the dune at time 0
 
         total_points = torch.hstack(point_flow)
-
-        # light debug: every 50 calls, report whether RKNN is used and tensor sizes
-        self._dbg_counter += 1
-        if self._dbg_counter % 50 == 1:
-            path = self.rknn_path if self.use_rknn else getattr(self, 'abs_checkpoint_path', None)
-            print(f"[DUNE][dbg] use_rknn={self.use_rknn} ready={self._rknn_ready} path={path} total_points={total_points.shape}")
         
         # map the point flow to the latent distance features mu
         if self.use_rknn:
@@ -240,7 +231,6 @@ class DUNE(torch.nn.Module):
         else:
             self.abs_checkpoint_path = file_check(self.rknn_path)
 
-        print(f"[DUNE][RKNN] loading model: {self.abs_checkpoint_path}")
         self.rknn = RKNN()
         ret = self.rknn.load_rknn(self.abs_checkpoint_path)
         if ret != 0:
@@ -263,15 +253,10 @@ class DUNE(torch.nn.Module):
 
         core_mask = core_map.get(str(self.rknn_core).lower(), 0)
         
-        # SIMPLE FIX: Convert string "None" to Python None, and handle case
         if self.rknn_target in ["None", "null", ""]:
             actual_target = None
-        elif self.rknn_target == "":
-            actual_target = ""  # Try uppercase
         else:
             actual_target = self.rknn_target
-            
-        print(f"[DUNE][RKNN] init_runtime target={actual_target} core={self.rknn_core} mask={hex(core_mask) if isinstance(core_mask,int) else core_mask}")
         
         try:
             if core_mask:
@@ -281,9 +266,8 @@ class DUNE(torch.nn.Module):
         except TypeError:
             # older toolkit without core_mask param
             ret = self.rknn.init_runtime(target=actual_target)
-        except Exception as e:
+        except Exception:
             # If that fails, try without target
-            print(f"[DUNE][RKNN] First attempt failed: {e}, trying without target...")
             if core_mask:
                 ret = self.rknn.init_runtime(core_mask=core_mask)
             else:
@@ -293,12 +277,6 @@ class DUNE(torch.nn.Module):
             raise RuntimeError(f'init_runtime failed with code {ret}')
 
         self._rknn_ready = True
-        try:
-            # not all toolkits expose get_sdk_version; ignore failures
-            ver = self.rknn.get_sdk_version()
-            print(f"[DUNE][RKNN] runtime ready, sdk_version={ver}")
-        except Exception:
-            print("[DUNE][RKNN] runtime ready")
 
     def _rknn_infer(self, total_points: torch.Tensor) -> torch.Tensor:
         """Infer mu using RKNN runtime.
@@ -334,9 +312,6 @@ class DUNE(torch.nn.Module):
                 raise RuntimeError(f'Unexpected RKNN output shape: {mu_np.shape}')
 
             mu_list.append(mu_np[:this_len, :])
-
-            if self._dbg_counter % 50 == 1:
-                print(f"[DUNE][dbg] rknn chunk start={start} len={this_len} input={buf.shape} output={mu_np.shape}")
 
         mu_concat = np.concatenate(mu_list, axis=0).astype(np.float32, copy=False)  # (N, edge_dim)
         # torch.from_numpy is fastest but can fail in some mixed/embedded numpy setups.
