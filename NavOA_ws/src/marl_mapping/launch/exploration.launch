@@ -18,7 +18,7 @@
 
   <!-- Exploration parameters -->
   <arg name="max_steps" default="500" />
-  <arg name="goal_tolerance" default="1" />
+  <arg name="goal_tolerance" default="1.5" />
   <arg name="goal_timeout" default="60.0" />
   <arg name="idle_wait" default="1.0" />
   <arg name="post_reach_wait" default="2.5" />
@@ -38,6 +38,13 @@
   <arg name="region_shape_mode" default="polygon" />  <!-- "convex_hull" or "polygon" -->
   <arg name="region_close_threshold" default="1.5" />  <!-- meters, polygon closes when last point is this close to first -->
   <arg name="map_padding_cells" default="400" />  <!-- cells, extra canvas border for Rviz clicking (0=off) -->
+
+  <!-- Loop closure revisit: after 20s with no new frontiers in region,
+       revisit previously explored points once, then stop. -->
+  <arg name="enable_loop_closure" default="true" />
+  <arg name="loop_closure_min_distance" default="80" />  <!-- grid cells, ~4m at 0.05 res -->
+  <arg name="loop_closure_max_revisits" default="5" />   <!-- max revisit goals -->
+  <arg name="loop_closure_trigger_delay" default="20.0" />  <!-- sec, wait before triggering -->
 
   <arg name="visualization" default="true" />
   <arg name="save_data" default="true" />
@@ -72,5 +79,9 @@
     <param name="plan_watch_enabled" value="true" />
     <param name="plan_topic" value="$(arg plan_topic)" />
     <param name="costmap_topic" value="$(arg costmap_topic)" />
+    <param name="enable_loop_closure" value="$(arg enable_loop_closure)" />
+    <param name="loop_closure_min_distance" value="$(arg loop_closure_min_distance)" />
+    <param name="loop_closure_max_revisits" value="$(arg loop_closure_max_revisits)" />
+    <param name="loop_closure_trigger_delay" value="$(arg loop_closure_trigger_delay)" />
   </node>
 </launch>

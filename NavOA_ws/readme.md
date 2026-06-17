@@ -149,10 +149,10 @@ Important: After finishing mapping and before killing the current SLAM terminal,
 #Save MAP-----------------------------
 ```
 rosservice call /write_state \
-"filename: '/home/ubuntu/Robit_SlamNav/NavOA_ws/src/carto_ws/map/meeting_room/selfmap.pbstream'
+"filename: '/home/ubuntu/Robit_SlamNav/NavOA_ws/src/carto_ws/map/meeting_room/test00.pbstream'
 include_unfinished_submaps: true"
 ```
-rosrun map_server map_saver -f /home/ubuntu/Robit_SlamNav/NavOA_ws/src/carto_ws/map/meeting_room/selfmap
+rosrun map_server map_saver -f /home/ubuntu/Robit_SlamNav/NavOA_ws/src/carto_ws/map/meeting_room/test00
 
 # Must save as `.pbstream` format, and modify the save path to your own address.
 
@@ -193,7 +193,7 @@ taskset -c 5,6,7 roslaunch cartographer_ros livox_2d.launch
 
 roslaunch NavOA_ros navoa_nav_only.launch
 
-roslaunch cartographer_ros cartographer_guard_imu.launch
+c
 roslaunch lidar_ros lidar_full.launch
 
 roslaunch marl_mapping exploration.launch

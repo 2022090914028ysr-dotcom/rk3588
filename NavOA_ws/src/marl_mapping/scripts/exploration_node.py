@@ -76,6 +76,7 @@ class ExplorationNode:
         self.frontier_map = None
         self.safe_free_map = None     # free cells outside inflation radius (fallback)
         self.costmap = None           # 2D array from move_base global costmap
+        self.free_mask = None          # truly-free cells (cost==0) for frontier detection
         self.robot_pos = [0.0, 0.0, 0.0]       # world (x, y, z)
         self.robot_quat = [0.0, 0.0, 0.0, 1.0]
         self.current_goal_world = None          # world (wx, wy)
@@ -95,6 +96,21 @@ class ExplorationNode:
         self._last_goal_world = None        # world coords of the last successfully sent goal
         self._local_radius = rospy.get_param('~local_radius', 60)  # grid cells (~3m at 0.05 res)
         self._use_regional_explore = rospy.get_param('~regional_explore', True)
+
+        # ---- Loop closure revisit ----
+        # When no new frontiers detected in the region for trigger_delay
+        # seconds, revisit previously explored points to trigger SLAM
+        # loop-closure.  If new frontiers appear mid-revisit, abort and
+        # explore them; loop closure will retrigger after the next idle.
+        self._enable_loop_closure = rospy.get_param('~enable_loop_closure', True)
+        self._loop_closure_min_distance = rospy.get_param('~loop_closure_min_distance', 80)  # grid cells (~4m at 0.05 res)
+        self._loop_closure_max_revisits = rospy.get_param('~loop_closure_max_revisits', 5)
+        self._loop_closure_trigger_delay = rospy.get_param('~loop_closure_trigger_delay', 20.0)  # seconds
+        self._loop_closure_history = []       # list of (wx, wy, gx, gy) world+grid coords visited
+        self._loop_closure_phase = False      # True when actively revisiting
+        self._loop_closure_count = 0          # revisits sent in current phase
+        self._loop_closure_visited_now = set()  # grid cells visited during current phase
+        self._no_frontier_since = None        # rospy.Time when we first detected no frontiers
         # Periodic frontier recalculation during navigation
         self._frontier_update_interval = rospy.get_param('~frontier_update_interval', 5.0)  # sec
         self._last_frontier_update = None       # rospy.Time of last recalculation
@@ -213,23 +229,37 @@ class ExplorationNode:
         self.obstacle_map = (raw > 50).astype(np.uint8)
         self.explored_map = (raw >= 0).astype(np.uint8)
 
-        # frontier: known-free cells adjacent to unknown
+        # ---- Compute inflation kernels once ----
         kernel = np.ones((3, 3), dtype=np.uint8)
-        safe_obs = cv2.dilate(self.obstacle_map, kernel, iterations=2)
-        unknown = (self.explored_map == 0).astype(np.uint8)
-        dil_unk = cv2.dilate(unknown, kernel, iterations=1)
-        self.frontier_map = ((self.explored_map > 0) & (safe_obs == 0) &
-                             (dil_unk > 0)).astype(np.uint8)
-
-        # Safe free map: cells that are reachable in the inflated costmap.
-        # Must be explored, not obstacle-dilated, not frontier.
         ksize = 2 * self.inflation_cells + 1
         inf_kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE,
                                                 (ksize, ksize))
         obs_inflated = cv2.dilate(self.obstacle_map, inf_kernel, iterations=1)
+
+        # safe_free_map: explored cells outside inflated obstacle zone
+        # (fallback when costmap is unavailable)
         self.safe_free_map = ((self.explored_map > 0) &
-                              (obs_inflated == 0) &
-                              (self.frontier_map == 0))
+                              (obs_inflated == 0))
+
+        # ---- free_mask: truly-free cells for frontier detection ----
+        # Prefer move_base costmap (cost==0 = no inflation, truly reachable).
+        # Fall back to safe_free_map when costmap is unavailable.
+        if (self.costmap is not None and
+                self.costmap.shape[0] == self.map_height and
+                self.costmap.shape[1] == self.map_width):
+            self.free_mask = (self.costmap == 0)
+            rospy.loginfo_throttle(30,
+                "[Explore] free_mask from costmap: %.0f%% truly-free cells",
+                100.0 * np.sum(self.free_mask) / max(self.free_mask.size, 1))
+        else:
+            self.free_mask = self.safe_free_map
+            rospy.loginfo_throttle(30,
+                "[Explore] free_mask from safe_free_map (costmap unavailable)")
+
+        # frontier_map: free cells adjacent to unknown
+        unknown = (self.explored_map == 0).astype(np.uint8)
+        dil_unk = cv2.dilate(unknown, kernel, iterations=1)
+        self.frontier_map = (self.free_mask & (dil_unk > 0)).astype(np.uint8)
 
         obs = np.sum(self.obstacle_map)
         total = self.obstacle_map.size
@@ -515,7 +545,8 @@ class ExplorationNode:
                         self.obstacle_map is not None and
                         self.explored_map is not None):
                     f = detect_frontiers(self.obstacle_map, self.explored_map,
-                                         min_frontier_size=self.min_frontier_size)
+                                         min_frontier_size=self.min_frontier_size,
+                                         free_mask=self.free_mask)
                     gx, gy = self._last_goal_grid
                     still_exists = any((cx - gx)**2 + (cy - gy)**2 <= self._goal_check_radius**2
                                        for (cx, cy, _sz, _wb) in f)
@@ -546,6 +577,9 @@ class ExplorationNode:
                     # Mark as visited, reset retry counter (we made progress)
                     if self._last_goal_grid:
                         self.visited_goals.add(self._last_goal_grid)
+                        # Record in loop-closure history for future revisits
+                        self._add_to_loop_closure_history(
+                            self._last_goal_world, self._last_goal_grid)
                     self._frontier_reset_count = 0
                     self._post_reach_time = rospy.Time.now()
                     return
@@ -583,6 +617,59 @@ class ExplorationNode:
         # --- pick new goal ---
         goal_xy = self._select_goal()
         if goal_xy is None:
+            # ---- No frontiers found ----
+            now = rospy.Time.now()
+
+            if self._enable_loop_closure:
+
+                if not self._loop_closure_phase:
+                    # ---- Track idle time before triggering loop closure ----
+                    if self._no_frontier_since is None:
+                        self._no_frontier_since = now
+                        rospy.loginfo("[Explore] No frontiers — will trigger "
+                                      "loop-closure in %.0fs if none appear",
+                                      self._loop_closure_trigger_delay)
+                        return
+                    idle = (now - self._no_frontier_since).to_sec()
+                    if idle < self._loop_closure_trigger_delay:
+                        rospy.loginfo_throttle(5.0,
+                            "[Explore] No frontiers for %.0f/%.0fs, waiting...",
+                            idle, self._loop_closure_trigger_delay)
+                        return
+                    # ---- Trigger: enter loop closure phase ----
+                    if not self._loop_closure_history:
+                        rospy.logwarn("[Explore] No frontiers & no revisit "
+                                      "history — giving up")
+                        self.stop_exploration(); return
+                    rospy.loginfo("[Explore] No frontiers for %.0fs — "
+                                  "starting loop-closure revisit (%d history)",
+                                  idle, len(self._loop_closure_history))
+                    self._loop_closure_phase = True
+                    self._loop_closure_count = 0
+                    self._loop_closure_visited_now.clear()
+
+                # ---- In loop closure phase: pick next revisit point ----
+                if self._loop_closure_count < self._loop_closure_max_revisits:
+                    goal_xy = self._select_loop_closure_goal()
+                    if goal_xy is not None:
+                        self._send_goal(goal_xy)
+                        self.step_count += 1
+                        self._loop_closure_count += 1
+                        return
+                    # No more suitable revisit candidates
+                    rospy.loginfo("[Explore] Loop-closure: no more distant "
+                                  "revisit candidates (%d/%d sent)",
+                                  self._loop_closure_count,
+                                  self._loop_closure_max_revisits)
+
+                # ---- Loop closure finished: stop exploration ----
+                rospy.loginfo("[Explore] Loop-closure revisit done "
+                              "(%d points) — stopping exploration",
+                              self._loop_closure_count)
+                self._loop_closure_phase = False
+                self.stop_exploration(); return
+
+            # ---- Normal stuck handling (loop closure disabled) ----
             if self._stuck_since is None:
                 self._stuck_since = rospy.Time.now()
                 rospy.logwarn("[Explore] No reachable frontiers -- "
@@ -594,15 +681,21 @@ class ExplorationNode:
                 rospy.logwarn("[Explore] Stuck for %.0fs, giving up",
                               stuck_elapsed)
                 self.stop_exploration(); return
-            # Still waiting — retry next tick (throttled log)
             rospy.loginfo_throttle(10.0,
                 "[Explore] Still stuck (%.0fs/%.0fs), "
                 "waiting for new frontiers...",
                 stuck_elapsed, self._max_stuck_duration)
             return
 
-        # Got a goal — reset stuck timer
+        # Got a goal — reset stuck / no-frontier timers
         self._stuck_since = None
+        self._no_frontier_since = None
+        # If we were in loop-closure phase but a new frontier appeared,
+        # exit the phase to prioritise fresh exploration.
+        if self._loop_closure_phase:
+            rospy.loginfo("[Explore] New frontiers found during "
+                          "loop-closure phase — resuming normal exploration")
+            self._loop_closure_phase = False
         self._send_goal(goal_xy)
         self.step_count += 1
 
@@ -630,7 +723,8 @@ class ExplorationNode:
         ry = max(0, min(self.map_height - 1, ry))
 
         f = detect_frontiers(self.obstacle_map, self.explored_map,
-                             min_frontier_size=self.min_frontier_size)
+                             min_frontier_size=self.min_frontier_size,
+                             free_mask=self.free_mask)
 
         # ---- Filter by exploration region mask (Rviz Publish Point) ----
         if self.exploration_region_mask is not None:
@@ -667,7 +761,8 @@ class ExplorationNode:
                           self._frontier_reset_count,
                           self._max_frontier_resets)
             f = detect_frontiers(self.obstacle_map, self.explored_map,
-                                 min_frontier_size=self.min_frontier_size)
+                                 min_frontier_size=self.min_frontier_size,
+                                 free_mask=self.free_mask)
             # Re-apply region filter after rescan (bugfix: was leaking
             # frontiers from outside the user-defined region)
             if self.exploration_region_mask is not None:
@@ -721,6 +816,77 @@ class ExplorationNode:
                         continue
             return (fx, fy)
         return None
+
+    def _select_loop_closure_goal(self):
+        """Select a previously visited point far from the robot for loop closure.
+
+        Returns (gx, gy) grid coords of a suitable revisit point, or None.
+
+        Strategy:
+          - Pick visited points that are far from the current robot pose
+            (>= _loop_closure_min_distance cells away).
+          - Prefer points that haven't been visited in this loop-closure round.
+          - If multiple candidates, pick the farthest one to maximise
+            the loop-closure trajectory.
+        """
+        robot_map = self._get_robot_pose_map()
+        if robot_map is None:
+            return None
+        if self.map_res > 0:
+            rx = int((robot_map[0] - self.map_origin[0]) / self.map_res)
+            ry = int((robot_map[1] - self.map_origin[1]) / self.map_res)
+        else:
+            rx, ry = 0, 0
+        rx = max(0, min(self.map_width - 1, rx))
+        ry = max(0, min(self.map_height - 1, ry))
+
+        min_dist_sq = self._loop_closure_min_distance ** 2
+        candidates = []
+
+        for (wx, wy, gx, gy, _ts) in self._loop_closure_history:
+            # Skip points already visited in this loop-closure round
+            if (gx, gy) in self._loop_closure_visited_now:
+                continue
+            # Skip points too close to current position
+            d2 = (gx - rx) ** 2 + (gy - ry) ** 2
+            if d2 < min_dist_sq:
+                continue
+            # Skip points that are now obstacles (map may have changed)
+            if self.obstacle_map is not None:
+                h, w = self.obstacle_map.shape
+                if 0 <= gy < h and 0 <= gx < w:
+                    if self.obstacle_map[gy, gx] != 0:
+                        continue
+            # Check costmap reachability if available
+            if self.costmap is not None:
+                ch, cw = self.costmap.shape
+                if 0 <= gx < cw and 0 <= gy < ch:
+                    if self.costmap[gy, gx] > 0:
+                        continue
+
+            candidates.append((gx, gy, d2))
+
+        if not candidates:
+            rospy.loginfo("[Explore] LoopClosure: no distant revisit "
+                          "candidates (min_dist=%d cells, history=%d)",
+                          self._loop_closure_min_distance,
+                          len(self._loop_closure_history))
+            return None
+
+        # Pick the farthest candidate to maximise loop-closure path
+        candidates.sort(key=lambda x: x[2], reverse=True)
+        gx, gy, d2 = candidates[0]
+
+        # Snap to a nearby free cell in case the exact grid cell is not ideal
+        fx, fy = self._snap_to_free_cell(gx, gy)
+        self._loop_closure_visited_now.add((fx, fy))
+
+        rospy.loginfo("[Explore] LoopClosure: revisiting (%d,%d) "
+                      "dist=%.1f cells, %d/%d",
+                      fx, fy, math.sqrt(d2),
+                      self._loop_closure_count + 1,
+                      self._loop_closure_max_revisits)
+        return (fx, fy)
 
     def _sort_frontiers_by_method(self, robot_pos, frontiers):
         """Sort frontiers by the configured exploration method.
@@ -808,6 +974,23 @@ class ExplorationNode:
         rospy.logwarn("[Explore] snap_to_free: no free cell within %d "
                       "cells of (%d,%d), using centroid", max_radius, cx, cy)
         return (cx, cy)
+
+    def _add_to_loop_closure_history(self, world_xy, grid_xy):
+        """Record a visited point for potential loop-closure revisits.
+
+        Deduplicates by grid coords (within 5 cells ~0.25m).
+        Caps history at 200 entries to limit memory.
+        """
+        wx, wy = world_xy
+        gx, gy = grid_xy
+        # Deduplicate: skip if a point within 5 cells already exists
+        for (_, _, hgx, hgy, _) in self._loop_closure_history:
+            if abs(hgx - gx) <= 5 and abs(hgy - gy) <= 5:
+                return
+        self._loop_closure_history.append((wx, wy, gx, gy, rospy.Time.now()))
+        # Cap history size
+        if len(self._loop_closure_history) > 200:
+            self._loop_closure_history = self._loop_closure_history[-200:]
 
     def _get_robot_pose_map(self):
         """Return (x, y) of the robot in the map frame via TF, or None."""

@@ -1,42 +1,42 @@
 <launch>
+  <arg name="use_camera" default="true"/>
+  <arg name="use_ultrasonic" default="true"/>
   <arg name="argPath" default="$(find ascamera)/configurationfiles"/>
   <arg name="fps" default="30"/>
 
   <!-- HP60C depth camera -->
-  <node pkg="ascamera" name="ascamera_hp60c" type="ascamera_node" respawn="true" output="screen">
-    <param name="depth_width"  type="int" value="640"/>
-    <param name="depth_height" type="int" value="480"/>
-    <param name="rgb_width"    type="int" value="640"/>
-    <param name="rgb_height"   type="int" value="480"/>
-    <param name="fps"          type="int" value="$(arg fps)"/>
-    <param name="usb_bus_no"   type="int" value="-1"/>
-    <param name="usb_path"     type="str" value="null"/>
-    <param name="confiPath"    type="str" value="$(arg argPath)"/>
-    <param name="color_pcl"    type="boolean" value="false"/>
-    <param name="pub_mono8"    type="boolean" value="false"/>
-    <param name="pub_tfTree"   type="boolean" value="true"/>
-  </node>
+  <group if="$(arg use_camera)">
+    <node pkg="ascamera" name="ascamera_hp60c" type="ascamera_node" respawn="true" output="screen">
+      <param name="depth_width"  type="int" value="640"/>
+      <param name="depth_height" type="int" value="480"/>
+      <param name="rgb_width"    type="int" value="640"/>
+      <param name="rgb_height"   type="int" value="480"/>
+      <param name="fps"          type="int" value="$(arg fps)"/>
+      <param name="usb_bus_no"   type="int" value="-1"/>
+      <param name="usb_path"     type="str" value="null"/>
+      <param name="confiPath"    type="str" value="$(arg argPath)"/>
+      <param name="color_pcl"    type="boolean" value="false"/>
+      <param name="pub_mono8"    type="boolean" value="false"/>
+      <param name="pub_tfTree"   type="boolean" value="true"/>
+    </node>
 
-  <node pkg="tf" type="static_transform_publisher" name="base_link_to_laser"
-    args="0.0 0.0 0.0 -1.57 0.0 0.0 /base_footprint /laser_frame 40" />
-
-  <!-- depth -> /camscan (frame = base_footprint) -->
-  <node pkg="ascamera" name="depth_to_laserscan" type="depth_to_laserscan.py" output="screen">
-    <param name="depth_topic"  type="str"   value="/ascamera_hp60c/depth0/image_raw"/>
-    <param name="scan_rows"      type="int"   value="0"/>
-    <param name="scan_row_start" type="int"   value="80"/>
-    <param name="scan_row_end"   type="int"   value="320"/>
-    <param name="range_min"    type="double" value="0.0"/>
-    <param name="range_max"    type="double" value="5"/>
-    <param name="output_frame" type="str"   value="base_footprint"/>
-    <param name="fy"           type="double" value="420.85"/>
-    <param name="cy"           type="double" value="240.69"/>
-    <param name="camera_height" type="double" value="0.3"/>
-    <param name="ground_tolerance" type="double" value="0.25"/>
-    <param name="range_offset" type="double" value="0.13"/>
-    <param name="angle_offset" type="double" value="0.1"/>
-    <param name="pub_rate"    type="double" value="10"/>
-  </node>
+    <node pkg="ascamera" name="depth_to_laserscan" type="depth_to_laserscan.py" output="screen">
+      <param name="depth_topic"  type="str"   value="/ascamera_hp60c/depth0/image_raw"/>
+      <param name="scan_rows"      type="int"   value="0"/>
+      <param name="scan_row_start" type="int"   value="80"/>
+      <param name="scan_row_end"   type="int"   value="320"/>
+      <param name="range_min"    type="double" value="0.0"/>
+      <param name="range_max"    type="double" value="5"/>
+      <param name="output_frame" type="str"   value="base_footprint"/>
+      <param name="fy"           type="double" value="420.85"/>
+      <param name="cy"           type="double" value="240.69"/>
+      <param name="camera_height" type="double" value="0.3"/>
+      <param name="ground_tolerance" type="double" value="0.25"/>
+      <param name="range_offset" type="double" value="0.13"/>
+      <param name="angle_offset" type="double" value="0.1"/>
+      <param name="pub_rate"    type="double" value="10"/>
+    </node>
+  </group>
 
   <node name="lidar_node"  pkg="lidar_ros"  type="lidar_node" output="screen" respawn="false" >
     <param name="serial_name"                 type="string" value="/dev/ttyS4"/>  
@@ -51,18 +51,20 @@
     <param name="angle_corp_string"           type="string" value="" />
   </node>
 
+<node pkg="tf2_ros" type="static_transform_publisher" name="base_link_to_laser"
+    args="0 0 0.2 -1.57 0 0 base_footprint laser_frame" />
 
   <!-- 2-way merge: /camscan + /scan -> /mergescan  (ultrasonic removed; used as virtual bumper in vel_filter) -->
-  <node pkg="ascamera" name="scan_merger" type="scan_merge.py" output="screen">
+  <!-- <node pkg="ascamera" name="scan_merger" type="scan_merge.py" output="screen">
     <param name="topics"        type="yaml"  value="['/scan', '/camscan','/voscan']"/>
     <param name="angle_offsets" type="yaml"  value="[-0.7854, 0.0,0.0]"/>
     <param name="output_frame"  type="str"   value="base_footprint"/>
     <param name="timeout"       type="double" value="1.0"/>
     <param name="pub_rate"     type="double" value="10"/>
-  </node>
+  </node> -->
   <include file="$(find rf2o_laser_odometry)/launch/rf2o_laser_odometry.launch" />
   
-  <node pkg="NavOA_ros" name="multi_ultrasonic_scan" type="multi_ultrasonic_scan.py" output="screen" />
+  <node pkg="NavOA_ros" name="multi_ultrasonic_scan" type="multi_ultrasonic_scan.py" output="screen" if="$(arg use_ultrasonic)" />
 
 </launch>
    

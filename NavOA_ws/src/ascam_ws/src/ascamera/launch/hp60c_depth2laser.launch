@@ -38,13 +38,13 @@
 
 
     <!-- camscan TF accumulation: narrow FOV -> wide 360 via map cache -->
-    <node pkg="ascamera" name="camscan_accumulator" type="camscan_accumulator.py" output="screen">
+    <!-- <node pkg="ascamera" name="camscan_accumulator" type="camscan_accumulator.py" output="screen">
         <param name="topic_in"     type="str"    value="/camscan"/>
         <param name="topic_out"    type="str"    value="/camscan_wide"/>
         <param name="target_frame" type="str"    value="base_footprint"/>
         <param name="map_frame"    type="str"    value="map"/>
         <param name="cache_sec"    type="double" value="2"/>
-        <param name="pub_rate"     type="double" value="10"/>
+        <param name="pub_rate"     type="double" value="10"/> -->
     </node>
 
 

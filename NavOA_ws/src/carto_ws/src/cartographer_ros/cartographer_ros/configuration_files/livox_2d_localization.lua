@@ -97,7 +97,7 @@ TRAJECTORY_BUILDER_2D.motion_filter.max_time_seconds = 1        -- 减少时间�
 
 -- 快速相关扫描匹配器（用于重定位）
 POSE_GRAPH.constraint_builder.fast_correlative_scan_matcher.linear_search_window = 10.0   -- 单个房间的对角线长度，足够覆盖整个房间，帮助快速重定位
-POSE_GRAPH.constraint_builder.fast_correlative_scan_matcher.angular_search_window = math.rad(30.)  -- 扩大到±45°
+POSE_GRAPH.constraint_builder.fast_correlative_scan_matcher.angular_search_window = math.rad(180.)  -- 扩大到±45°
 POSE_GRAPH.constraint_builder.fast_correlative_scan_matcher.branch_and_bound_depth = 12 -- 深度9，平衡精度与速度
 
 -- global 触发后相关参数 

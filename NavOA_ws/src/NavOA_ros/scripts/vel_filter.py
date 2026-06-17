@@ -123,6 +123,8 @@ class VelocityFilter:
         )
         self._reverse_last_vy = 0.0
         self._reverse_hold_until = rospy.Time(0)
+        # Latched lateral velocity during reverse (prevents left-right oscillation)
+        self._reverse_evade_vy = 0.0
 
         # ---- camscan bias: when /camscan sees a front obstacle but /scan doesn't ----
         self.enable_camscan_bias = bool(
@@ -134,6 +136,18 @@ class VelocityFilter:
         )
         self.camscan_bias_gain = float(
             rospy.get_param('~camscan_bias_gain', 0.5)
+        )
+
+        # ---- camscan virtual bumper: /camscan acts as additional front sensor ----
+        # Merged with ultrasonic front detection in _apply_ultrasonic_bumper.
+        self.enable_camscan_bumper = bool(
+            rospy.get_param('~enable_camscan_bumper', False)
+        )
+        self.camscan_stop_distance = float(
+            rospy.get_param('~camscan_stop_distance', 0.30)
+        )
+        self.camscan_slow_distance = float(
+            rospy.get_param('~camscan_slow_distance', 0.50)
         )
         # Raw lidar scan topic (un-merged) for camscan bias comparison
         self.raw_scan_topic = rospy.get_param('~raw_scan_topic', '/scan')
@@ -178,8 +192,9 @@ class VelocityFilter:
             rospy.Subscriber("/ultrasonic/right", Float32, self._us_right_cb)
 
         # camscan subscription (for glass/transparent obstacle detection)
-        if self.enable_camscan_bias:
+        if self.enable_camscan_bias or self.enable_camscan_bumper:
             rospy.Subscriber(self.camscan_topic, LaserScan, self._camscan_callback)
+        if self.enable_camscan_bias:
             rospy.Subscriber(self.raw_scan_topic, LaserScan, self._raw_scan_callback)
 
         self.pub = rospy.Publisher(self.cmd_out_topic, Twist, queue_size=10)
@@ -455,28 +470,52 @@ class VelocityFilter:
         return abs(self.ultrasonic_evade_lateral_speed) * max(0.0, min(1.0, scale))
 
     def _apply_ultrasonic_bumper(self, twist):
-        """Ultrasonic virtual bumper with active evasion.
+        """Ultrasonic + camscan virtual bumper with active evasion.
 
-        Three evasive actions based on which sensor triggers:
+        Front detection merges ultrasonic and /camscan:
           - Front blocked  -> reverse
           - Left blocked   -> strafe right (linear.y negative)
           - Right blocked  -> strafe left  (linear.y positive)
         Both sides blocked + front clear → stop rotation, slow reverse.
         All three blocked → reverse.
         """
-        if not self.enable_ultrasonic_bumper:
+        if not self.enable_ultrasonic_bumper and not self.enable_camscan_bumper:
             return twist, 'pass_through'
 
         d_front = self._us_get_valid('front')
         d_left  = self._us_get_valid('left')
         d_right = self._us_get_valid('right')
 
-        front_blocked = math.isfinite(d_front) and d_front < self.ultrasonic_stop_distance
+        # ---- merge camscan front into detection ----
+        cam_front_only = False
+        if self.enable_camscan_bumper:
+            d_cam_front = self._camscan_front_valid()
+            if math.isfinite(d_cam_front):
+                if math.isfinite(d_front):
+                    d_front = min(d_front, d_cam_front)
+                else:
+                    d_front = d_cam_front
+                # Track whether camscan is the sole front trigger
+                if (d_cam_front < self.camscan_stop_distance and
+                        (not math.isfinite(self._us_get_valid('front')) or
+                         self._us_get_valid('front') >= self.ultrasonic_stop_distance)):
+                    cam_front_only = True
+
+        # Effective thresholds: most conservative of both sensors
+        eff_stop_dist = self.ultrasonic_stop_distance
+        eff_slow_dist = self.ultrasonic_slow_distance
+        if self.enable_camscan_bumper:
+            eff_stop_dist = min(eff_stop_dist, self.camscan_stop_distance)
+            eff_slow_dist = max(eff_slow_dist, self.camscan_slow_distance)
+
+        front_blocked = math.isfinite(d_front) and d_front < eff_stop_dist
         left_blocked  = math.isfinite(d_left)  and d_left  < self.ultrasonic_side_stop_distance
         right_blocked = math.isfinite(d_right) and d_right < self.ultrasonic_side_stop_distance
 
         # ---- no trigger: maybe just slow-down ----
         if not (front_blocked or left_blocked or right_blocked):
+            # Reset latched reverse evade direction when front is clear
+            self._reverse_evade_vy = 0.0
             # Hold lateral velocity briefly after reverse evasion ends
             now = rospy.Time.now()
             if (self.reverse_side_stop_distance > 0.0 and
@@ -485,11 +524,13 @@ class VelocityFilter:
                 twist.linear.y = self._reverse_last_vy
                 return twist, 'us_reverse_hold'
 
-            if math.isfinite(d_front) and d_front < self.ultrasonic_slow_distance:
+            if math.isfinite(d_front) and d_front < eff_slow_dist:
                 if twist.linear.x > 0.0:
-                    scale = (d_front - self.ultrasonic_stop_distance) / (
-                        self.ultrasonic_slow_distance - self.ultrasonic_stop_distance
-                    )
+                    denom = eff_slow_dist - eff_stop_dist
+                    if denom > 0.0:
+                        scale = (d_front - eff_stop_dist) / denom
+                    else:
+                        scale = 0.0
                     scale = max(0.0, min(1.0, scale))
                     twist.linear.x *= scale
                     return twist, 'us_slow_forward'
@@ -504,32 +545,47 @@ class VelocityFilter:
                 orig_wz = twist.angular.z  # capture algorithm turn direction before zeroing
                 twist.linear.x = -abs(float(self.auto_reverse_speed))
                 twist.angular.z = 0.0
-                mode = 'us_reverse'
+                mode = 'cam_reverse' if cam_front_only else 'us_reverse'
 
                 # Expand left/right detection range while reversing,
                 # so the robot can simultaneously strafe away from side obstacles.
+                # Latch the first chosen direction to prevent ping-pong oscillation.
                 if self.reverse_side_stop_distance > 0.0:
-                    rev_left  = (math.isfinite(d_left) and
-                                 d_left < self.reverse_side_stop_distance)
-                    rev_right = (math.isfinite(d_right) and
-                                 d_right < self.reverse_side_stop_distance)
+                    if abs(self._reverse_evade_vy) < 0.001:
+                        # First frame of reverse: decide direction
+                        rev_left  = (math.isfinite(d_left) and
+                                     d_left < self.reverse_side_stop_distance)
+                        rev_right = (math.isfinite(d_right) and
+                                     d_right < self.reverse_side_stop_distance)
 
-                    if rev_left and rev_right:
-                        # Both sides close — strafe toward the closer side
-                        if d_right > d_left:
-                            twist.linear.y = abs(self.ultrasonic_evade_lateral_speed)
+                        if rev_left and rev_right:
+                            # Both sides close — strafe toward the farther side
+                            if d_right > d_left:
+                                self._reverse_evade_vy = abs(self.ultrasonic_evade_lateral_speed)
+                            else:
+                                self._reverse_evade_vy = -abs(self.ultrasonic_evade_lateral_speed)
+                        elif rev_left:
+                            self._reverse_evade_vy = abs(self.ultrasonic_evade_lateral_speed)
+                        elif rev_right:
+                            self._reverse_evade_vy = -abs(self.ultrasonic_evade_lateral_speed)
                         else:
-                            twist.linear.y = -abs(self.ultrasonic_evade_lateral_speed)
-                    elif rev_left:
-                        twist.linear.y = abs(self.ultrasonic_evade_lateral_speed)
-                    elif rev_right:
-                        twist.linear.y = -abs(self.ultrasonic_evade_lateral_speed)
-                    else:
-                        # Both sides clear — follow algorithm's turn direction
-                        if orig_wz > 0.03:
-                            twist.linear.y = abs(self.ultrasonic_evade_lateral_speed)
-                        elif orig_wz < -0.03:
-                            twist.linear.y = -abs(self.ultrasonic_evade_lateral_speed)
+                            # Both sides clear — follow algorithm's turn direction
+                            if orig_wz > 0.03:
+                                self._reverse_evade_vy = abs(self.ultrasonic_evade_lateral_speed)
+                            elif orig_wz < -0.03:
+                                self._reverse_evade_vy = -abs(self.ultrasonic_evade_lateral_speed)
+                    twist.linear.y = self._reverse_evade_vy
+
+                    # Safety override: stop lateral movement if strafing toward
+                    # a close obstacle (uses ultrasonic_side_stop_distance).
+                    if (self._reverse_evade_vy > 0.001 and
+                            math.isfinite(d_right) and
+                            d_right < self.ultrasonic_side_stop_distance):
+                        twist.linear.y = 0.0
+                    elif (self._reverse_evade_vy < -0.001 and
+                            math.isfinite(d_left) and
+                            d_left < self.ultrasonic_side_stop_distance):
+                        twist.linear.y = 0.0
 
                 # Record vy and arm hold timer for when reverse ends
                 self._reverse_last_vy = twist.linear.y
@@ -539,7 +595,7 @@ class VelocityFilter:
             else:
                 twist.linear.x = 0.0
                 twist.angular.z = 0.0
-                mode = 'us_front_stop'
+                mode = 'cam_front_stop' if cam_front_only else 'us_front_stop'
 
         elif left_blocked and right_blocked:
             speed_left = self._compute_linear_evade_speed(d_left)

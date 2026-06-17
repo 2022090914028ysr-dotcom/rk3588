@@ -23,8 +23,8 @@
     <arg name="control_rate" default="50.0"/>
     <arg name="vel_filter_cmd_out_topic" default="/cmd_vel"/>
     <arg name="ultrasonic_evade_lateral_speed" default="1.5"/>
-    <arg name="reverse_side_stop_distance" default="0.40"/>
-    <arg name="reverse_side_hold_duration" default="1.0"/>
+    <arg name="reverse_side_stop_distance" default="0.25"/>
+    <arg name="reverse_side_hold_duration" default="2.5"/>
 
     <arg name="return_to_previous_goal_enabled" default="true"/>
     <arg name="goal_timeout_button_enabled" default="false"/>
@@ -45,10 +45,10 @@
       <param name="max_angular_speed" value="0.5" />
       <param name="wz_scale" value="1" />
       <param name="enable_ultrasonic_bumper" value="true" />
-      <param name="ultrasonic_stop_distance" value="0.13" />
-      <param name="ultrasonic_slow_distance" value="0.13" />
-      <param name="ultrasonic_side_stop_distance" value="0.17" />
-      <param name="ultrasonic_blend_distance" value="0.13" />
+      <param name="ultrasonic_stop_distance" value="0.26" />
+      <param name="ultrasonic_slow_distance" value="0.26" />
+      <param name="ultrasonic_side_stop_distance" value="0.25" />
+      <param name="ultrasonic_blend_distance" value="0.16" />
       <param name="ultrasonic_evade_lateral_speed" value="$(arg ultrasonic_evade_lateral_speed)" />
       <param name="ultrasonic_linear_evade" value="true" />
       <param name="reverse_side_stop_distance" value="$(arg reverse_side_stop_distance)" />
@@ -58,6 +58,9 @@
       <param name="enable_camscan_bias" value="false" />
       <param name="camscan_front_threshold" value="0.50" />
       <param name="camscan_bias_gain" value="0.50" />
+      <param name="enable_camscan_bumper" value="true" />
+      <param name="camscan_stop_distance" value="0.40" />
+      <param name="camscan_slow_distance" value="0.40" />
     </node>
 
     <node name='NavOA_control' pkg="NavOA_ros" type="NavOA_node.py" output="screen" launch-prefix="python3">

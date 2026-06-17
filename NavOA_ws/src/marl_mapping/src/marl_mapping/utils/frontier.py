@@ -11,7 +11,7 @@ from scipy.optimize import linear_sum_assignment
 from sklearn.cluster import KMeans
 
 
-def detect_frontiers(obstacle_map, explored_map, min_frontier_size=5):
+def detect_frontiers(obstacle_map, explored_map, min_frontier_size=5, free_mask=None):
     """
     Detect frontier clusters from occupancy and exploration maps.
 
@@ -19,6 +19,12 @@ def detect_frontiers(obstacle_map, explored_map, min_frontier_size=5):
         obstacle_map: binary map (1=obstacle, 0=free)
         explored_map: binary map (1=explored, 0=unknown)
         min_frontier_size: minimum cluster size to consider
+        free_mask:   optional binary mask (1=truly-free, 0=not).
+                     When provided, replaces the internal "explored &
+                     not-near-obstacle" computation.  Use this to
+                     restrict frontiers to cells with cost==0 in the
+                     move_base global costmap (no inflation), so that
+                     goals are only placed in strictly reachable space.
 
     Returns:
         list of (cx, cy, size, white_border) for each frontier cluster.
@@ -27,16 +33,22 @@ def detect_frontiers(obstacle_map, explored_map, min_frontier_size=5):
     """
     h, w = obstacle_map.shape
 
-    # Compute raw frontiers
     kernel = np.ones((3, 3), dtype=np.uint8)
-    safe_obstacle = cv2.dilate(obstacle_map.astype(np.uint8), kernel, iterations=2)
     unknown = (explored_map == 0).astype(np.uint8)
     dilated_unknown = cv2.dilate(unknown, kernel, iterations=1)
 
-    frontier = np.logical_and(
-        np.logical_and(explored_map > 0, safe_obstacle == 0),
-        dilated_unknown > 0
-    ).astype(np.uint8)
+    # ---- Compute raw frontiers ----
+    if free_mask is not None:
+        # Use caller-supplied mask: only truly-free (cost==0) cells
+        # adjacent to unknown are frontier candidates.
+        frontier = np.logical_and(free_mask, dilated_unknown > 0).astype(np.uint8)
+    else:
+        # Original behaviour: explored cells not near obstacles
+        safe_obstacle = cv2.dilate(obstacle_map.astype(np.uint8), kernel, iterations=2)
+        frontier = np.logical_and(
+            np.logical_and(explored_map > 0, safe_obstacle == 0),
+            dilated_unknown > 0
+        ).astype(np.uint8)
 
     # White (explored-free) map for border counting
     white = ((explored_map > 0) & (obstacle_map == 0)).astype(np.uint8)
