@@ -54,7 +54,7 @@ POSE_GRAPH.constraint_builder.sampling_ratio = 0.3
 POSE_GRAPH.constraint_builder.max_constraint_distance = 15.0
 
 -- 子图参数
-TRAJECTORY_BUILDER_2D.submaps.num_range_data = 40
+TRAJECTORY_BUILDER_2D.submaps.num_range_data = 20
 TRAJECTORY_BUILDER_2D.submaps.grid_options_2d.resolution = 0.05
 
 return options

@@ -193,7 +193,7 @@ taskset -c 5,6,7 roslaunch cartographer_ros livox_2d.launch
 
 roslaunch NavOA_ros navoa_nav_only.launch
 
-c
+roslaunch cartographer_ros cartographer_guard_imu_score.launch
 roslaunch lidar_ros lidar_full.launch
 
 roslaunch marl_mapping exploration.launch

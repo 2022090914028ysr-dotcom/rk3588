@@ -42,13 +42,41 @@
     <!-- Score-based triggering                                        -->
     <!-- ============================================================ -->
     <param name="score_topic" value="/matching_score" />
-    <param name="score_threshold"          value="0.50" />
+    <param name="score_threshold"          value="0.40" />
     <param name="score_consecutive_frames" value="10" />
 
     <!-- ============================================================ -->
-    <!-- Shared cooldown (applies to both IMU and score paths)         -->
+    <!-- Offset-based triggering (map→base_footprint jump detection)    -->
+    <!--   Only active after cartographer has been running for          -->
+    <!--   offset_startup_delay seconds.                               -->
+    <!-- ============================================================ -->
+    <param name="offset_enabled"            value="true" />
+    <param name="offset_threshold"          value="1.5" />
+    <param name="offset_consecutive_frames" value="1" />
+    <param name="offset_startup_delay"      value="30.0" />
+    <param name="map_frame"                 value="map" />
+    <param name="base_frame"                value="base_footprint" />
+
+    <!-- ============================================================ -->
+    <!-- Rotation-based triggering (yaw jump detection in map frame)   -->
+    <!--   Same startup delay as offset. Triggers when |Δyaw| >        -->
+    <!--   rotation_threshold_deg for N consecutive frames.            -->
+    <!-- ============================================================ -->
+    <param name="rotation_enabled"            value="true" />
+    <param name="rotation_threshold_deg"      value="70.0" />
+    <param name="rotation_consecutive_frames" value="1" />
+
+    <!-- ============================================================ -->
+    <!-- Shared cooldown (applies to IMU, score, offset, rotation)     -->
     <!-- ============================================================ -->
     <param name="reset_cooldown" value="10.0" />
+
+    <!-- ============================================================ -->
+    <!-- Max idle timeout (0 = disabled)                               -->
+    <!-- Forces a fresh restart if no trigger has fired in this many   -->
+    <!-- seconds.  Any existing trigger resets the timer.              -->
+    <!-- ============================================================ -->
+    <param name="max_idle_timeout" value="1200.0" />
 
     <!-- ============================================================ -->
     <!-- Hard reset config (shared by both paths)                      -->

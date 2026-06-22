@@ -5,7 +5,7 @@
   <arg name="fps" default="30"/>
 
   <!-- HP60C depth camera -->
-  <group if="$(arg use_camera)">
+  <!-- <group if="$(arg use_camera)">
     <node pkg="ascamera" name="ascamera_hp60c" type="ascamera_node" respawn="true" output="screen">
       <param name="depth_width"  type="int" value="640"/>
       <param name="depth_height" type="int" value="480"/>
@@ -36,7 +36,7 @@
       <param name="angle_offset" type="double" value="0.1"/>
       <param name="pub_rate"    type="double" value="10"/>
     </node>
-  </group>
+  </group> -->
 
   <node name="lidar_node"  pkg="lidar_ros"  type="lidar_node" output="screen" respawn="false" >
     <param name="serial_name"                 type="string" value="/dev/ttyS4"/>  
