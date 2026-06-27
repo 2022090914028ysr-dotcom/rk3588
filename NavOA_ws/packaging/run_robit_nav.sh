@@ -1,17 +1,19 @@
 #!/bin/bash
 set -euo pipefail
 
-CONDA_BASE="/home/ubuntu/miniconda3"
+NAV_BASE="/data/app/nav"
+CONDA_BASE="${NAV_BASE}/conda"
 if [ -f "${CONDA_BASE}/etc/profile.d/conda.sh" ]; then
   source "${CONDA_BASE}/etc/profile.d/conda.sh"
-  conda activate control || true
+  conda activate "${CONDA_BASE}" || true
 fi
 
+export PATH="${CONDA_BASE}/bin:${PATH}"
 export ROS_MASTER_URI=${ROS_MASTER_URI:-http://localhost:11311}
 
 set +u
 source /opt/ros/noetic/setup.bash
-source /opt/robit/nav/setup.bash
+source "${NAV_BASE}/setup.bash"
 set -u
 
 echo "Starting Robit Navigation Stack..."

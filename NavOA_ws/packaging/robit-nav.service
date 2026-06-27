@@ -6,11 +6,11 @@ Wants=network-online.target
 [Service]
 Type=simple
 RemainAfterExit=no
-ExecStart=/opt/robit/nav/run_robit_nav.sh start
-ExecStop=/opt/robit/nav/run_robit_nav.sh stop
+ExecStart=/data/app/nav/run_robit_nav.sh start
+ExecStop=/data/app/nav/run_robit_nav.sh stop
 Restart=on-failure
 RestartSec=5
-WorkingDirectory=/opt/robit/nav
+WorkingDirectory=/data/app/nav
 StandardOutput=journal
 StandardError=journal
 
