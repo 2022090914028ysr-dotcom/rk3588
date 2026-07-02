@@ -16,9 +16,12 @@ source /opt/ros/noetic/setup.bash
 source "${NAV_BASE}/setup.bash"
 set -u
 
+# Ensure ROS shared libraries are on the linker path (libtf.so, libceres.so, etc.)
+export LD_LIBRARY_PATH="/opt/ros/noetic/lib:${LD_LIBRARY_PATH:-}"
+
 echo "Starting Robit Navigation Stack..."
-roslaunch rosbridge_server rosbridge_websocket.launch port:=9090 &
-roslaunch cartographer_ros livox_2d_localization.launch &
-roslaunch NavOA_ros navoa_nav_only.launch &
+roslaunch --wait rosbridge_server rosbridge_websocket.launch port:=9090 &
+roslaunch --wait cartographer_ros livox_2d_localization.launch &
+roslaunch --wait NavOA_ros navoa_nav_only.launch &
 rosrun NavOA_ros status_state.py &
 wait || true

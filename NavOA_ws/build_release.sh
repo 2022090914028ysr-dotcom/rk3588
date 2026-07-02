@@ -76,6 +76,16 @@ if [ -d "${MAP_SOURCE_DIR}" ]; then
   cp -a "${MAP_SOURCE_DIR}/." "${APP_ROOT}/share/carto_ws/map/"
 fi
 
+# Copy cartographer Lua config files into cartographer_ros config directory
+# so a single -configuration_directory works for both launch and the guard's StartTrajectory service
+echo "Merging cartographer Lua config files into cartographer_ros/configuration_files..."
+CART_ROS_CFG="${APP_ROOT}/share/cartographer_ros/configuration_files"
+CART_CFG="${APP_ROOT}/share/cartographer/configuration_files"
+if [ -d "${CART_ROS_CFG}" ] && [ -d "${CART_CFG}" ]; then
+  cp -a "${CART_CFG}"/*.lua "${CART_ROS_CFG}/" 2>/dev/null || true
+  echo "  Merged $(ls -1 "${CART_CFG}"/*.lua 2>/dev/null | wc -l) Lua files from cartographer into cartographer_ros"
+fi
+
 # Bundle the conda environment using conda-pack (relocatable archive)
 echo "Packing conda 'control' environment for target deployment..."
 if command -v conda-pack &>/dev/null; then
@@ -91,7 +101,11 @@ cp -a "${CONDA_TAR}" "${APP_ROOT}/conda.tar.gz"
 
 # Fix shebangs in auto-generated ROS scripts that point to the build machine's python
 echo "Fixing shebangs and build-machine paths in auto-generated files..."
-find "${APP_ROOT}" -name "*.py" -exec sed -i '1s|^#!.*python.*|#!/usr/bin/env python3|' {} \;
+find "${APP_ROOT}" -name "*.py" -exec sed -i '1s|^#!.*python.*|#!/data/app/nav/conda/bin/python3|' {} \;
+
+# Strip launch-prefix="python3" from installed launch files so ROS uses the shebang (conda python)
+echo "Stripping launch-prefix='python3' from launch files (so conda shebang is used)..."
+find "${APP_ROOT}" -name "*.launch" -exec sed -i 's/ launch-prefix="python3"//g' {} \;
 
 # Install the runtime wrapper script
 echo "Installing service wrapper script..."
@@ -115,7 +129,17 @@ Version: 1.0.0
 Section: robotics
 Priority: optional
 Architecture: arm64
-Depends: ros-noetic-ros-core, systemd
+Depends: ros-noetic-ros-core, systemd,
+ ros-noetic-tf, ros-noetic-tf2, ros-noetic-tf2-ros,
+ ros-noetic-rosbridge-server,
+ ros-noetic-move-base, ros-noetic-nav-core,
+ ros-noetic-costmap-2d, ros-noetic-base-local-planner,
+ ros-noetic-map-server, ros-noetic-actionlib,
+ ros-noetic-dynamic-reconfigure, ros-noetic-amcl,
+ ros-noetic-pcl-ros, ros-noetic-pcl-conversions,
+ ros-noetic-global-planner,
+ libceres-dev, libgoogle-glog0v5, libgflags2.2,
+ liblua5.3-0, libcairo2
 Maintainer: Robit Release Team <noreply@example.com>
 Description: Robit ROS navigation runtime package (userdata partition)
  Installed to /data/app/nav/ for OTA-updateable userdata partition.
