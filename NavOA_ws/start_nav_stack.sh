@@ -53,10 +53,10 @@ sleep 3
 # CARTO_PID=$!
 # sleep 3
 
-echo "=== [2/3] Launching cartographer localization ==="
-roslaunch cartographer_ros livox_2d_localization.launch &
-CARTO_PID=$!
-sleep 3
+# echo "=== [2/3] Launching cartographer localization ==="
+# roslaunch cartographer_ros livox_2d_localization.launch &
+# CARTO_PID=$!
+# sleep 3
 
 echo "=== [3/3] Launching NavOA (nav-only) ==="
 roslaunch NavOA_ros navoa_nav_only.launch &

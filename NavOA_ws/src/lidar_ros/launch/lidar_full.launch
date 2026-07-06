@@ -5,7 +5,7 @@
   <arg name="fps" default="30"/>
 
   <!-- HP60C depth camera -->
-  <!-- <group if="$(arg use_camera)">
+   <group if="$(arg use_camera)">
     <node pkg="ascamera" name="ascamera_hp60c" type="ascamera_node" respawn="true" output="screen">
       <param name="depth_width"  type="int" value="640"/>
       <param name="depth_height" type="int" value="480"/>
@@ -20,7 +20,7 @@
       <param name="pub_tfTree"   type="boolean" value="true"/>
     </node>
 
-    <node pkg="ascamera" name="depth_to_laserscan" type="depth_to_laserscan.py" output="screen">
+  <!--  <node pkg="ascamera" name="depth_to_laserscan" type="depth_to_laserscan.py" output="screen">
       <param name="depth_topic"  type="str"   value="/ascamera_hp60c/depth0/image_raw"/>
       <param name="scan_rows"      type="int"   value="0"/>
       <param name="scan_row_start" type="int"   value="80"/>
@@ -36,7 +36,7 @@
       <param name="angle_offset" type="double" value="0.1"/>
       <param name="pub_rate"    type="double" value="10"/>
     </node>
-  </group> -->
+  --> </group>
 
   <node name="lidar_node"  pkg="lidar_ros"  type="lidar_node" output="screen" respawn="false" >
     <param name="serial_name"                 type="string" value="/dev/ttyS4"/>  
@@ -51,8 +51,8 @@
     <param name="angle_corp_string"           type="string" value="" />
   </node>
 
-<node pkg="tf2_ros" type="static_transform_publisher" name="base_link_to_laser"
-    args="0 0 0.2 -1.57 0 0 base_footprint laser_frame" />
+  <node pkg="tf2_ros" type="static_transform_publisher" name="base_link_to_laser"
+      args="0 0 0.2 -1.57 0 0 base_footprint laser_frame" />
 
   <!-- 2-way merge: /camscan + /scan -> /mergescan  (ultrasonic removed; used as virtual bumper in vel_filter) -->
   <!-- <node pkg="ascamera" name="scan_merger" type="scan_merge.py" output="screen">
@@ -65,6 +65,28 @@
   <include file="$(find rf2o_laser_odometry)/launch/rf2o_laser_odometry.launch" />
   
   <node pkg="NavOA_ros" name="multi_ultrasonic_scan" type="multi_ultrasonic_scan.py" output="screen" if="$(arg use_ultrasonic)" />
+  <!-- Bridge /cmd_vel and IMU over /dev/ttyS6 to the other PC -->
+  <node pkg="NavOA_ros" type="serial_cmd_vel_imu_bridge.py" name="serial_cmd_vel_imu_bridge" output="screen">
+    <param name="serial_port" value="/dev/ttyS1" />
+    <param name="baudrate" value="460800" />
+    <param name="serial_timeout" value="0.02" />
+    <param name="cmd_send_rate_hz" value="80.0" />
+    <param name="tx_queue_size" value="200" />
+    <param name="serial_flush_interval" value="0.05" />
+    <param name="cmd_vel_topic" value="/cmd_vel" />
+    <param name="button_topic" value="/app_controller/button" />
+    <!-- Publish IMU from serial onto /imu_serial; mux will prioritize this -->
+    <param name="imu_topic" value="/imu_serial" />
+    <param name= "event_topic" value="/nav_serial/event" />
+  </node>
+
+  <!-- IMU mux: prefer serial IMU (/imu_serial), fall back to ROS /imu -->
+  <node pkg="NavOA_ros" type="imu_mux.py" name="imu_mux" output="screen">
+    <param name="primary_topic" value="/imu_serial" />
+    <param name="fallback_topic" value="/imu" />
+    <param name="output_topic" value="/imu_mux" />
+    <param name="timeout" value="0.2" />
+  </node>
 
 </launch>
    

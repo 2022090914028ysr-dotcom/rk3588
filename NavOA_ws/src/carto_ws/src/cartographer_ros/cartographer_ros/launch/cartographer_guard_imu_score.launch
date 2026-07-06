@@ -12,7 +12,7 @@
 -->
 <launch>
   <arg name="configuration_directory" default="$(find cartographer_ros)/configuration_files" />
-  <arg name="configuration_basename" default="livox_2d_localization_old.lua" />
+  <arg name="configuration_basename" default="livox_2d_localization_fast_reloc.lua" />
   <arg name="load_state_filename" default="/home/ubuntu/Robit_SlamNav/NavOA_ws/src/carto_ws/map/meeting_room/test00.pbstream" />
 
   <node pkg="cartographer_ros"
