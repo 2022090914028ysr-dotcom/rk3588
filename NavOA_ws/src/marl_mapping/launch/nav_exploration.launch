@@ -1,0 +1,47 @@
+<launch>
+  <!--
+    Navigation + Autonomous Exploration ¡ª Single Real Robot
+    Starts move_base + NavOA for navigation, exploration sends goals to
+    /move_base_simple/goal. The nav stack handles all motion.
+  -->
+
+  <arg name="use_sim_time" default="false" />
+
+  <!-- Exploration toggles -->
+  <arg name="enable_exploration"  default="true" />
+  <arg name="exploration_method"  default="nearest" />
+  <arg name="goal_topic"          default="/move_base_simple/goal" />
+
+  <!-- ============================================================ -->
+  <!--  Navigation stack  (move_base + NavOA)                       -->
+  <!-- ============================================================ -->
+  <include file="$(find NavOA_ros)/launch/navoa_nav_only.launch">
+    <arg name="use_sim_time" value="$(arg use_sim_time)" />
+    <arg name="launch_rviz"  value="false" />
+  </include>
+
+  <!-- ============================================================ -->
+  <!--  Autonomous exploration                                      -->
+  <!-- ============================================================ -->
+  <node if="$(arg enable_exploration)"
+        pkg="marl_mapping" type="exploration_node.py"
+        name="autonomous_exploration" output="screen" respawn="false">
+
+    <param name="goal_topic"         value="$(arg goal_topic)" />
+    <param name="exploration_method" value="$(arg exploration_method)" />
+    <param name="visualization"      value="true" />
+    <param name="save_data"          value="true" />
+
+    <!-- Plan monitoring: watch GlobalPlanner for empty plans -->
+    <param name="plan_watch_enabled" value="true" />
+  </node>
+
+  <!-- ============================================================ -->
+  <!--  RViz (optional)                                             -->
+  <!-- ============================================================ -->
+  <arg name="launch_rviz"  default="false" />
+  <arg name="rviz_config"  default="$(find NavOA_ros)/example/gazebo_limo/rviz/robit_map.rviz" />
+  <node if="$(arg launch_rviz)" name="rviz" pkg="rviz" type="rviz"
+        output="screen" args="-d $(arg rviz_config)" />
+
+</launch>

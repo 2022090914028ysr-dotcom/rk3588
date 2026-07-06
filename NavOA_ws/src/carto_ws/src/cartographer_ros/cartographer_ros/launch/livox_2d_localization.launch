@@ -5,7 +5,7 @@
   <arg name="launch_rviz" default="false" />
   <param name="/use_sim_time" value="false" />
 
-  <node name="lidar_node" pkg="lidar_ros" type="lidar_node" output="screen" respawn="false">
+  <!-- <node name="lidar_node" pkg="lidar_ros" type="lidar_node" output="screen" respawn="false">
     <param name="serial_name" type="string" value="/dev/ttyS4"/>  
     <param name="serial_baud" type="int" value="230400"/>  
     <param name="frame_id" type="string" value="laser_frame"/>
@@ -16,13 +16,17 @@
     <param name="range_max" type="double" value="15" />
     <param name="resolution_fixed" type="bool" value="false"/>
     <param name="angle_corp_string" type="string" value="" />
-  </node>
+  </node> -->
   
 
-  <node pkg="tf" type="static_transform_publisher" name="base_link_to_laser"
-    args="0.0 0.0 0.2 -1.57 0.0 0.0 /base_footprint /laser_frame 40" />
+  <!-- Latched static TF: tf2_ros publishes once to /tf_static, so cartographer's
+       TF buffer never misses base_footprint->laser_frame, even on first startup. -->
+  <!-- <node pkg="tf2_ros" type="static_transform_publisher" name="base_link_to_laser"
+    args="0 0 0.2 -1.57 0 0 base_footprint laser_frame" /> -->
 
- <include file="$(find rf2o_laser_odometry)/launch/rf2o_laser_odometry.launch" />
+ <!-- <include file="$(find rf2o_laser_odometry)/launch/rf2o_laser_odometry.launch" /> -->
+
+ <!-- <node pkg="NavOA_ros" name="multi_ultrasonic_scan" type="multi_ultrasonic_scan.py" output="screen" /> -->
 
   <!-- Static map server: serves the pre-built map on /map.
        This is the clean global map from the pbstream, with NO ghost submaps from
@@ -37,7 +41,7 @@
 
   <node name="cartographer_node" pkg="cartographer_ros" type="cartographer_node" 
         args="-configuration_directory $(find cartographer_ros)/configuration_files
-               -configuration_basename livox_2d_localization.lua
+               -configuration_basename livox_2d_localization_old.lua
                -load_state_filename $(arg load_state_filename)" output="screen">
     <remap from="scan" to="/scan" />
     <remap from="odom" to="/odom_rf2o" />
@@ -54,10 +58,8 @@
     <remap from="map" to="/carto_submap_viz" />
   </node>
 
-    <node if="$(arg launch_rviz)" name="rviz" pkg="rviz" type="rviz" required="true"
-      args="-d $(find cartographer_ros)/configuration_files/demo_2d.rviz">
-      <env name="DISPLAY" value=":0"/>
-    </node>
+    <!-- <node if="$(arg launch_rviz)" name="rviz" pkg="rviz" type="rviz" required="true"
+      args="-d $(find cartographer_ros)/configuration_files/demo_2d.rviz" /> -->
 
         
 </launch>

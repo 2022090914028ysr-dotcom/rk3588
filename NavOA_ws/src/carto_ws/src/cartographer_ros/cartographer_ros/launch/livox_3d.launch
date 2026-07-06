@@ -1,0 +1,61 @@
+<?xml version="1.0"?>
+<launch>
+  <param name="/use_sim_time" value="false" />
+
+  <!-- ===== Livox 2D LiDAR ===== -->
+  <node name="lidar_node" pkg="lidar_ros" type="lidar_node" output="screen" respawn="false">
+    <param name="serial_name" type="string" value="/dev/ttyS4"/>
+    <param name="serial_baud" type="int" value="230400"/>
+    <param name="frame_id" type="string" value="laser_frame"/>
+    <param name="counterclockwise" type="bool" value="true"/>
+    <param name="angle_min" type="double" value="-180.0" />
+    <param name="angle_max" type="double" value="180" />
+    <param name="range_min" type="double" value="0.1" />
+    <param name="range_max" type="double" value="15" />
+    <param name="resolution_fixed" type="bool" value="false"/>
+    <param name="angle_corp_string" type="string" value="" />
+  </node>
+
+  <!-- Livox -> base_footprint (height=0.5m) -->
+  <node pkg="tf" type="static_transform_publisher" name="base_link_to_laser"
+    args="0.0 0.0 0.5 -1.57 0.0 0.0 /base_footprint /laser_frame 40" />
+
+  <!-- ===== HP60C Depth Camera (point cloud enabled) ===== -->
+  <node pkg="ascamera" name="ascamera_hp60c" type="ascamera_node" respawn="true" output="screen">
+    <param name="depth_width"  type="int" value="640"/>
+    <param name="depth_height" type="int" value="480"/>
+    <param name="rgb_width"    type="int" value="640"/>
+    <param name="rgb_height"   type="int" value="480"/>
+    <param name="fps"          type="int" value="30"/>
+    <param name="usb_bus_no"   type="int" value="-1"/>
+    <param name="usb_path"     type="str" value="null"/>
+    <param name="confiPath"    type="str" value="$(find ascamera)/configurationfiles"/>
+    <param name="color_pcl"    type="boolean" value="true"/>
+    <param name="pub_mono8"    type="boolean" value="false"/>
+    <param name="pub_tfTree"   type="boolean" value="false"/>
+  </node>
+
+  <!-- HP60C -> base_footprint (height=0.25m) -->
+  <node pkg="tf" type="static_transform_publisher" name="base_footprint_to_camera"
+    args="0.0 0.0 0.25 0.0 0.0 0.0 /base_footprint /ascamera_hp60c_ascamera_0 40" />
+
+  <!-- ===== RF2O Odometry ===== -->
+  <include file="$(find rf2o_laser_odometry)/launch/rf2o_laser_odometry.launch" />
+
+  <!-- ===== Cartographer 3D ===== -->
+  <node name="cartographer_node" pkg="cartographer_ros" type="cartographer_node"
+        args="-configuration_directory $(find cartographer_ros)/configuration_files
+               -configuration_basename livox_3d.lua" output="screen">
+    <remap from="scan" to="/scan" />
+    <remap from="points2" to="/ascamera_hp60c/depth0/points" />
+    <remap from="odom" to="/odom_rf2o" />
+  </node>
+
+  <!-- 3D map -> 2D grid projection -->
+  <node name="cartographer_occupancy_grid_node" pkg="cartographer_ros"
+        type="cartographer_occupancy_grid_node" args="-resolution 0.05" />
+
+  <!-- Rviz -->
+  <node name="rviz" pkg="rviz" type="rviz" required="false"
+        args="-d $(find cartographer_ros)/configuration_files/demo_2d.rviz" />
+</launch>

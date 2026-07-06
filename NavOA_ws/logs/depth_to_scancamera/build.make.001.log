@@ -1,0 +1,5 @@
+[35m[1mScanning dependencies of target depth_to_scancamera_node[0m
+[ 33%] [32mBuilding CXX object CMakeFiles/depth_to_scancamera_node.dir/src/depth_to_scancamera.cpp.o[0m
+[ 66%] [32mBuilding CXX object CMakeFiles/depth_to_scancamera_node.dir/src/depth_to_scancamera_node.cpp.o[0m
+[100%] [32m[1mLinking CXX executable /home/ubuntu/Robit_SlamNav/NavOA_ws/devel/.private/depth_to_scancamera/lib/depth_to_scancamera/depth_to_scancamera_node[0m
+[100%] Built target depth_to_scancamera_node

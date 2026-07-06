@@ -1,0 +1,4 @@
+Symlinking /home/ubuntu/Robit_SlamNav/NavOA_ws/devel/lib/pkgconfig/depth_to_scancamera.pc
+Symlinking /home/ubuntu/Robit_SlamNav/NavOA_ws/devel/lib/depth_to_scancamera/depth_to_scancamera_node
+Symlinking /home/ubuntu/Robit_SlamNav/NavOA_ws/devel/share/depth_to_scancamera/cmake/depth_to_scancameraConfig-version.cmake
+Symlinking /home/ubuntu/Robit_SlamNav/NavOA_ws/devel/share/depth_to_scancamera/cmake/depth_to_scancameraConfig.cmake

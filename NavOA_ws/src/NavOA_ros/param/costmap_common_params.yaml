@@ -8,7 +8,7 @@ obstacle_range: 3.0
 raytrace_range: 3.5
 
 # 膨胀参数
-inflation_radius: 0.3
+inflation_radius: 0.10
 cost_scaling_factor: 3.0
 
 # 传感器配置

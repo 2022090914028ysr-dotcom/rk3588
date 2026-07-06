@@ -173,11 +173,12 @@ source /opt/ros/noetic/setup.bash
 
 rm -rf build_isolated/ devel_isolated/
 
-source devel_isolated/setup.bash
 
 catkin_make_isolated --install --use-ninja
 
 catkin_make_isolated --use-ninja
+
+source devel_isolated/setup.bash
 
 conda activate control 
 
@@ -203,7 +204,9 @@ roslaunch NavOA_ros navoa_nav_only.launch
 
 
 roslaunch cartographer_ros cartographer_guard_imu.launch
+roslaunch lidar_ros lidar_full.launch
 
+roslaunch marl_mapping exploration.launch
 
 rosrun tf tf_echo map odom 1
 rosrun tf tf_echo map imu_link 1

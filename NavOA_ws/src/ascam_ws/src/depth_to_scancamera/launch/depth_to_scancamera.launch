@@ -1,0 +1,35 @@
+<launch>
+    <!--
+        depth_to_scancamera launch file.
+        Converts HP60C depth camera images to simulated 2D laser scan data.
+    -->
+
+    <!-- Output frame id -->
+    <arg name="output_frame_id" default="camera_link"/>
+    <!-- Number of pixel rows for scan extraction -->
+    <arg name="scan_height" default="10"/>
+    <!-- Starting row (-1 = auto-center) -->
+    <arg name="scan_row_start" default="-1"/>
+    <!-- Min / max valid range [m] -->
+    <arg name="range_min" default="0.15"/>
+    <arg name="range_max" default="10.0"/>
+    <!-- Manual FOV override [deg], 0 = use camera intrinsics -->
+    <arg name="fov_override_deg" default="0.0"/>
+
+    <node pkg="depth_to_scancamera" name="depth_to_scancamera"
+          type="depth_to_scancamera_node"
+          respawn="true" output="screen">
+
+        <param name="output_frame_id"  value="$(arg output_frame_id)"/>
+        <param name="scan_height"      value="$(arg scan_height)"/>
+        <param name="scan_row_start"   value="$(arg scan_row_start)"/>
+        <param name="range_min"        value="$(arg range_min)"/>
+        <param name="range_max"        value="$(arg range_max)"/>
+        <param name="fov_override_deg" value="$(arg fov_override_deg)"/>
+
+        <!-- Remap topics (adjust to match your camera topics) -->
+        <remap from="depth0/image_raw"   to="depth0/image_raw"/>
+        <remap from="depth0/camera_info" to="depth0/camera_info"/>
+    </node>
+
+</launch>

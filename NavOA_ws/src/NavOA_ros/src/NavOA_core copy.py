@@ -54,7 +54,7 @@ class NavOA_core:
         self.flip_angle = rospy.get_param("~flip_angle", False)
         self.include_initial_path_direction = rospy.get_param("~include_initial_path_direction", False)
         self.slow_down_radius = float(rospy.get_param("~slow_down_radius", "1.0"))
-        self.min_speed_near_goal = float(rospy.get_param("~min_speed_near_goal", "0.05"))
+        
         self.goal = None
         
         if self.planner_config_file is None:
@@ -516,7 +516,7 @@ class NavOA_core:
         if dist >= self.slow_down_radius:
             return action
 
-        scale = max(self.min_speed_near_goal / max(abs(action[0, 0]), 1e-6), dist / self.slow_down_radius)
+        scale = dist / self.slow_down_radius
         scale = min(scale, 1.0)
 
         scaled_action = action.copy()
