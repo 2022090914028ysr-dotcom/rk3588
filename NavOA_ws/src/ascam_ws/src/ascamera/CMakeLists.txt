@@ -245,8 +245,13 @@ install(TARGETS ${PROJECT_NAME}_node
 
 ## Mark other files for installation (e.g. launch and bag files, etc.)
 install(DIRECTORY
-${CMAKE_CURRENT_SOURCE_DIR}/launch/
+  ${CMAKE_CURRENT_SOURCE_DIR}/launch/
   DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}/launch
+)
+
+install(DIRECTORY
+  ${CMAKE_CURRENT_SOURCE_DIR}/configurationfiles/
+  DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}/configurationfiles
 )
 
 install(DIRECTORY

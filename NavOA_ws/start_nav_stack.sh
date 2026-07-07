@@ -33,7 +33,7 @@ SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 
 echo "=== Sourcing workspace ==="
 source /opt/ros/noetic/setup.bash
-source "${SCRIPT_DIR}/devel_isolated/setup.bash"
+source "${SCRIPT_DIR}/install_isolated/setup.bash"
 
 echo "=== Activating conda env: control ==="
 # shellcheck disable=SC1091
@@ -45,6 +45,12 @@ LIDAR_ARGS="use_camera:=${USE_CAMERA} use_ultrasonic:=${USE_ULTRASONIC}"
 echo "=== [1/3] Launching LiDAR (camera=$USE_CAMERA, ultrasonic=$USE_ULTRASONIC) ==="
 roslaunch lidar_ros lidar_full.launch $LIDAR_ARGS &
 LIDAR_PID=$!
+sleep 1
+
+
+echo "=== [2/3] Launching cartographer localization ==="
+roslaunch cartographer_ros livox_2d_localization.launch &
+CARTO_PID=$!
 sleep 3
 
 
@@ -53,10 +59,10 @@ sleep 3
 # CARTO_PID=$!
 # sleep 3
 
-echo "=== [2/3] Launching cartographer localization ==="
-roslaunch cartographer_ros livox_2d_localization.launch &
-CARTO_PID=$!
-sleep 3
+# echo "=== [2/3] Launching cartographer localization ==="
+# roslaunch cartographer_ros livox_2d_localization.launch &
+# CARTO_PID=$!
+# sleep 3
 
 echo "=== [3/3] Launching NavOA (nav-only) ==="
 roslaunch NavOA_ros navoa_nav_only.launch &

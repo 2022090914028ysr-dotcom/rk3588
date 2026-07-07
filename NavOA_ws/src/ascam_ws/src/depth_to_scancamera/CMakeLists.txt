@@ -1,10 +1,10 @@
 cmake_minimum_required(VERSION 3.5)
 project(depth_to_scancamera)
 
-# C++14 标准
+# C++14 卤锚脳录
 add_compile_options(-std=c++14)
 
-# 查找依赖包
+# 虏茅脮脪脪脌脌碌掳眉
 find_package(catkin REQUIRED COMPONENTS
   roscpp
   sensor_msgs
@@ -13,7 +13,7 @@ find_package(catkin REQUIRED COMPONENTS
   cv_bridge
 )
 
-# Catkin 包配置
+# Catkin 掳眉脜盲脰脙
 catkin_package(
   INCLUDE_DIRS include
   CATKIN_DEPENDS
@@ -23,26 +23,26 @@ catkin_package(
     image_geometry
 )
 
-# 包含目录
+# 掳眉潞卢脛驴脗录
 include_directories(
   include
   ${catkin_INCLUDE_DIRS}
 )
 
-# 可执行文件
+# 驴脡脰麓脨脨脦脛录镁
 add_executable(
   depth_to_scancamera_node
   src/depth_to_scancamera_node.cpp
   src/depth_to_scancamera.cpp
 )
 
-# 链接库
+# 脕麓陆脫驴芒
 target_link_libraries(
   depth_to_scancamera_node
   ${catkin_LIBRARIES}
 )
 
-# 安装
+# 掳虏脳掳
 install(
   TARGETS depth_to_scancamera_node
   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}

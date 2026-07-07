@@ -45,10 +45,10 @@
       <param name="max_angular_speed" value="0.5" />
       <param name="wz_scale" value="1" />
       <param name="enable_ultrasonic_bumper" value="true" />
-      <param name="ultrasonic_stop_distance" value="0.26" />
-      <param name="ultrasonic_slow_distance" value="0.26" />
-      <param name="ultrasonic_side_stop_distance" value="0.25" />
-      <param name="ultrasonic_blend_distance" value="0.16" />
+      <param name="ultrasonic_stop_distance" value="0.16" />
+      <param name="ultrasonic_slow_distance" value="0.16" />
+      <param name="ultrasonic_side_stop_distance" value="0.13" />
+      <param name="ultrasonic_blend_distance" value="0.13" />
       <param name="ultrasonic_evade_lateral_speed" value="$(arg ultrasonic_evade_lateral_speed)" />
       <param name="ultrasonic_linear_evade" value="true" />
       <param name="reverse_side_stop_distance" value="$(arg reverse_side_stop_distance)" />

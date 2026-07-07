@@ -268,7 +268,7 @@ if __name__ == '__main__':
 
         if not args.local:
             # environment at generation time
-            CMAKE_PREFIX_PATH = r'/home/ubuntu/Nav_Release/Robit_SlamNav/NavOA_ws/install_isolated;/opt/ros/noetic'.split(';')
+            CMAKE_PREFIX_PATH = r'/home/ubuntu/Nav_Release/Robit_SlamNav/NavOA_ws/devel_isolated/yahboomcar_msgs;/home/ubuntu/Nav_Release/Robit_SlamNav/NavOA_ws/devel_isolated/rf2o_laser_odometry;/home/ubuntu/Nav_Release/Robit_SlamNav/NavOA_ws/devel_isolated/marl_mapping;/home/ubuntu/Nav_Release/Robit_SlamNav/NavOA_ws/devel_isolated/lidar_ros;/home/ubuntu/Nav_Release/Robit_SlamNav/NavOA_ws/devel_isolated/depth_to_scancamera;/home/ubuntu/Nav_Release/Robit_SlamNav/NavOA_ws/devel_isolated/cartographer_ros;/home/ubuntu/Nav_Release/Robit_SlamNav/NavOA_ws/devel_isolated/NavOA_ros;/home/ubuntu/Nav_Release/Robit_SlamNav/NavOA_ws/devel_isolated/cartographer_ros_msgs;/home/ubuntu/Nav_Release/Robit_SlamNav/NavOA_ws/devel_isolated/cartographer;/home/ubuntu/Nav_Release/Robit_SlamNav/NavOA_ws/devel_isolated/astra_tracker;/home/ubuntu/Nav_Release/Robit_SlamNav/NavOA_ws/devel_isolated/ascamera;/home/ubuntu/Nav_Release/Robit_SlamNav/NavOA_ws/devel_isolated/ascam_visual;/opt/ros/noetic'.split(';')
         else:
             # don't consider any other prefix path than this one
             CMAKE_PREFIX_PATH = []

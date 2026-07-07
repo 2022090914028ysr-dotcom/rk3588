@@ -155,6 +155,8 @@ Important: After finishing mapping and before killing the current SLAM terminal,
 
 #Save MAP-----------------------------
 ```
+rosservice call /finish_trajectory 0
+
 rosservice call /write_state \
 "filename: '/home/ubuntu/Nav_Release/Robit_SlamNav/NavOA_ws/src/carto_ws/map/meeting_room/test7.pbstream'
 include_unfinished_submaps: true"
@@ -222,6 +224,7 @@ sudo cat /dev/ttyS6
 did some correction 
 **[File Content End]**
 
+roslaunch rosbridge_server rosbridge_websocket.launch port:=9090
 
 #####################################################voice navigation (English place names)#####################################################
 

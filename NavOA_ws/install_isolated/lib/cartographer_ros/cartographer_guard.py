@@ -4,11 +4,10 @@
 """
 cartographer_guard.py
 
-功能：基于匹配分数和雷达稳定检测触发 Cartographer 重定位
+功能：基于匹配分数触发 Cartographer 重定位
 
 状态机：
-STATE_MONITOR     - 监控第一个trigger（匹配分数）
-STATE_WAITING     - 等待第二个trigger（雷达稳定）
+STATE_MONITOR     - 监控匹配分数
 STATE_RECOVERING  - 执行重定位中
 STATE_STABILIZING - 重定位后稳定期（锁定机器人，等待分数恢复）
 
@@ -31,30 +30,23 @@ import math
 import rospy
 import tf2_ros
 from geometry_msgs.msg import Pose, Twist, TransformStamped, PoseWithCovarianceStamped
-from sensor_msgs.msg import LaserScan
 from std_msgs.msg import Bool, Float32
 from cartographer_ros_msgs.srv import FinishTrajectory, StartTrajectory, FinishTrajectoryRequest, StartTrajectoryRequest
 
 
 class CartographerGuard:
     # 状态定义
-    STATE_MONITOR = 0      # 监控第一个trigger
-    STATE_WAITING = 1      # 等待第二个trigger
-    STATE_RECOVERING = 2   # 执行重定位中
-    STATE_STABILIZING = 3  # 重定位后稳定期
+    STATE_MONITOR = 0      # 监控匹配分数
+    STATE_RECOVERING = 1   # 执行重定位中
+    STATE_STABILIZING = 2  # 重定位后稳定期
 
     def __init__(self):
         # ========== 参数 ==========
         self.score_topic = rospy.get_param("~score_topic", "/matching_score")
-        self.scan_topic = rospy.get_param("~scan_topic", "/scan")
         
         # 分数触发条件
         self.score_threshold = rospy.get_param("~score_threshold", 0.8)
         self.score_consecutive_frames = rospy.get_param("~score_consecutive_frames", 10)
-        
-        # 雷达触发条件
-        self.scan_stable_frames = rospy.get_param("~scan_stable_frames", 10)
-        self.scan_change_threshold = rospy.get_param("~scan_change_threshold", 0.05)
         
         # 稳定期时长（秒）- 重定位后等待定位稳定
         self.stabilizing_duration = rospy.get_param("~stabilizing_duration", 5.0)
@@ -94,9 +86,7 @@ class CartographerGuard:
         # ========== 状态变量 ==========
         self.state = self.STATE_MONITOR
         self.score_low_count = 0      # 连续低分数计数
-        self.scan_stable_count = 0    # 连续稳定计数
         self.score_recovery_count = 0 # 稳定期内连续高分数计数（方案 E 早释放）
-        self.prev_scan = None         # 上一帧雷达数据
         self.last_recovery_time = 0   # 上次恢复时间
         self.stabilizing_start = 0    # 稳定期开始时间
         self.last_good_pose = None    # 方案 A: 缓存的最后可信 map->base_link 位姿
@@ -119,7 +109,6 @@ class CartographerGuard:
 
         # ========== 订阅 ==========
         rospy.Subscriber(self.score_topic, Float32, self.score_callback)
-        rospy.Subscriber(self.scan_topic, LaserScan, self.scan_callback)
 
         # ========== 方案 D: AMCL 旁路 ==========
         self.amcl_initial_pub = None
@@ -148,11 +137,6 @@ class CartographerGuard:
 
         rospy.loginfo("CartographerGuard initialized, state=MONITOR")
     
-    def reset_scan_monitor(self):
-        """重置雷达监控状态"""
-        self.scan_stable_count = 0
-        self.prev_scan = None
-    
     def set_state(self, new_state):
         """状态切换"""
         old_state = self.state
@@ -161,12 +145,7 @@ class CartographerGuard:
         if new_state == self.STATE_MONITOR:
             rospy.loginfo("State: MONITOR (waiting for score to drop)")
             self.score_low_count = 0
-            self.reset_scan_monitor()
             self._publish_holding(False)
-
-        elif new_state == self.STATE_WAITING:
-            rospy.loginfo("State: WAITING (trigger1 active, waiting for scan to stabilize)")
-            self.reset_scan_monitor()
 
         elif new_state == self.STATE_RECOVERING:
             rospy.loginfo("State: RECOVERING (performing cartographer reset)")
@@ -177,7 +156,6 @@ class CartographerGuard:
             rospy.loginfo(
                 f"State: STABILIZING (max {self.stabilizing_duration}s, "
                 f"early-release after {self.score_recovery_frames} good frames)")
-            self.reset_scan_monitor()
             self.score_low_count = 0
             self.score_recovery_count = 0
             self._publish_holding(True)
@@ -192,7 +170,7 @@ class CartographerGuard:
     def cache_pose_callback(self, event):
         """方案 A: 仅在 MONITOR 状态下缓存最新 map -> base_link 位姿。
 
-        进入 WAITING/RECOVERING/STABILIZING 后停止更新，
+        进入 RECOVERING/STABILIZING 后停止更新，
         保证注入回 cartographer 的初始位姿来自"还可信"的时段。
         """
         if self.state != self.STATE_MONITOR:
@@ -299,10 +277,10 @@ class CartographerGuard:
                 self.score_low_count += 1
                 rospy.logdebug(f"Score low: {msg.data:.3f} < {self.score_threshold}, count={self.score_low_count}/{self.score_consecutive_frames}")
 
-                # 达到阈值，触发第一个trigger
+                # 达到阈值，直接触发重定位
                 if self.score_low_count >= self.score_consecutive_frames:
-                    rospy.logwarn(f"TRIGGER1: Score low for {self.score_low_count} consecutive frames")
-                    self.set_state(self.STATE_WAITING)
+                    rospy.logwarn(f"TRIGGER: Score low for {self.score_low_count} consecutive frames")
+                    self.do_recovery()
             else:
                 # 分数恢复正常，重置计数
                 if self.score_low_count > 0:
@@ -319,50 +297,6 @@ class CartographerGuard:
             else:
                 self.score_recovery_count = 0
     
-    def scan_callback(self, msg):
-        """雷达回调 - 只在 WAITING 状态下处理"""
-        if self.state != self.STATE_WAITING:
-            return
-        
-        # 采样雷达数据（每5个点取1个，降低计算量）
-        step = 5
-        ranges = []
-        for i, r in enumerate(msg.ranges):
-            if i % step == 0 and not (math.isinf(r) or math.isnan(r)) and 0.1 < r < 10.0:
-                ranges.append(r)
-        
-        if not ranges:
-            return
-        
-        # 与上一帧比较
-        if self.prev_scan is not None:
-            min_len = min(len(ranges), len(self.prev_scan))
-            if min_len > 0:
-                total_diff = 0.0
-                for i in range(min_len):
-                    total_diff += abs(ranges[i] - self.prev_scan[i])
-                diff = total_diff / min_len
-                
-                if diff < self.scan_change_threshold:
-                    self.scan_stable_count += 1
-                    rospy.logdebug(f"Scan stable: diff={diff:.4f}, count={self.scan_stable_count}/{self.scan_stable_frames}")
-                    
-                    # 达到稳定阈值，触发第二个trigger
-                    if self.scan_stable_count == self.scan_stable_frames:
-                        rospy.logwarn(f"TRIGGER2: Scan stable for {self.scan_stable_count} consecutive frames")
-                    if self.scan_stable_count >= self.scan_stable_frames:
-                        self.do_recovery()
-                else:
-                    # 不稳定，重置计数
-                    if self.scan_stable_count > 0:
-                        rospy.logdebug(f"Scan unstable: diff={diff:.4f}, resetting count")
-                    self.scan_stable_count = 0
-        else:
-            # 第一帧，重置计数
-            self.scan_stable_count = 0
-        
-        self.prev_scan = ranges
-    
     def do_recovery(self):
         """执行重定位"""
         now = rospy.Time.now().to_sec()
@@ -371,9 +305,8 @@ class CartographerGuard:
         if now - self.last_recovery_time < 10.0:
             # 节流：每 10s 最多打一次，避免刷屏
             rospy.logwarn_throttle(10.0, "Recovery in cooldown (10s), waiting...")
-            # 回到等待状态
-            if self.state != self.STATE_WAITING:
-                self.set_state(self.STATE_WAITING)
+            # 回到监控状态
+            self.set_state(self.STATE_MONITOR)
             return
         
         self.set_state(self.STATE_RECOVERING)
@@ -418,7 +351,7 @@ class CartographerGuard:
                 initial_source = "cached_pose"
 
             if initial_pose is not None:
-                req.use_initial_pose = False
+                req.use_initial_pose = True
                 req.initial_pose = initial_pose
                 p = initial_pose.position
                 q = initial_pose.orientation

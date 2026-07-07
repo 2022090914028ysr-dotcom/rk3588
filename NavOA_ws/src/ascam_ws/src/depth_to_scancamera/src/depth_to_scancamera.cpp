@@ -18,7 +18,7 @@ DepthToScanCamera::DepthToScanCamera(ros::NodeHandle& nh, ros::NodeHandle& nh_pr
     , cam_model_ready_(false)
     , scan_width_(0)
 {
-    // ©¤©¤ Read parameters ©¤©¤
+    // Â©Â¤Â©Â¤ Read parameters Â©Â¤Â©Â¤
     nh_priv_.param<std::string>("output_frame_id", output_frame_id_, "camera_link");
     nh_priv_.param<int>("scan_height", scan_height_, 10);
     nh_priv_.param<double>("range_min", range_min_, 0.15);
@@ -38,7 +38,7 @@ DepthToScanCamera::DepthToScanCamera(ros::NodeHandle& nh, ros::NodeHandle& nh_pr
     ROS_INFO("  range_max       : %.2f m", range_max_);
     ROS_INFO("  fov_override    : %.2f deg (0=use camera)", fov_deg);
 
-    // ©¤©¤ Subscribers & Publishers ©¤©¤
+    // Â©Â¤Â©Â¤ Subscribers & Publishers Â©Â¤Â©Â¤
     image_transport::ImageTransport it(nh_);
     depth_sub_ = it.subscribe("depth0/image_raw", 1,
                               &DepthToScanCamera::depthCallback, this);
@@ -51,9 +51,9 @@ DepthToScanCamera::DepthToScanCamera(ros::NodeHandle& nh, ros::NodeHandle& nh_pr
     ROS_INFO("[depth_to_scancamera] Node started, waiting for depth images...");
 }
 
-// ¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T
+// Â¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨T
 // CameraInfo callback
-// ¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T
+// Â¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨T
 void DepthToScanCamera::cameraInfoCallback(const sensor_msgs::CameraInfoConstPtr& msg)
 {
     std::lock_guard<std::mutex> lock(mutex_);
@@ -71,9 +71,9 @@ void DepthToScanCamera::cameraInfoCallback(const sensor_msgs::CameraInfoConstPtr
                   msg->width, msg->height);
 }
 
-// ¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T
+// Â¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨T
 // Precompute ray angles for each image column
-// ¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T
+// Â¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨T
 void DepthToScanCamera::computeScanAngles()
 {
     double cx = cam_model_.cx();
@@ -95,9 +95,9 @@ void DepthToScanCamera::computeScanAngles()
     }
 }
 
-// ¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T
+// Â¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨T
 // Depth image callback
-// ¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T
+// Â¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨T
 void DepthToScanCamera::depthCallback(const sensor_msgs::ImageConstPtr& msg)
 {
     if (!cam_model_ready_)
@@ -108,9 +108,9 @@ void DepthToScanCamera::depthCallback(const sensor_msgs::ImageConstPtr& msg)
     convertAndPublish(msg);
 }
 
-// ¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T
+// Â¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨T
 // Core conversion: depth image -> LaserScan
-// ¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T
+// Â¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨TÂ¨T
 void DepthToScanCamera::convertAndPublish(const sensor_msgs::ImageConstPtr& depth_msg)
 {
     std::lock_guard<std::mutex> lock(mutex_);
@@ -118,7 +118,7 @@ void DepthToScanCamera::convertAndPublish(const sensor_msgs::ImageConstPtr& dept
     int img_width  = depth_msg->width;
     int img_height = depth_msg->height;
 
-    // ©¤©¤ Determine scan row range ©¤©¤
+    // Â©Â¤Â©Â¤ Determine scan row range Â©Â¤Â©Â¤
     int row_start, row_end;
     if (scan_row_start_ >= 0)
     {
@@ -132,7 +132,7 @@ void DepthToScanCamera::convertAndPublish(const sensor_msgs::ImageConstPtr& dept
     row_start = std::max(0, std::min(row_start, img_height - 1));
     row_end   = std::min(row_start + scan_height_, img_height);
 
-    // ©¤©¤ Prepare LaserScan message ©¤©¤
+    // Â©Â¤Â©Â¤ Prepare LaserScan message Â©Â¤Â©Â¤
     sensor_msgs::LaserScan scan_msg;
     scan_msg.header.stamp    = depth_msg->header.stamp;
     scan_msg.header.frame_id = output_frame_id_;
@@ -181,7 +181,7 @@ void DepthToScanCamera::convertAndPublish(const sensor_msgs::ImageConstPtr& dept
     scan_msg.ranges.resize(effective_width, std::numeric_limits<float>::infinity());
     scan_msg.intensities.resize(effective_width, 0.0);
 
-    // ©¤©¤ Process column by column ©¤©¤
+    // Â©Â¤Â©Â¤ Process column by column Â©Â¤Â©Â¤
     bool is_16bit = (depth_msg->encoding == sensor_msgs::image_encodings::TYPE_16UC1 ||
                      depth_msg->encoding == sensor_msgs::image_encodings::MONO16);
     bool is_32bit = (depth_msg->encoding == sensor_msgs::image_encodings::TYPE_32FC1);
@@ -262,7 +262,7 @@ void DepthToScanCamera::convertAndPublish(const sensor_msgs::ImageConstPtr& dept
         }
     }
 
-    // ©¤©¤ Publish ©¤©¤
+    // Â©Â¤Â©Â¤ Publish Â©Â¤Â©Â¤
     scan_pub_.publish(scan_msg);
 }
 

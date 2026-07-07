@@ -6,7 +6,7 @@ options = {
   trajectory_builder = TRAJECTORY_BUILDER,
   map_frame = "map",
   tracking_frame = "base_footprint",
-  published_frame = "odom",       -- 不能与 odom_frame 同名！
+  published_frame = "odom",      
   odom_frame = "odom",
   provide_odom_frame = false,            -- rf2o 负责发布 odom->base_footprint
   publish_frame_projected_to_2d = false,
@@ -54,11 +54,8 @@ TRAJECTORY_BUILDER_2D.real_time_correlative_scan_matcher.rotation_delta_cost_wei
 POSE_GRAPH.optimization_problem.huber_scale = 1e2
 POSE_GRAPH.optimize_every_n_nodes = 50
 
-
 POSE_GRAPH.constraint_builder.min_score = 0.70            -- 提高回环匹配门槛，减少误匹配
 POSE_GRAPH.constraint_builder.sampling_ratio = 0.3
 POSE_GRAPH.constraint_builder.max_constraint_distance = 2.0
-
-
 
 return options

@@ -53,11 +53,9 @@
   <!-- NavOA control and path splitting, without localization bringup. -->
   <include file="$(find NavOA_ros)/example/gazebo_limo/launch/NavOA_gazebo_limo.launch">
     <arg name="use_sim_time" value="$(arg use_sim_time)"/>
-    <arg name="vel_filter_scan_topic" value="/scan"/>
+
     <arg name="vel_filter_cmd_out_topic" value="/cmd_vel"/>
-    <arg name="vel_filter_front_center_angle" value="1.57"/>
-    <arg name="vel_filter_enable_auto_reverse" value="true"/>
-    <arg name="vel_filter_enable_free_space_steer" value="false"/>
+    <arg name="ultrasonic_evade_lateral_speed" value="1.5"/>
     <arg name="return_to_previous_goal_enabled" value="false"/>
     <arg name="goal_timeout_button_enabled" value="true"/>
     <arg name="goal_timeout_button_topic" value="/app_controller/button"/>
@@ -68,31 +66,17 @@
     <arg name="goal_timeout_button_send_release" value="true"/>
   </include>
 
-  <!-- Bridge /cmd_vel and IMU over /dev/ttyS6 to the other PC -->
-  <!-- <node pkg="NavOA_ros" type="serial_cmd_vel_imu_bridge.py" name="serial_cmd_vel_imu_bridge" output="screen">
-    <param name="serial_port" value="/dev/ttyS7" />
-    <param name="baudrate" value="460800" />
-    <param name="serial_timeout" value="0.02" />
-    <param name="cmd_send_rate_hz" value="80.0" />
-    <param name="tx_queue_size" value="200" />
-    <param name="serial_flush_interval" value="0.05" />
-    <param name="cmd_vel_topic" value="/cmd_vel" />
-    <param name="button_topic" value="/app_controller/button" /> -->
-    <!-- Publish IMU from serial onto /imu_serial; mux will prioritize this -->
-    <!-- <param name="imu_topic" value="/imu_serial" />
-    <param name= "event_topic" value="/nav_serial/event" />
-  </node> -->
-
-  <!-- IMU mux: prefer serial IMU (/imu_serial), fall back to ROS /imu -->
-  <node pkg="NavOA_ros" type="imu_mux.py" name="imu_mux" output="screen">
-    <param name="primary_topic" value="/imu_serial" />
-    <param name="fallback_topic" value="/imu" />
-    <param name="output_topic" value="/imu_mux" />
-    <param name="timeout" value="0.2" />
+  <node pkg="NavOA_ros" type="status_state.py" name="status_state" output="screen">
+    <!-- Map boundary for /robot_out_of_map detection -->
+    <param name="map_origin_x"      value="-5.058" />
+    <param name="map_origin_y"      value="-7.829" />
+    <param name="map_width_meters"  value="10.30" />
+    <param name="map_height_meters" value="12.65" />
+    <param name="map_boundary_margin" value="0.5" />
   </node>
-
+  
   <!-- Use NavOA RViz for map/navigation visualization. -->
-  <node if="$(arg launch_rviz)" name="rviz" pkg="rviz" type="rviz" output="screen"
-        args="-d $(arg rviz_config)" />
+  <!-- <node if="$(arg launch_rviz)" name="rviz" pkg="rviz" type="rviz" output="screen"
+        args="-d $(arg rviz_config)" /> -->
 
 </launch>

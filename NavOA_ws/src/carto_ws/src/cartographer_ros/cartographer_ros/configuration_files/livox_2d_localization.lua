@@ -147,10 +147,4 @@ TRAJECTORY_BUILDER_2D.max_range = 10    -- 从100减少到30，减少点数
 TRAJECTORY_BUILDER_2D.missing_data_ray_length = 3.0  -- 从5减少到3
 
 
-
-
-
-
-
-
 return options

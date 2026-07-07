@@ -40,15 +40,15 @@ public:
     ~DepthToScanCamera() = default;
 
 private:
-    // ©¤©¤ Callbacks ©¤©¤
+    // Â©Â¤Â©Â¤ Callbacks Â©Â¤Â©Â¤
     void depthCallback(const sensor_msgs::ImageConstPtr& msg);
     void cameraInfoCallback(const sensor_msgs::CameraInfoConstPtr& msg);
 
-    // ©¤©¤ Core conversion ©¤©¤
+    // Â©Â¤Â©Â¤ Core conversion Â©Â¤Â©Â¤
     void convertAndPublish(const sensor_msgs::ImageConstPtr& depth_msg);
     void computeScanAngles();
 
-    // ©¤©¤ ROS interface ©¤©¤
+    // Â©Â¤Â©Â¤ ROS interface Â©Â¤Â©Â¤
     ros::NodeHandle& nh_;
     ros::NodeHandle& nh_priv_;
 
@@ -56,16 +56,16 @@ private:
     ros::Subscriber           camera_info_sub_;
     ros::Publisher            scan_pub_;
 
-    // ©¤©¤ Camera model ©¤©¤
+    // Â©Â¤Â©Â¤ Camera model Â©Â¤Â©Â¤
     image_geometry::PinholeCameraModel cam_model_;
     bool cam_model_ready_;
 
-    // ©¤©¤ Precomputed data ©¤©¤
+    // Â©Â¤Â©Â¤ Precomputed data Â©Â¤Â©Â¤
     std::vector<double> scan_angle_cos_;
     std::vector<double> scan_angle_sin_;
     int scan_width_;
 
-    // ©¤©¤ Configurable parameters ©¤©¤
+    // Â©Â¤Â©Â¤ Configurable parameters Â©Â¤Â©Â¤
     std::string output_frame_id_;
     int         scan_height_;
     int         scan_row_start_;
@@ -73,7 +73,7 @@ private:
     double      range_max_;
     double      fov_override_;
 
-    // ©¤©¤ Thread safety ©¤©¤
+    // Â©Â¤Â©Â¤ Thread safety Â©Â¤Â©Â¤
     std::mutex mutex_;
 };
 

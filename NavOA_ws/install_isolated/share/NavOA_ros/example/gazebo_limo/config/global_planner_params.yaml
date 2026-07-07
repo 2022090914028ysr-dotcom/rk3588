@@ -7,5 +7,5 @@ GlobalPlanner:
   use_grid_path: false
   
   lethal_cost: 253
-  neutral_cost: 66
-  cost_factor: 0.55
+  neutral_cost: 50
+  cost_factor: 5

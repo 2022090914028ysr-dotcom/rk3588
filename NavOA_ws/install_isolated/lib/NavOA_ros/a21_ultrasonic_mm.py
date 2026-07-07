@@ -23,10 +23,10 @@ from std_msgs.msg import Int32
 
 HEADER = 0xFF
 
-
+#  3   7         6
 class A21UARTReader:
     def __init__(self,
-                 port="/dev/ttyS6",
+                 port="/dev/ttyS7",
                  baudrate=115200,
                  timeout=1.0,
                  trigger=False,
@@ -106,9 +106,7 @@ class A21UARTReader:
         rospy.loginfo("Ultrasonic ROS publisher (mm) running")
         rate = rospy.Rate(1.0 / self.period)
 
-        while not rospy.is_shutdown():
-
-        
+        while not rospy.is_shutdown():  
             if self.trigger:
                 self.ser.write(b'\x55') 
 
@@ -119,7 +117,7 @@ class A21UARTReader:
                 msg.data = raw_value      # 毫米
                 self.pub.publish(msg)
 
-                #rospy.loginfo(f"Distance: {raw_value} mm")
+                rospy.loginfo(f"Distance: {raw_value} mm")
 
             rate.sleep()
 
@@ -132,8 +130,8 @@ def main():
     )
 
     parser.add_argument("--port",
-                        default="/dev/ttyS6",
-                        help="串口号，例如 /dev/ttyS6")
+                        default="/dev/ttyS7",
+                        help="串口号，例如 /dev/ttyS7")
     parser.add_argument("--baud",
                         type=int,
                         default=115200,
@@ -144,7 +142,7 @@ def main():
                         help="启用 UART 触发模式")
     parser.add_argument("--period",
                         type=float,
-                        default=0.15,
+                        default=0.1,
                         help="触发周期（秒，>=0.15）")
 
     args = parser.parse_args()

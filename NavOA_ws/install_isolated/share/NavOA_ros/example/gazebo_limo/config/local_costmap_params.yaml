@@ -1,5 +1,5 @@
 local_costmap:
-  global_frame: odom
+  global_frame: map
   robot_base_frame: base_footprint
   update_frequency: 10.0
   publish_frequency: 10.0
@@ -55,5 +55,5 @@ local_costmap:
 
   inflation_layer:
     enabled: true
-    inflation_radius: 0.40
+    inflation_radius: 0.0
     cost_scaling_factor: 2.0

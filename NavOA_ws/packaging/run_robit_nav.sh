@@ -21,6 +21,7 @@ export LD_LIBRARY_PATH="/opt/ros/noetic/lib:${LD_LIBRARY_PATH:-}"
 
 echo "Starting Robit Navigation Stack..."
 roslaunch --wait rosbridge_server rosbridge_websocket.launch port:=9090 &
+roslaunch --wait lidar_ros lidar_full.launch use_camera:=false use_ultrasonic:=true &
 roslaunch --wait cartographer_ros livox_2d_localization.launch &
 roslaunch --wait NavOA_ros navoa_nav_only.launch &
 rosrun NavOA_ros status_state.py &

@@ -24,19 +24,10 @@
 
     <!-- 话题配置 -->
     <param name="score_topic" value="/matching_score" />
-    <param name="scan_topic" value="/scan" />
 
     <!-- 分数触发条件 -->
-    <param name="score_threshold" value="0.75" />
+    <param name="score_threshold" value="0.60" />
     <param name="score_consecutive_frames" value="10" />
-
-    <!-- 雷达触发条件 -->
-    <param name="scan_stable_frames" value="10" />
-    <param name="scan_change_threshold" value="0.5" />
-
-    <!-- 位姿跳变限制：超过 1m 认为是错误定位 -->
-    <param name="pose_topic" value="/tracked_pose" />
-    <param name="max_pose_jump_distance" value="1.0" />
 
     <!-- 稳定期时长（秒）- 重定位后等待定位稳定 -->
     <param name="stabilizing_duration" value="10" />
