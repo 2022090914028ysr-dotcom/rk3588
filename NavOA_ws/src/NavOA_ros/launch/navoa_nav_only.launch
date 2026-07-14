@@ -11,7 +11,7 @@
 
   <arg name="use_sim_time" default="false"/>
   <arg name="enable_map_server" default="false"/>
-  <arg name="map_file" default="/home/ubuntu/Robit_SlamNav/NavOA_ws/src/carto_ws/map/meeting_room/test00.yaml" />
+  <arg name="map_file" default="$(find cartographer_ros)/../../../map/meeting_room/test00.yaml" />
   <arg name="global_map_topic" default="/map"/>
   <arg name="move_base_cmd_topic" default="/move_base_cmd_vel"/>
   <arg name="launch_rviz" default="false"/>
@@ -66,15 +66,7 @@
     <arg name="goal_timeout_button_send_release" value="true"/>
   </include>
 
-  <node pkg="NavOA_ros" type="status_state.py" name="status_state" output="screen">
-    <!-- Map boundary for /robot_out_of_map detection -->
-    <param name="map_origin_x"      value="-5.058" />
-    <param name="map_origin_y"      value="-7.829" />
-    <param name="map_width_meters"  value="10.30" />
-    <param name="map_height_meters" value="12.65" />
-    <param name="map_boundary_margin" value="0.5" />
-  </node>
-  
+
   <!-- Use NavOA RViz for map/navigation visualization. -->
   <node if="$(arg launch_rviz)" name="rviz" pkg="rviz" type="rviz" output="screen"
         args="-d $(arg rviz_config)" />

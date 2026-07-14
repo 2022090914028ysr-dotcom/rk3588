@@ -80,6 +80,7 @@ class SerialCmdVelImuBridge(object):
         self.imu_max_future = rospy.get_param("~imu_max_future", 0.2)
         self.prefer_device_stamp = rospy.get_param("~prefer_device_stamp", True)
         self.nav_json_protocol = rospy.get_param("~nav_json_protocol", "xrobot-nav-jsonl-v1")
+        self.verbose = rospy.get_param("~verbose", False)
         self.last_imu_stamp = None
 
         # Serial
@@ -144,14 +145,15 @@ class SerialCmdVelImuBridge(object):
         vy = msg.linear.y
         w = msg.angular.z
         line = "CMD_VEL,{:.6f},{:.6f},{:.6f}\n".format(vx, vy, w)
-        rospy.loginfo_throttle(
-            0.5,
-            "[serial_cmd_vel_imu_bridge] Forwarding cmd_vel: vx=%.3f vy=%.3f w=%.3f as '%s'",
-            vx,
-            vy,
-            w,
-            line.strip(),
-        )
+        if self.verbose:
+            rospy.loginfo_throttle(
+                0.5,
+                "[serial_cmd_vel_imu_bridge] Forwarding cmd_vel: vx=%.3f vy=%.3f w=%.3f as '%s'",
+                vx,
+                vy,
+                w,
+                line.strip(),
+            )
         data = line.encode("ascii", errors="ignore")
         self._enqueue_tx("cmd", data)
 
@@ -165,13 +167,14 @@ class SerialCmdVelImuBridge(object):
             line = f"BUTTON,{button_id},{event_type}\n"
             payload = line.encode("ascii", errors="ignore")
             self._enqueue_tx("button", payload)
-            rospy.loginfo_throttle(
-                0.5,
-                "[serial_cmd_vel_imu_bridge] Forwarding button: id=%d event=%d as '%s'",
-                button_id,
-                event_type,
-                line.strip(),
-            )
+            if self.verbose:
+                rospy.loginfo_throttle(
+                    0.5,
+                    "[serial_cmd_vel_imu_bridge] Forwarding button: id=%d event=%d as '%s'",
+                    button_id,
+                    event_type,
+                    line.strip(),
+                )
         except Exception as e:
             rospy.logerr_throttle(5.0, "Error writing button to serial: %s", e)
 
@@ -310,12 +313,13 @@ class SerialCmdVelImuBridge(object):
 
         raw = json.dumps(event_msg, ensure_ascii=True, separators=(",", ":"))
         self.event_pub.publish(String(data=raw))
-        rospy.loginfo_throttle(
-            0.5,
-            "[serial_cmd_vel_imu_bridge] Received Nav event: subtype=%s data=%s",
-            event_msg["subtype"],
-            event_msg["data"],
-        )
+        if self.verbose:
+            rospy.loginfo_throttle(
+                0.5,
+                "[serial_cmd_vel_imu_bridge] Received Nav event: subtype=%s data=%s",
+                event_msg["subtype"],
+                event_msg["data"],
+            )
 
     def _handle_imu_line(self, line: str):
         parts = line.split(",")

@@ -1,0 +1,53 @@
+<?xml version="1.0"?>
+<!--
+  mode_manager.launch — Launch the ModeManager ROS node
+
+  Listens on /mode_command (std_msgs/String) for mode-switch commands:
+    "start_mapping"    → switch to mapping mode
+    "stop_mapping"     → save map, switch to localisation
+    "carto_start"      → launch cartographer_node
+    "carto_stop"       → kill cartographer_node
+    "get_status"       → publish current mode on /mode_status
+
+  Integrates with FastAPI middleware via rosbridge_server + roslibpy.
+-->
+<launch>
+  <arg name="configuration_directory"
+       default="$(find cartographer_ros)/configuration_files" />
+  <arg name="config_file_mapping" default="livox_2d.lua" />
+  <arg name="config_file_localization" default="livox_2d_localization.lua" />
+  <arg name="map_save_dir"
+       default="$(find cartographer_ros)/../map" />
+  <arg name="carto_launch_pkg" default="cartographer_ros" />
+  <arg name="carto_launch_file" default="livox_2d.launch" />
+
+  <node pkg="cartographer_ros" type="mode_manager.py"
+        name="mode_manager" output="screen">
+
+    <!-- Lua config paths -->
+    <param name="config_dir" value="$(arg configuration_directory)" />
+    <param name="config_file_mapping" value="$(arg config_file_mapping)" />
+    <param name="config_file_localization"
+           value="$(arg config_file_localization)" />
+    <param name="map_save_dir" value="$(arg map_save_dir)" />
+
+    <!-- Cartographer launch config (for carto_start command) -->
+    <param name="carto_launch_pkg" value="$(arg carto_launch_pkg)" />
+    <param name="carto_launch_file" value="$(arg carto_launch_file)" />
+
+    <!-- TF frames -->
+    <param name="map_frame" value="map" />
+    <param name="base_frame" value="base_footprint" />
+    <param name="tf_timeout" value="1.0" />
+
+    <!-- ROS service names (usually left at default) -->
+    <param name="finish_service"  value="/finish_trajectory" />
+    <param name="start_service"   value="/start_trajectory" />
+    <param name="write_service"   value="/write_state" />
+    <param name="states_service"  value="/get_trajectory_states" />
+
+    <!-- Command / status topics -->
+    <param name="command_topic" value="/mode_command" />
+    <param name="status_topic"  value="/mode_status" />
+  </node>
+</launch>

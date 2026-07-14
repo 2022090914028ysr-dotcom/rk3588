@@ -1,0 +1,104 @@
+<launch>
+  <!--
+    full.launch
+    Top-level system launcher with mode selection.
+    Use the 'mode' argument to choose the system behavior.
+
+    Usage:
+      roslaunch runner full.launch mode:=mapping       # SLAM mapping
+      roslaunch runner full.launch mode:=localization   # Localization + navigation
+      roslaunch runner full.launch mode:=auto_mapping     # Autonomous mapping (exploration)
+      roslaunch runner full.launch mode:=sensors        # Sensor stack only
+
+    Without a mode arg, launches the runner_manager node which provides
+    dynamic mode switching at runtime.
+  -->
+  <arg name="mode"          default="manager"/>
+  <arg name="use_camera"    default="false"/>
+  <arg name="use_ultrasonic" default="true"/>
+  <arg name="launch_rviz"   default="false"/>
+
+  <!-- Mode selection -->
+  <include if="$(eval mode == 'mapping')"
+           file="$(find runner)/launch/mapping.launch">
+    <arg name="use_camera"     value="$(arg use_camera)"/>
+    <arg name="use_ultrasonic" value="$(arg use_ultrasonic)"/>
+    <arg name="launch_rviz"    value="$(arg launch_rviz)"/>
+  </include>
+
+  <include if="$(eval mode == 'localization')"
+           file="$(find runner)/launch/localization.launch">
+    <arg name="use_camera"     value="$(arg use_camera)"/>
+    <arg name="use_ultrasonic" value="$(arg use_ultrasonic)"/>
+    <arg name="launch_rviz"    value="$(arg launch_rviz)"/>
+  </include>
+
+  <include if="$(eval mode == 'auto_mapping')"
+           file="$(find runner)/launch/auto_mapping.launch">
+    <arg name="use_camera"     value="$(arg use_camera)"/>
+    <arg name="use_ultrasonic" value="$(arg use_ultrasonic)"/>
+    <arg name="launch_rviz"    value="$(arg launch_rviz)"/>
+  </include>
+
+  <include if="$(eval mode == 'sensors')"
+           file="$(find runner)/launch/sensors.launch">
+    <arg name="use_camera"     value="$(arg use_camera)"/>
+    <arg name="use_ultrasonic" value="$(arg use_ultrasonic)"/>
+    <arg name="launch_rviz"    value="$(arg launch_rviz)"/>
+  </include>
+
+  <!-- Manager mode: dynamic mode switching via runner_node.
+       NOTE: sensors + cartographer_node run at the TOP LEVEL of this launch
+       file.  The runner_manager node uses Cartographer trajectory services
+       (finish_trajectory / start_trajectory / write_state) for seamless mode
+       switching — it NEVER kills or relaunches sensors or cartographer as a
+       subprocess.  NavOA and MARL are the only components managed via
+       subprocess (they come and go on demand). -->
+  <group if="$(eval mode == 'manager')">
+    <!-- ================================================================ -->
+    <!-- ALWAYS-ON: sensors + cartographer (managed by roslaunch lifecycle) -->
+    <!-- ================================================================ -->
+
+    <!-- Sensors: lidar, camera, ultrasonic, serial bridge, rf2o, IMU mux
+         These run continuously across ALL mode switches and are NEVER
+         killed or restarted by the runner_manager. -->
+    <include file="$(find runner)/launch/sensors.launch">
+      <arg name="use_camera"     value="$(arg use_camera)"/>
+      <arg name="use_ultrasonic" value="$(arg use_ultrasonic)"/>
+      <arg name="launch_rviz"    value="$(arg launch_rviz)"/>
+    </include>
+
+    <!-- Cartographer: SLAM node with mapping config.
+         In manager mode, cartographer_node starts with a mapping trajectory.
+         All subsequent mode switches use finish/start_trajectory services on
+         the same node — it is NEVER killed and relaunched. -->
+    <node name="cartographer_node" pkg="cartographer_ros" type="cartographer_node"
+          args="-configuration_directory $(find cartographer_ros)/configuration_files
+                 -configuration_basename livox_2d.lua"
+          output="screen">
+      <remap from="scan" to="/scan" />
+      <remap from="odom" to="/odom_rf2o" />
+    </node>
+
+    <!-- Occupancy grid (for RViz visualisation / costmap) -->
+    <node name="cartographer_occupancy_grid_node" pkg="cartographer_ros"
+          type="cartographer_occupancy_grid_node" args="-resolution 0.05" />
+
+    <!-- ================================================================ -->
+    <!-- Status publisher + lifecycle manager ROS nodes                   -->
+    <!-- ================================================================ -->
+
+    <!-- Enriched status publisher: derives /localization_status,
+         /Mapping_status, /Nav_status, /monitor_map_boundary from real
+         ROS topics (matching_score, move_base, /map OccupancyGrid). -->
+    <node pkg="runner" type="status_state.py" name="runner_status_state"
+          output="screen"/>
+
+    <!-- Runner: system lifecycle manager.
+         Listens on /runner/command, publishes JSON status on /runner/status.
+         Uses Cartographer trajectory services for all mode transitions.
+         Manages NavOA / MARL as subprocesses when needed.
+         NEVER manages sensors or cartographer_node as subprocesses. -->
+    <node pkg="runner" type="mode_manager.py" name="runner_manager" output="screen"/>
+  </group>
+</launch>

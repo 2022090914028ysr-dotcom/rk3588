@@ -1,6 +1,6 @@
 <launch>
   <arg name="use_sim_time" default="false" />
-  <!-- <arg name="map_file" default="/home/ubuntu/Robit_SlamNav/NavOA_ws/src/NavOA_ros/example/gazebo_limo/maps/slamtoolbox_map.yaml" /> -->
+  <arg name="map_file" default="$(find NavOA_ros)/example/gazebo_limo/maps/slamtoolbox_map.yaml" />
 
   <param name="use_sim_time" value="$(arg use_sim_time)" />
 

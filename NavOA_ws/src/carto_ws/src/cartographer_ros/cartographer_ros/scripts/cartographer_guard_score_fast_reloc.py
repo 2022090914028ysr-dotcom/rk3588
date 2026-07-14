@@ -22,7 +22,9 @@ Cartographer 轨迹管理工具（Score 版本），提供以下功能：
 import math
 import threading
 
+import os
 import rospy
+import rospkg
 import tf2_ros
 from cartographer_ros_msgs.srv import (
     StartTrajectory,
@@ -52,7 +54,7 @@ class CartographerTrajectoryManagerScore:
 
         # ── 配置 ────────────────────────────────────────────────────────
         self.config_dir  = rospy.get_param("~config_dir",
-            "/home/ubuntu/Robit_SlamNav/NavOA_ws/src/carto_ws/src/cartographer_ros/cartographer_ros/configuration_files")
+            os.path.join(rospkg.RosPack().get_path('cartographer_ros'), 'configuration_files'))
         self.config_file            = rospy.get_param("~config_file",            "livox_2d_localization_old.lua")
         self.config_file_fast_reloc = rospy.get_param("~config_file_fast_reloc", "livox_2d_localization_fast_reloc.lua")
 

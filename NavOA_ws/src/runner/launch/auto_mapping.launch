@@ -1,0 +1,59 @@
+<launch>
+  <!--
+    auto_mapping.launch
+    Full autonomous mapping (exploration) mode.
+    Starts sensors, Cartographer SLAM, NavOA navigation, and MARL exploration.
+    The robot will autonomously explore and build a map of the environment.
+
+    Usage:
+      roslaunch runner auto_mapping.launch
+  -->
+  <arg name="use_camera"          default="false"/>
+  <arg name="use_ultrasonic"      default="true"/>
+  <arg name="launch_rviz"         default="false"/>
+  <arg name="rviz_config"         default="$(find NavOA_ros)/example/gazebo_limo/rviz/robit_map.rviz"/>
+
+  <!-- Mapping mode args -->
+  <arg name="cartographer_config" default="livox_2d.lua"/>
+
+  <!-- Exploration args -->
+  <arg name="exploration_method"  default="nearest"/>
+  <arg name="enable_exploration"  default="true"/>
+  <arg name="enable_loop_closure" default="true"/>
+  <arg name="goal_topic"          default="/move_base_simple/goal"/>
+
+  <!-- Sensors -->
+  <include file="$(find runner)/launch/sensors.launch">
+    <arg name="use_camera"     value="$(arg use_camera)"/>
+    <arg name="use_ultrasonic" value="$(arg use_ultrasonic)"/>
+  </include>
+
+  <!-- Cartographer SLAM (mapping mode) -->
+  <node name="cartographer_node" pkg="cartographer_ros" type="cartographer_node"
+        args="-configuration_directory $(find cartographer_ros)/configuration_files
+               -configuration_basename $(arg cartographer_config)"
+        output="screen">
+    <remap from="scan" to="/scan" />
+    <remap from="odom" to="/odom_rf2o" />
+  </node>
+
+  <!-- Occupancy grid -->
+  <node name="cartographer_occupancy_grid_node" pkg="cartographer_ros"
+        type="cartographer_occupancy_grid_node" args="-resolution 0.05" />
+
+  <!-- MARL autonomous exploration node -->
+  <node if="$(arg enable_exploration)"
+        pkg="marl_mapping" type="exploration_node.py"
+        name="autonomous_exploration" output="screen" respawn="false">
+    <param name="goal_topic"         value="$(arg goal_topic)"/>
+    <param name="exploration_method" value="$(arg exploration_method)"/>
+    <param name="visualization"      value="true"/>
+    <param name="save_data"          value="true"/>
+    <param name="plan_watch_enabled" value="true"/>
+    <param name="enable_loop_closure" value="$(arg enable_loop_closure)"/>
+  </node>
+
+  <!-- RViz -->
+  <node if="$(arg launch_rviz)" name="rviz" pkg="rviz" type="rviz"
+        output="screen" args="-d $(arg rviz_config)"/>
+</launch>

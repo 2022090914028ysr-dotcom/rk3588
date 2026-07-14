@@ -1,0 +1,53 @@
+<launch>
+  <!--
+    localization.launch
+    Localization + Navigation mode.
+    Uses a pre-built .pbstream map for Cartographer localization,
+    and runs the NavOA navigation stack (move_base + controllers).
+
+    Usage:
+      roslaunch runner localization.launch
+      # Robot will localize on the loaded map and be ready for navigation goals
+  -->
+  <arg name="use_camera"          default="true"/>
+  <arg name="use_ultrasonic"      default="true"/>
+  <arg name="launch_rviz"         default="true"/>
+  <arg name="rviz_config"         default="$(find NavOA_ros)/example/gazebo_limo/rviz/robit_map.rviz"/>
+
+  <!-- Map file paths (update these to match your saved map) -->
+  <arg name="pbstream_file"
+       default="$(find cartographer_ros)/../../../map/meeting_room/test00.pbstream"/>
+  <arg name="map_yaml"
+       default="$(find cartographer_ros)/../../../map/meeting_room/test00.yaml"/>
+  <arg name="cartographer_config"
+       default="livox_2d_localization_fast_reloc.lua"/>
+
+  <!-- Sensors (lidar, rf2o, serial bridge, imu mux, ultrasonic, camera) -->
+  <include file="$(find runner)/launch/sensors.launch">
+    <arg name="use_camera"     value="$(arg use_camera)"/>
+    <arg name="use_ultrasonic" value="$(arg use_ultrasonic)"/>
+  </include>
+
+  <!-- Static map server (provides /map for visualization) -->
+  <node name="map_server" pkg="map_server" type="map_server"
+        args="$(arg map_yaml)" output="screen"/>
+
+  <!-- Cartographer localization node (loads pre-built map) -->
+  <node name="cartographer_node" pkg="cartographer_ros" type="cartographer_node"
+        args="-configuration_directory $(find cartographer_ros)/configuration_files
+               -configuration_basename $(arg cartographer_config)
+               -load_state_filename $(arg pbstream_file)"
+        output="screen">
+    <remap from="scan" to="/scan" />
+    <remap from="odom" to="/odom_rf2o" />
+  </node>
+
+  <!-- Cartographer occupancy grid (remapped to avoid conflict with map_server) -->
+  <node name="cartographer_occupancy_grid_node" pkg="cartographer_ros"
+        type="cartographer_occupancy_grid_node"
+        args="-resolution 0.05 -include_unfrozen_submaps=false">
+    <remap from="map" to="/carto_submap_viz" />
+  </node>
+
+
+</launch>

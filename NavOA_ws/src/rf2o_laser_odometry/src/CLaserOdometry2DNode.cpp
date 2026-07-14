@@ -79,7 +79,7 @@ CLaserOdometry2DNode::CLaserOdometry2DNode() :
   pn.param<bool>("publish_tf", publish_tf, true);
   pn.param<std::string>("init_pose_from_topic", init_pose_from_topic, "/base_pose_ground_truth");
   pn.param<double>("freq",freq,10.0);
-  pn.param<bool>("verbose", verbose, true);
+  pn.param<bool>("verbose", verbose, false);
 
   //Publishers and Subscribers
   //--------------------------
@@ -171,7 +171,7 @@ void CLaserOdometry2DNode::process(const ros::TimerEvent&)
   }
   else
   {
-    ROS_WARN("Waiting for laser_scans....") ;
+    ROS_DEBUG("Waiting for laser_scans....") ;
   }
 }
 

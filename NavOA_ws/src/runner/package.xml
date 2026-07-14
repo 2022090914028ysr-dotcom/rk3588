@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<package format="2">
+  <name>runner</name>
+  <version>1.0.0</version>
+  <description>
+    Central launcher and orchestrator for the SlamNav workspace.
+    Connects lidar_ros, cartographer_ros, NavOA_ros, marl_mapping,
+    and rf2o_laser_odometry into coordinated system modes.
+  </description>
+  <maintainer email="user@todo.todo">user</maintainer>
+  <license>MIT</license>
+
+  <buildtool_depend>catkin</buildtool_depend>
+
+  <depend>roscpp</depend>
+  <depend>rospy</depend>
+  <depend>std_msgs</depend>
+  <depend>lidar_ros</depend>
+  <depend>NavOA_ros</depend>
+  <depend>marl_mapping</depend>
+  <depend>rf2o_laser_odometry</depend>
+
+  <export/>
+</package>
