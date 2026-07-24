@@ -57,7 +57,7 @@ Or use the shell convenience script:
 runner/
 ├── launch/
 │   ├── sensors.launch       # Base: lidar + camera + ultrasonic + serial + rf2o + imu
-│   ├── mapping.launch       # Sensors + Cartographer SLAM
+│   ├── mapping.launch       # Sensors + Cartographer SLAM + NavOA nav stack
 │   ├── localization.launch  # Sensors + Cartographer localization + NavOA nav stack
 │   ├── auto_mapping.launch   # Sensors + Cartographer SLAM + NavOA + MARL exploration
 │   └── full.launch          # Top-level: mode argument → any of the above

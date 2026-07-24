@@ -93,7 +93,7 @@
          ROS topics (matching_score, move_base, /map OccupancyGrid). -->
     <node pkg="runner" type="status_state.py" name="runner_status_state"
           output="screen"/>
-
+          
     <!-- Runner: system lifecycle manager.
          Listens on /runner/command, publishes JSON status on /runner/status.
          Uses Cartographer trajectory services for all mode transitions.

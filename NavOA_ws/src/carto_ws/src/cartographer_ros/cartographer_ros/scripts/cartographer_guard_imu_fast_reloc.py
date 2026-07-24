@@ -49,7 +49,7 @@ class CartographerTrajectoryManager:
 
         # ── 配置 ────────────────────────────────────────────────────────
         self.config_dir   = rospy.get_param("~config_dir",   os.path.join(rospkg.RosPack().get_path('cartographer_ros'), 'configuration_files'))
-        self.config_file             = rospy.get_param("~config_file",             "livox_2d_localization_old.lua")
+        self.config_file             = rospy.get_param("~config_file",             "livox_2d_localization_fast_reloc.lua")
         self.config_file_fast_reloc  = rospy.get_param("~config_file_fast_reloc",  "livox_2d_localization_fast_reloc.lua")
 
         # ── TF 帧 ───────────────────────────────────────────────────────

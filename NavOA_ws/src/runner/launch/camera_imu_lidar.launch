@@ -1,0 +1,52 @@
+<launch>
+  <arg name="use_camera" default="true"/>
+  <arg name="use_ultrasonic" default="true"/>
+  <arg name="argPath" default="$(find ascamera)/configurationfiles"/>
+  <arg name="fps" default="30"/>
+  <arg name="launch_rviz" default="false"/>
+  <arg name="rviz_config" default="$(find NavOA_ros)/example/gazebo_limo/rviz/robit_map.rviz"/>
+
+  <!-- HP60C depth camera -->
+   <group if="$(arg use_camera)">
+    <node pkg="ascamera" name="ascamera_hp60c" type="ascamera_node" respawn="true" output="screen">
+      <param name="depth_width"  type="int" value="640"/>
+      <param name="depth_height" type="int" value="480"/>
+      <param name="rgb_width"    type="int" value="640"/>
+      <param name="rgb_height"   type="int" value="480"/>
+      <param name="fps"          type="int" value="$(arg fps)"/>
+      <param name="usb_bus_no"   type="int" value="-1"/>
+      <param name="usb_path"     type="str" value="null"/>
+      <param name="confiPath"    type="str" value="$(arg argPath)"/>
+      <param name="color_pcl"    type="boolean" value="false"/>
+      <param name="pub_mono8"    type="boolean" value="false"/>
+      <param name="pub_tfTree"   type="boolean" value="true"/>
+    </node>
+   </group>
+
+  <node name="lidar_node"  pkg="lidar_ros"  type="lidar_node" output="screen" respawn="false" >
+    <param name="serial_name"                 type="string" value="/dev/ttyS4"/>  
+    <param name="serial_baud"                 type="int" value="230400"/>  
+    <param name="frame_id"                    type="string" value="laser_frame"/>
+    <param name="counterclockwise"            type="bool"   value="true"/>
+    <param name="angle_min"                   type="double" value="-180.0" />
+    <param name="angle_max"                   type="double" value="180" />
+    <param name="range_min"                   type="double" value="0.1" />
+    <param name="range_max"                   type="double" value="15" />
+    <param name="resolution_fixed"            type="bool"   value="false"/>
+    <param name="angle_corp_string"           type="string" value="" />
+  </node>
+
+  <node pkg="tf2_ros" type="static_transform_publisher" name="base_link_to_laser"
+      args="0 0 0.2 -1.57 0 0 base_footprint laser_frame" />
+      
+  <node pkg="NavOA_ros" type="imu_publisher.py" name="imu_publisher" output="screen">
+    <param name="serial_port" value="/dev/ttyS6" />
+    <param name="baudrate" value="230400" />
+  </node>
+<!-- IMU mux: prefer serial IMU (/imu_serial), fall back to ROS /imu -->
+  <node pkg="NavOA_ros" type="imu_mux.py" name="imu_mux" output="screen">
+    <param name="primary_topic" value="/imu_serial" />
+    <param name="secondary_topic" value="/imu" />
+  </node>
+
+</launch>

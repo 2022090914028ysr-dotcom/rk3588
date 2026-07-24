@@ -177,8 +177,10 @@ catkin_install_python(PROGRAMS
   scripts/waypoint_capture_from_goal.py
   scripts/localization_recovery.py
   scripts/vel_filter_debug_monitor.py
-  
+
   scripts/error_collector.py
+
+  scripts/imu_publisher.py
   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
 

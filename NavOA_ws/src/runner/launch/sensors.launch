@@ -1,6 +1,6 @@
 <launch>
   <arg name="use_camera" default="true"/>
-  <arg name="use_ultrasonic" default="true"/>
+  <arg name="use_ultrasonic" default="false"/>
   <arg name="argPath" default="$(find ascamera)/configurationfiles"/>
   <arg name="fps" default="30"/>
   <arg name="launch_rviz" default="false"/>
@@ -99,6 +99,10 @@
     <arg name="launch_rviz"        value="$(arg launch_rviz)"/>
 
   </include>
+  
+  <node pkg = "rosbridge_server" type="rosbridge_websocket" name="rosbridge_websocket" output="screen">
+    <param name="port" value="9090"/>
+  </node>
 
 </launch>
    

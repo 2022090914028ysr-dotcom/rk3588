@@ -6,18 +6,14 @@ import math
 import sys
 import os
 
+# 将本文件所在目录加入 sys.path，确保能导入同目录下的模块
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+
 # 导入 ROS 消息类型
 from sensor_msgs.msg import Imu
 
-# 尝试导入你提供的 imu_controller 模块
-# 假设 imu_controller.py 位于同一目录。
-# 已移除对 robot_config 的导入和依赖
-import imu_controller
-from imu_controller import imu_controller # 导入全局实例
-
-# --- 移除对 robot_config 的导入 ---
-# import robot_config
-# from robot_config import config
+# 导入 imu_controller 模块
+from imu_controller import IMUController, config
 # -----------------------------------
 
 
@@ -41,26 +37,37 @@ def euler_to_quaternion(roll, pitch, yaw):
 class IMUPublisherNode:
     def __init__(self):
         # 1. 初始化 ROS 节点
-        rospy.init_node('wit_imu_driver', anonymous=False)
-        
-        # 2. 获取参数 (可选，支持从 launch 文件修改)
+        rospy.init_node('imu_publisher', anonymous=False)
+
+        # 2. 获取参数 (支持从 launch 文件修改)
         self.imu_topic = rospy.get_param('~imu_topic', '/imu')
         self.frame_id = rospy.get_param('~frame_id', 'imu_link')
-        self.publish_rate = rospy.get_param('~rate', 200) # 目标频率 200Hz
+        self.publish_rate = rospy.get_param('~rate', 200)
 
         # 3. 创建发布者
         self.pub = rospy.Publisher(self.imu_topic, Imu, queue_size=10)
-        
-        rospy.loginfo(f"正在初始化 IMU 驱动，发布话题: {self.imu_topic}，Frame ID: {self.frame_id}")
 
-        # 4. 初始化底层控制器
-        if not imu_controller.initialize():
+        rospy.loginfo(f"正在初始化 IMU 驱动，话题: {self.imu_topic}，Frame ID: {self.frame_id}")
+
+        # 4. 获取串口参数（支持从 launch 文件修改）
+        serial_port = rospy.get_param('~serial_port', config.imu.port)
+        baudrate = rospy.get_param('~baudrate', config.imu.baudrate)
+
+        # 5. 用 launch 传入的参数覆盖全局配置
+        config.imu.port = serial_port
+        config.imu.baudrate = baudrate
+
+        # 6. 创建 IMU 控制器实例
+        self.controller = IMUController()
+
+        # 7. 初始化底层控制器
+        if not self.controller.initialize():
             rospy.logerr("IMU 控制器初始化失败！")
             sys.exit(1)
-        
-        # 5. 启动读取线程
-        imu_controller.start_reading()
-        
+
+        # 6. 启动读取线程
+        self.controller.start_reading()
+
         # 等待数据稳定
         rospy.sleep(1)
 
@@ -69,10 +76,9 @@ class IMUPublisherNode:
         
         while not rospy.is_shutdown():
             # 检查数据是否有效
-            if imu_controller.is_data_valid():
+            if self.controller.is_data_valid():
                 # 获取当前数据 (IMUData 对象)
-                # 注意：get_current_data() 返回的是已校准和处理过的数据
-                data = imu_controller.get_current_data() 
+                data = self.controller.get_current_data()
                 
                 # 构建 ROS 消息
                 imu_msg = Imu()
@@ -111,10 +117,9 @@ class IMUPublisherNode:
 
     def cleanup(self):
         rospy.loginfo("正在关闭 IMU 驱动...")
-        # 调用 IMU 控制器的 close 方法，停止读取线程并关闭串口
-        imu_controller.close()
+        self.controller.close()
 
-if __name__ == '__main__':
+def main():
     node = IMUPublisherNode()
     try:
         node.run()
@@ -122,3 +127,6 @@ if __name__ == '__main__':
         pass
     finally:
         node.cleanup()
+
+if __name__ == '__main__':
+    main()
