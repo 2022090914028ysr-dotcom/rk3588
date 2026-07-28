@@ -248,9 +248,9 @@ def main():
     # ---- serial ports ----
     parser.add_argument("--port-front", default="/dev/ttyS3",
                         help="Front sensor serial port")
-    parser.add_argument("--port-left",  default="/dev/ttyS6",
+    parser.add_argument("--port-left",  default="/dev/ttyS7",
                         help="Left sensor serial port")
-    parser.add_argument("--port-right", default="/dev/ttyS7",
+    parser.add_argument("--port-right", default="/dev/ttyS6",
                         help="Right sensor serial port")
 
     # ---- angles ----

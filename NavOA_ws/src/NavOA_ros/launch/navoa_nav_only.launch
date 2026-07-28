@@ -11,7 +11,7 @@
 
   <arg name="use_sim_time" default="false"/>
   <arg name="enable_map_server" default="false"/>
-  <arg name="map_file" default="$(find cartographer_ros)/../../../map/meeting_room/test00.yaml" />
+  <arg name="map_file" default="$(find cartographer_ros)/../../../map/meeting_room/test001.yaml" />
   <arg name="global_map_topic" default="/map"/>
   <arg name="move_base_cmd_topic" default="/move_base_cmd_vel"/>
   <arg name="launch_rviz" default="false"/>
@@ -33,7 +33,7 @@
     <param name="controller_patience" value="15.0" />
     <param name="planner_patience" value="5.0" />
     <param name="base_global_planner" value="global_planner/GlobalPlanner" />
-    <param name="planner_frequency" value="0.0" />
+    <param name="planner_frequency" value="2.0" />
     <param name="recovery_behavior_enabled" value="false" />
     <param name="clearing_rotation_allowed" value="false" />
 

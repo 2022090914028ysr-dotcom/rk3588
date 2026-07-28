@@ -1,6 +1,6 @@
-image: test11.pgm
+image: /home/ubuntu/Robit_SlamNav/NavOA_ws/src/carto_ws/map/meeting_room/test11.pgm
 resolution: 0.050000
-origin: [-6.232829, -8.397136, 0.000000]
+origin: [-8.654223, -11.497873, 0.000000]
 negate: 0
 occupied_thresh: 0.65
 free_thresh: 0.196

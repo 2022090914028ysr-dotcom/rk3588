@@ -10,6 +10,7 @@ options = {
   odom_frame = "odom",
   provide_odom_frame = false,            -- rf2o 负责发布 odom->base_footprint
   publish_frame_projected_to_2d = false,
+  publish_tracked_pose = true,             -- publish /tracked_pose for all modes
   use_pose_extrapolator = true,
   use_odometry = true,                   -- 订阅 /odom（EKF 融合后）
   use_nav_sat = false,

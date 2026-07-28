@@ -2,7 +2,7 @@
 <launch>
   <arg name="configuration_directory" default="$(find cartographer_ros)/configuration_files" />
   <arg name="configuration_basename" default="livox_2d_localization_old.lua" />
-  <arg name="load_state_filename" default="$(find cartographer_ros)/../../../map/meeting_room/test00.pbstream" />
+  <arg name="load_state_filename" default="$(find cartographer_ros)/../../../map/meeting_room/test001.pbstream" />
 
   <node pkg="cartographer_ros"
         type="cartographer_guard_imu.py"

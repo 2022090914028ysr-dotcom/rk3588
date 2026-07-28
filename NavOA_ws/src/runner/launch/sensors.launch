@@ -1,6 +1,6 @@
 <launch>
   <arg name="use_camera" default="true"/>
-  <arg name="use_ultrasonic" default="false"/>
+  <arg name="use_ultrasonic" default="true"/>
   <arg name="argPath" default="$(find ascamera)/configurationfiles"/>
   <arg name="fps" default="30"/>
   <arg name="launch_rviz" default="false"/>
@@ -54,7 +54,7 @@
   </node>
 
   <node pkg="tf2_ros" type="static_transform_publisher" name="base_link_to_laser"
-      args="0 0 0.2 -1.57 0 0 base_footprint laser_frame" />
+      args="0 0 0.2 0 0 0 base_footprint laser_frame" />
 
   <!-- 2-way merge: /camscan + /scan -> /mergescan  (ultrasonic removed; used as virtual bumper in vel_filter) -->
   <!-- <node pkg="ascamera" name="scan_merger" type="scan_merge.py" output="screen">
@@ -68,7 +68,7 @@
   
   <node pkg="NavOA_ros" name="multi_ultrasonic_scan" type="multi_ultrasonic_scan.py" output="screen" if="$(arg use_ultrasonic)" />
   <!-- Bridge /cmd_vel and IMU over /dev/ttyS6 to the other PC -->
-  <node pkg="NavOA_ros" type="serial_cmd_vel_imu_bridge.py" name="serial_cmd_vel_imu_bridge" output="screen">
+  <!-- <node pkg="NavOA_ros" type="serial_cmd_vel_imu_bridge.py" name="serial_cmd_vel_imu_bridge" output="screen">
     <param name="serial_port" value="/dev/ttyS1" />
     <param name="baudrate" value="460800" />
     <param name="serial_timeout" value="0.02" />
@@ -76,12 +76,12 @@
     <param name="tx_queue_size" value="200" />
     <param name="serial_flush_interval" value="0.05" />
     <param name="cmd_vel_topic" value="/cmd_vel" />
-    <param name="button_topic" value="/app_controller/button" />
+    <param name="button_topic" value="/app_controller/button" /> -->
     <!-- Publish IMU from serial onto /imu_serial; mux will prioritize this -->
-    <param name="imu_topic" value="/imu_serial" />
+    <!-- <param name="imu_topic" value="/imu_serial" />
     <param name= "event_topic" value="/nav_serial/event" />
     <param name="verbose" value="false" />
-  </node>
+  </node> -->
 
   <!-- IMU mux: prefer serial IMU (/imu_serial), fall back to ROS /imu -->
   <node pkg="NavOA_ros" type="imu_mux.py" name="imu_mux" output="screen">

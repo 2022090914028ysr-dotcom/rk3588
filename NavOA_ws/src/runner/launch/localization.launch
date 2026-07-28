@@ -9,16 +9,16 @@
       roslaunch runner localization.launch
       # Robot will localize on the loaded map and be ready for navigation goals
   -->
-  <arg name="use_camera"          default="true"/>
+  <arg name="use_camera"          default="false"/>
   <arg name="use_ultrasonic"      default="true"/>
   <arg name="launch_rviz"         default="true"/>
   <arg name="rviz_config"         default="$(find NavOA_ros)/example/gazebo_limo/rviz/robit_map.rviz"/>
 
   <!-- Map file paths (update these to match your saved map) -->
   <arg name="pbstream_file"
-       default="$(find cartographer_ros)/../../../map/meeting_room/test00.pbstream"/>
+       default="$(find cartographer_ros)/../../../map/meeting_room/test001.pbstream"/>
   <arg name="map_yaml"
-       default="$(find cartographer_ros)/../../../map/meeting_room/test00.yaml"/>
+       default="$(find cartographer_ros)/../../../map/meeting_room/test001.yaml"/>
   <arg name="cartographer_config"
        default="livox_2d_localization_fast_reloc.lua"/>
 

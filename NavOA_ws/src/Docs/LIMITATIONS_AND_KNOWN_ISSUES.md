@@ -178,7 +178,7 @@ The `pure_localization_trimmer` keeps only the last N submaps (3 in most configs
 
 ### 3.5 Map Size Scaling
 
-As maps grow (the default `test00.pbstream` is 7.0 MB):
+As maps grow (the default `test001.pbstream` is 7.0 MB):
 - Pose graph optimization takes longer
 - Global localization search space increases
 - The `global_sampling_ratio` parameter must be tuned down for large maps (currently 0.1 in localization mode), which increases CPU usage

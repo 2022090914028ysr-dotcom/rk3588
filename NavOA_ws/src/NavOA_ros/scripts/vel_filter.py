@@ -669,6 +669,14 @@ class VelocityFilter:
             if us_mode != 'pass_through':
                 # ultrasonic overrides everything when triggered
                 modified.angular.z *= self.wz_scale
+                # Apply speed clamps even during ultrasonic evasion (they were
+                # previously bypassed by the early return below).
+                if self.max_forward_speed > 0.0 and modified.linear.x > self.max_forward_speed:
+                    modified.linear.x = self.max_forward_speed
+                if self.max_angular_speed > 0.0:
+                    az = modified.angular.z
+                    if abs(az) > self.max_angular_speed:
+                        modified.angular.z = math.copysign(self.max_angular_speed, az)
                 modified = self._apply_deadband(modified)
                 self._latest_output = modified
                 self._last_mode = us_mode

@@ -1,6 +1,6 @@
 GlobalPlanner:
   allow_unknown: true
-  default_tolerance: 0.2
+  default_tolerance: 0.15
   visualize_potential: true   
   use_dijkstra: true
   use_quadratic: true

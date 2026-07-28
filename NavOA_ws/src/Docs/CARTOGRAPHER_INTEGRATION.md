@@ -269,7 +269,7 @@ Each saved map has three files:
 ### 6.2 Map Metadata Format
 
 ```yaml
-image: test00.pgm
+image: test001.pgm
 resolution: 0.050000
 origin: [-5.544689, -12.431804, 0.000000]
 negate: 0
@@ -281,7 +281,7 @@ free_thresh: 0.196
 
 | Location | Contents |
 |----------|----------|
-| `carto_ws/map/meeting_room/` | Primary maps (test00.pbstream is the default) |
+| `carto_ws/map/meeting_room/` | Primary maps (test001.pbstream is the default) |
 | `carto_ws/map/` | Auto-saved maps (`map_<timestamp>.pbstream`) + named maps |
 | `src/map/meeting_room/` | Additional copies of meeting_room map |
 
@@ -289,7 +289,7 @@ free_thresh: 0.196
 
 The default map loaded by `localization.launch` is:
 ```
-map/meeting_room/test00.pbstream
+map/meeting_room/test001.pbstream
 ```
 Size: 7.0 MB (largest map with most detail)
 

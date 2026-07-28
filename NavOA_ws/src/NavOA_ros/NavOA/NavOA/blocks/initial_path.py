@@ -55,12 +55,18 @@ class InitialPath:
         self.interval = kwargs.get("interval", self.dt * self.ref_speed)
         self.arrive_threshold = kwargs.get("arrive_threshold", 0.1)
         self.close_threshold = kwargs.get("close_threshold", 0.1)
-        self.ind_range = kwargs.get("ind_range", 10)
+        self.ind_range = kwargs.get("ind_range", 30)
         self.arrive_index_threshold = kwargs.get("arrive_index_threshold", 1)
+        # Maximum distance (m) beyond which closest_point() will NOT update
+        # point_index — prevents spurious advancement when the robot drifts far
+        # from the path.  Keep None to disable the guard.
+        self.max_tracking_distance = kwargs.get("max_tracking_distance", None)
 
         self.cg = curve_generator()
         # initial path and gear
         self.initial_path = None
+        # Last point_index that was within acceptable tracking distance
+        self._last_valid_point_index = 0
 
         
 
@@ -134,6 +140,7 @@ class InitialPath:
         self.split_path_with_gear()
         self.curve_index = 0
         self.point_index = 0
+        self._last_valid_point_index = 0
 
 
     def cal_average_interval(self, path):
@@ -158,12 +165,15 @@ class InitialPath:
 
         return dist_sum / (n - 1)
 
-    def closest_point(self, state, threshold=0.1, ind_range=10):
+    def closest_point(self, state, threshold=0.1, ind_range=30):
 
         min_dis = inf
+        best_index = self.point_index
         cur_index = self.point_index
 
-        start = max(cur_index, 0)
+        # Search BOTH backward and forward from the current index so the
+        # robot can re-acquire the path after drifting behind it.
+        start = max(cur_index - ind_range, 0)
         end = min(cur_index + ind_range, len(self.cur_curve))
 
         for index in range(start, end):
@@ -171,9 +181,24 @@ class InitialPath:
 
             if dis < min_dis:
                 min_dis = dis
-                self.point_index = index
+                best_index = index
                 if dis < threshold:
                     break
+
+        # Guard: only update point_index if the closest point is within the
+        # acceptable tracking distance.  This prevents spurious forward creep
+        # when the robot drifts far from the path.
+        if self.max_tracking_distance is not None:
+            if min_dis <= self.max_tracking_distance:
+                self.point_index = best_index
+                self._last_valid_point_index = best_index
+            else:
+                # Robot is too far from any path point; reuse the last known
+                # good reference so the MPC steers back toward the path.
+                self.point_index = self._last_valid_point_index
+        else:
+            self.point_index = best_index
+            self._last_valid_point_index = best_index
 
         return min_dis
 
@@ -279,7 +304,7 @@ class InitialPath:
         return (
             arrive_distance < arrive_threshold
             and self.point_index >= (len(self.cur_curve) - arrive_index_threshold)
-        ) or (self.point_index >= (len(self.cur_curve) - 3))
+        )
 
     def split_path_with_gear(self):
         """

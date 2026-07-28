@@ -10,7 +10,15 @@
       # Drive the robot around to build the map
       # Then save: rosrun cartographer_ros cartographer_occupancy_grid_node -...
   -->
-
+  <arg name="use_camera" default="false" />
+  <arg name="use_ultrasonic" default="true" />
+  <arg name="launch_rviz" default="false" />
+  <!-- Sensors (lidar, rf2o, serial bridge, imu mux, ultrasonic, camera) -->
+  <include file="$(find runner)/launch/sensors.launch">
+    <arg name="use_camera"     value="$(arg use_camera)"/>
+    <arg name="use_ultrasonic" value="$(arg use_ultrasonic)"/>
+  </include>
+  
   <arg name="cartographer_config"    default="livox_2d.lua"/>
   <!-- Cartographer SLAM node (mapping mode) -->
   <node name="cartographer_node" pkg="cartographer_ros" type="cartographer_node"

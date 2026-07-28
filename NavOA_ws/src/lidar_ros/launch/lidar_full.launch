@@ -52,7 +52,7 @@
   </node>
 
   <node pkg="tf2_ros" type="static_transform_publisher" name="base_link_to_laser"
-      args="0 0 0.2 -1.57 0 0 base_footprint laser_frame" />
+      args="0 00.2 0 0 0 base_footprint laser_frame" />
 
   <!-- 2-way merge: /camscan + /scan -> /mergescan  (ultrasonic removed; used as virtual bumper in vel_filter) -->
   <!-- <node pkg="ascamera" name="scan_merger" type="scan_merge.py" output="screen">

@@ -150,11 +150,11 @@ Important: After finishing mapping and before killing the current SLAM terminal,
 ```
 rosservice call /finish_trajectory 0
 
-rosservice call /write_state \
-"filename: '/home/ubuntu/Robit_SlamNav/NavOA_ws/src/carto_ws/map/meeting_room/test00.pbstream'
-include_unfinished_submaps: false"
+
+rosservice call /write_state "{filename: '/home/ubuntu/Robit_SlamNav/NavOA_ws/src/carto_ws/map/meeting_room/test11.pbstream', include_unfinished_submaps: true}"
+
 ```
-rosrun map_server map_saver -f /home/ubuntu/Robit_SlamNav/NavOA_ws/src/carto_ws/map/meeting_room/test00
+rosrun map_server map_saver -f /home/ubuntu/Robit_SlamNav/NavOA_ws/src/carto_ws/map/meeting_room/test001
 
 # Must save as `.pbstream` format, and modify the save path to your own address.
 

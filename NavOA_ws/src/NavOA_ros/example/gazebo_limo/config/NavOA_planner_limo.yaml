@@ -9,10 +9,10 @@ collision_threshold: -1.0
 # robot
 robot:
   kinematics: 'diff'
-  max_speed: [0.25, 0.5]
+  max_speed: [0.5, 0.5]
   max_acce: [0.5, 1]
-  length: 0.75
-  width: 0.5
+  length: 0.60
+  width: 0.35
 
 # initial path
 ipath:
@@ -21,9 +21,11 @@ ipath:
   curve_style: 'line'   # 'dubins' or reeds or line
   min_radius: 0.0
   loop: false
-  arrive_threshold: 1.0
+  arrive_threshold: 0.3
   close_threshold: 0.1
   arrive_index_threshold: 3
+  ind_range: 30
+  max_tracking_distance: 1.0
   
 # proximal alternating minimization network
 pan:
