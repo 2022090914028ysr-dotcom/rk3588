@@ -116,7 +116,7 @@ class RunnerNode:
                 os.path.join(rospkg.RosPack().get_path('cartographer_ros'),
                              os.pardir, os.pardir, os.pardir, 'map')))
         self._map_frame = rospy.get_param("~map_frame", "map")
-        self._base_frame = rospy.get_param("~base_frame", "base_footprint")
+        self._base_frame = rospy.get_param("~base_frame", "base_link")
         self._tf_timeout = rospy.get_param("~tf_timeout", 1.0)
 
         # ── Dynamic system state ────────────────────────────────────────
@@ -612,7 +612,7 @@ class RunnerNode:
     # ═══════════════════════════════════════════════════════════════════
 
     def _get_pose(self):
-        """Look up map→base_footprint and return as a Pose, or None."""
+        """Look up map→base_link and return as a Pose, or None."""
         try:
             tf_stamped = self._tf_buffer.lookup_transform(
                 self._map_frame, self._base_frame,

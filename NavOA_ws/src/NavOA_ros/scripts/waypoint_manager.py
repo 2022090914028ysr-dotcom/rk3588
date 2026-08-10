@@ -12,7 +12,7 @@ from nav_msgs.msg import Path
 
 
 def angle_between(v1: Tuple[float, float], v2: Tuple[float, float]) -> float:
-    """·µ»ØÁ½ÏòÁ¿µÄ¼Ð½Ç£¨»¡¶È£©¡£"""
+    """ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä¼Ð½Ç£ï¿½ï¿½ï¿½ï¿½È£ï¿½ï¿½ï¿½"""
     x1, y1 = v1
     x2, y2 = v2
     n1 = math.hypot(x1, y1)
@@ -32,11 +32,11 @@ class WaypointManager:
     def __init__(self):
         self.path_topic = rospy.get_param('~path_topic', '/move_base/GlobalPlanner/plan')
         self.goal_pub_topic = rospy.get_param('~goal_pub_topic', '/NavOA_goal')
-        self.base_frame = rospy.get_param('~base_frame', 'base_footprint')
+        self.base_frame = rospy.get_param('~base_frame', 'base_link')
         self.goal_tolerance = rospy.get_param('~goal_tolerance', 0.5)
         self.min_spacing = rospy.get_param('~min_spacing', 1.0)
         self.curve_angle_deg = rospy.get_param('~curve_angle_deg', 35.0)
-        self.sample_every_n = rospy.get_param('~sample_every_n', 0)  # 0 ±íÊ¾²»°´¹Ì¶¨²½³¤²ÉÑù
+        self.sample_every_n = rospy.get_param('~sample_every_n', 0)  # 0 ï¿½ï¿½Ê¾ï¿½ï¿½ï¿½ï¿½ï¿½Ì¶ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 
         self._tf_listener = tf.TransformListener()
         self._goal_pub = rospy.Publisher(self.goal_pub_topic, PoseStamped, queue_size=1)
@@ -58,13 +58,13 @@ class WaypointManager:
                 rospy.logwarn('[waypoint_manager] received path with <2 poses, ignoring')
                 return
 
-            # ÌáÈ¡¹Ø¼üµã
+            # ï¿½ï¿½È¡ï¿½Ø¼ï¿½ï¿½ï¿½
             keypoints = self._extract_keypoints(poses)
             if len(keypoints) == 0:
                 rospy.logwarn('[waypoint_manager] no keypoints extracted, using endpoints')
                 keypoints = [poses[0], poses[-1]]
 
-            # ¸üÐÂ²¢Á¢¿Ì·¢²¼µÚÒ»¸öÄ¿±ê
+            # ï¿½ï¿½ï¿½Â²ï¿½ï¿½ï¿½ï¿½Ì·ï¿½ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½Ä¿ï¿½ï¿½
             self._waypoints = keypoints
             self._current_idx = 0
             rospy.loginfo('[waypoint_manager] extracted %d waypoints, publishing first', len(keypoints))
@@ -74,11 +74,11 @@ class WaypointManager:
         curve_th = math.radians(self.curve_angle_deg)
         selected: List[PoseStamped] = []
 
-        # ×ÜÊÇ°üº¬Ê×µã
+        # ï¿½ï¿½ï¿½Ç°ï¿½ï¿½ï¿½ï¿½×µï¿½
         selected.append(poses[0])
         last_added_xy = (poses[0].pose.position.x, poses[0].pose.position.y)
 
-        # ¿ÉÑ¡¹Ì¶¨²½³¤²ÉÑù
+        # ï¿½ï¿½Ñ¡ï¿½Ì¶ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
         if self.sample_every_n and self.sample_every_n > 0:
             for i in range(self.sample_every_n, len(poses) - 1, self.sample_every_n):
                 p = poses[i].pose.position
@@ -87,7 +87,7 @@ class WaypointManager:
                     selected.append(poses[i])
                     last_added_xy = xy
 
-        # ÇúÂÊ/×ª½Ç²ÉÑù
+        # ï¿½ï¿½ï¿½ï¿½/×ªï¿½Ç²ï¿½ï¿½ï¿½
         for i in range(1, len(poses) - 1):
             p_prev = poses[i - 1].pose.position
             p_curr = poses[i].pose.position
@@ -102,14 +102,14 @@ class WaypointManager:
                 selected.append(poses[i])
                 last_added_xy = xy_curr
 
-        # ×ÜÊÇ°üº¬Ä©µã
+        # ï¿½ï¿½ï¿½Ç°ï¿½ï¿½ï¿½Ä©ï¿½ï¿½
         selected.append(poses[-1])
         return selected
 
     def _publish_current_goal(self):
         if 0 <= self._current_idx < len(self._waypoints):
             goal = self._waypoints[self._current_idx]
-            # ±£³ÖÔ­ path ×ø±êÏµ·¢²¼
+            # ï¿½ï¿½ï¿½ï¿½Ô­ path ï¿½ï¿½ï¿½ï¿½Ïµï¿½ï¿½ï¿½ï¿½
             goal.header.stamp = rospy.Time.now()
             goal.header.frame_id = self._path_frame or goal.header.frame_id or 'map'
             self._goal_pub.publish(goal)
@@ -122,7 +122,7 @@ class WaypointManager:
             try:
                 with self._lock:
                     if 0 <= self._current_idx < len(self._waypoints):
-                        # ¶ÁÈ¡µ±Ç°»úÆ÷ÈËÎ»×Ë£¨×ª»»µ½ path frame£©
+                        # ï¿½ï¿½È¡ï¿½ï¿½Ç°ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Î»ï¿½Ë£ï¿½×ªï¿½ï¿½ï¿½ï¿½ path frameï¿½ï¿½
                         base_frame = self.base_frame
                         path_frame = self._path_frame or 'map'
                         self._tf_listener.waitForTransform(path_frame, base_frame, rospy.Time(0), rospy.Duration(0.2))
@@ -134,13 +134,13 @@ class WaypointManager:
                         d = distance(robot_xy, goal_xy)
 
                         if d <= self.goal_tolerance:
-                            # ÇÐ»»µ½ÏÂÒ»¸öÄ¿±ê
+                            # ï¿½Ð»ï¿½ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½Ä¿ï¿½ï¿½
                             self._current_idx += 1
                             if self._current_idx < len(self._waypoints):
                                 self._publish_current_goal()
                             else:
                                 rospy.loginfo('[waypoint_manager] all waypoints reached')
-                    # else: Ã»ÓÐÂ·µã»òË÷ÒýÔ½½ç£¬µÈ´ýÐÂÂ·¾¶
+                    # else: Ã»ï¿½ï¿½Â·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ô½ï¿½ç£¬ï¿½È´ï¿½ï¿½ï¿½Â·ï¿½ï¿½
             except (tf.Exception, tf.LookupException, tf.ConnectivityException, tf.ExtrapolationException):
                 pass
             rate.sleep()

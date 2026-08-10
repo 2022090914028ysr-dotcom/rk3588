@@ -54,7 +54,7 @@ The `runner` package is the central orchestrator for the entire SlamNav system. 
 ```
 1. ascamera (HP60C depth camera)         [conditional on use_camera]
 2. lidar_node (/dev/ttyS4 → /scan)
-3. static TF base_footprint → laser_frame
+3. static TF base_link → laser_frame
 4. rf2o_laser_odometry (/odom_rf2o)
 5. multi_ultrasonic                      [conditional on use_ultrasonic]
 6. serial_cmd_vel_imu_bridge (/dev/ttyS1 → /imu_serial)

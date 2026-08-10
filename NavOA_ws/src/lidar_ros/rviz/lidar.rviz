@@ -87,7 +87,7 @@ Visualization Manager:
       Frame Timeout: 15
       Frames:
         All Enabled: true
-        base_footprint:
+        base_link:
           Value: true
         laser_frame:
           Value: true
@@ -98,7 +98,7 @@ Visualization Manager:
       Show Axes: true
       Show Names: true
       Tree:
-        base_footprint:
+        base_link:
           laser_frame:
             {}
       Update Interval: 0

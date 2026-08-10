@@ -55,7 +55,7 @@
     <arg name="use_sim_time" value="$(arg use_sim_time)"/>
 
     <arg name="vel_filter_cmd_out_topic" value="/cmd_vel"/>
-    <arg name="ultrasonic_evade_lateral_speed" value="1.5"/>
+    <arg name="ultrasonic_evade_lateral_speed" value="0.5"/>
     <arg name="return_to_previous_goal_enabled" value="false"/>
     <arg name="goal_timeout_button_enabled" value="true"/>
     <arg name="goal_timeout_button_topic" value="/app_controller/button"/>

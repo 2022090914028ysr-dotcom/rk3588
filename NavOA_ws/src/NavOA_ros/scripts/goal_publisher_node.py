@@ -138,7 +138,7 @@ def main():
     arrival_tolerance = float(rospy.get_param('~arrival_tolerance', 0.3))
     timeout_sec = float(rospy.get_param('~timeout_sec', 30.0))
     republish_on_timeout = bool(rospy.get_param('~republish_on_timeout', True))
-    base_frame = rospy.get_param('~base_frame', 'base_footprint')
+    base_frame = rospy.get_param('~base_frame', 'base_link')
 
     goals_param = rospy.get_param('~goals', None)
     yaml_path = rospy.get_param('~goal_list_yaml', '')

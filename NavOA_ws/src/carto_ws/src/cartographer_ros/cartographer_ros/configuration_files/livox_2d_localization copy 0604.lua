@@ -3,7 +3,7 @@ include "livox_2d.lua"
 options.publish_tracked_pose = true
 options.publish_tracked_pose = true
 options.use_odometry = true          -- rf2o is not running in localization mode (if true rf2o is running)
-options.provide_odom_frame = false     -- Cartographer provides map→odom→base_footprint TF without external odometry
+options.provide_odom_frame = false     -- Cartographer provides map→odom→base_link TF without external odometry
 options.published_frame = "odom" --for rf2o make it odom_frame = "odom"--for rf2o make it odom
 
 MAP_BUILDER.num_background_threads = 8    -- 增加后台线程数（根据CPU核心数调整）

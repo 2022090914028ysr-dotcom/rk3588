@@ -16,7 +16,7 @@ Topic derivation logic (overridable via private params for testing):
   /Nav_status             ->  /move_base/status (GoalStatusArray) + cmd_vel activity.
                               Values: "IDLE" | "NAVIGATING" | "ARRIVED" | "FAILED" | "CANCELLED"
 
-  /monitor_map_boundary   ->  /map (OccupancyGrid) + map→base_footprint TF.
+  /monitor_map_boundary   ->  /map (OccupancyGrid) + map→base_link TF.
                               Values: "INSIDE_MAP" | "NEAR_BOUNDARY" | "OUT_OF_MAP"
 
 Private parameters (~):
@@ -191,7 +191,7 @@ class StatusStateNode(object):
         self._use_tight_bbox      = rospy.get_param("~use_tight_bbox", True)
         self._map_settle_time_s   = rospy.get_param("~map_settle_time_s", 3.0)
         self._oob_wall_threshold  = rospy.get_param("~oob_wall_threshold", 90)
-        self._robot_frame         = rospy.get_param("~robot_frame", "base_footprint")
+        self._robot_frame         = rospy.get_param("~robot_frame", "base_link")
         self._map_frame           = rospy.get_param("~map_frame", "map")
 
         # ------------------------------------------------------------------

@@ -6,7 +6,7 @@ cartographer_trajectory_manager_score.py
 
 Cartographer 轨迹管理工具（Score 版本），提供以下功能：
   1. 查阅活跃状态的轨迹 ID
-  2. 获取 map→base_footprint 变换（监听 TF 的 map→odom 和 odom→base_footprint 并合成）
+  2. 获取 map→base_link 变换（监听 TF 的 map→odom 和 odom→base_link 并合成）
   3. 关闭最新的活跃轨迹
   4. 按照指定配置文件创建新轨迹
   5. 按照指定配置文件和初始位姿创建新轨迹
@@ -14,7 +14,7 @@ Cartographer 轨迹管理工具（Score 版本），提供以下功能：
 
 与 cartographer_trajectory_manager.py 的区别：
   - 移除了 IMU 摔倒检测（IMU 硬件损坏）
-  - 改用 matching score、map→base_footprint 位置跳变、yaw 跳变三种检测方式
+  - 改用 matching score、map→base_link 位置跳变、yaw 跳变三种检测方式
   - 恢复流程仍使用 Cartographer 服务（FinishTrajectory / StartTrajectory），
     而非杀节点 hard reset
 """
@@ -61,7 +61,7 @@ class CartographerTrajectoryManagerScore:
         # ── TF 帧 ───────────────────────────────────────────────────────
         self.map_frame         = rospy.get_param("~map_frame",         "map")
         self.odom_frame        = rospy.get_param("~odom_frame",        "odom")
-        self.robot_frame       = rospy.get_param("~robot_frame",       "base_footprint")
+        self.robot_frame       = rospy.get_param("~robot_frame",       "base_link")
         self.tf_lookup_timeout = rospy.get_param("~tf_lookup_timeout",  0.1)
 
         # ==================================================================
@@ -73,7 +73,7 @@ class CartographerTrajectoryManagerScore:
         self.score_consecutive_frames = rospy.get_param("~score_consecutive_frames", 10)
 
         # ==================================================================
-        # Offset-based 检测（map→base_footprint 位置跳变）
+        # Offset-based 检测（map→base_link 位置跳变）
         #   仅在 cartographer 启动 startup_delay 秒后激活
         # ==================================================================
         self.offset_enabled            = rospy.get_param("~offset_enabled", True)
@@ -82,7 +82,7 @@ class CartographerTrajectoryManagerScore:
         self.offset_startup_delay      = rospy.get_param("~offset_startup_delay", 1200.0)
 
         # ==================================================================
-        # Rotation-based 检测（map→base_footprint yaw 跳变）
+        # Rotation-based 检测（map→base_link yaw 跳变）
         #   与 offset 共用 startup_delay
         # ==================================================================
         self.rotation_enabled            = rospy.get_param("~rotation_enabled", True)
@@ -199,16 +199,16 @@ class CartographerTrajectoryManagerScore:
             return None
 
     # ═══════════════════════════════════════════════════════════════════════
-    # 2. 获取 map→base_footprint 变换
+    # 2. 获取 map→base_link 变换
     # ═══════════════════════════════════════════════════════════════════════
 
-    def get_map_to_base_footprint(self):
-        """监听 TF，合成 map→odom 和 odom→base_footprint，返回 map→base_footprint。
+    def get_map_to_base_link(self):
+        """监听 TF，合成 map→odom 和 odom→base_link，返回 map→base_link。
 
         返回 (x, y, yaw_rad) 元组，失败时返回 None。
         """
         try:
-            # 直接查找 map→base_footprint（TF2 会自动合成链）
+            # 直接查找 map→base_link（TF2 会自动合成链）
             trans = self.tf_buffer.lookup_transform(
                 self.map_frame, self.robot_frame,
                 rospy.Time(0), rospy.Duration(self.tf_lookup_timeout))
@@ -217,14 +217,14 @@ class CartographerTrajectoryManagerScore:
             q   = trans.transform.rotation
             yaw = euler_from_quaternion([q.x, q.y, q.z, q.w])[2]
             rospy.loginfo(
-                f"get_map_to_base_footprint (direct): "
+                f"get_map_to_base_link (direct): "
                 f"x={x:.3f}, y={y:.3f}, yaw={math.degrees(yaw):.1f}deg")
             return (x, y, yaw)
         except Exception as exc_direct:
-            # 直接查找失败，尝试手动合成 map→odom × odom→base_footprint
+            # 直接查找失败，尝试手动合成 map→odom × odom→base_link
             rospy.logwarn(
-                f"get_map_to_base_footprint: direct lookup failed ({exc_direct}), "
-                "trying manual composition map→odom × odom→base_footprint")
+                f"get_map_to_base_link: direct lookup failed ({exc_direct}), "
+                "trying manual composition map→odom × odom→base_link")
             try:
                 map_to_odom = self.tf_buffer.lookup_transform(
                     self.map_frame, self.odom_frame,
@@ -239,17 +239,17 @@ class CartographerTrajectoryManagerScore:
                 y = (map_to_odom.transform.translation.y
                      + odom_to_base.transform.translation.y)
 
-                # 简化处理：取 odom→base_footprint 的 yaw
+                # 简化处理：取 odom→base_link 的 yaw
                 q_base = odom_to_base.transform.rotation
                 yaw = euler_from_quaternion([q_base.x, q_base.y, q_base.z, q_base.w])[2]
 
                 rospy.loginfo(
-                    f"get_map_to_base_footprint (composed): "
+                    f"get_map_to_base_link (composed): "
                     f"x={x:.3f}, y={y:.3f}, yaw={math.degrees(yaw):.1f}deg")
                 return (x, y, yaw)
             except Exception as exc_compose:
                 rospy.logerr(
-                    f"get_map_to_base_footprint: composition also failed: {exc_compose}")
+                    f"get_map_to_base_link: composition also failed: {exc_compose}")
                 return None
 
     # ═══════════════════════════════════════════════════════════════════════
@@ -458,7 +458,7 @@ class CartographerTrajectoryManagerScore:
         2. 关闭最新的活跃轨迹
         3. 启动 fast_reloc 轨迹（盲启，无初始位姿）
         4. 等待 10s 让 fast_reloc 稳定
-        5. 获取当前 map→base_footprint 位姿
+        5. 获取当前 map→base_link 位姿
         6. 关闭 fast_reloc 轨迹
         7. 使用步骤 5 捕获的位姿 + 默认配置启动新轨迹
         """
@@ -521,7 +521,7 @@ class CartographerTrajectoryManagerScore:
         for attempt in range(1, self.recovery_pose_max_retries + 1):
             if rospy.is_shutdown():
                 return
-            pose = self.get_map_to_base_footprint()
+            pose = self.get_map_to_base_link()
             if pose is not None:
                 rospy.logwarn(
                     f"[{source}] RECOVERY [5/7]: 第 {attempt} 次尝试成功获取位姿: "
@@ -609,11 +609,11 @@ class CartographerTrajectoryManagerScore:
             self.score_low_count = 0
 
     # ═══════════════════════════════════════════════════════════════════════
-    # 8. Offset / Rotation 定时回调（map→base_footprint）
+    # 8. Offset / Rotation 定时回调（map→base_link）
     # ═══════════════════════════════════════════════════════════════════════
 
     def offset_timer_callback(self, event):
-        """检测 base_footprint 在 map 坐标系下的瞬时位置/姿态跳变。
+        """检测 base_link 在 map 坐标系下的瞬时位置/姿态跳变。
 
         仅在 cartographer 启动 startup_delay 秒后激活。
 

@@ -41,7 +41,7 @@ class LocalizationRecoveryNode(object):
         self.slam_toolbox_reset_service = rospy.get_param('~slam_toolbox_reset_service', '/' + self.slam_toolbox_node_name + '/reset')
         self.cartographer_reset_service = rospy.get_param('~cartographer_reset_service', '/cartographer_reset')
         self.initialpose_topic = rospy.get_param('~initialpose_topic', '/initialpose')
-        self.base_frame = rospy.get_param('~base_frame', 'base_footprint')
+        self.base_frame = rospy.get_param('~base_frame', 'base_link')
         self.publish_initialpose = rospy.get_param('~publish_initialpose', True)
 
         # Optional recovery strategy

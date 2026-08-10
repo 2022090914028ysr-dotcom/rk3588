@@ -77,7 +77,7 @@
                  -configuration_basename livox_2d.lua"
           output="screen">
       <remap from="scan" to="/scan" />
-      <remap from="odom" to="/odom_rf2o" />
+      <remap from="odom" to="/odom" />
     </node>
 
     <!-- Occupancy grid (for RViz visualisation / costmap) -->

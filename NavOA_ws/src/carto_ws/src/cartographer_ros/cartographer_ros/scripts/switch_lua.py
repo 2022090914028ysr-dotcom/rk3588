@@ -31,7 +31,7 @@ from cartographer_guard_score_fast_reloc import CartographerTrajectoryManagerSco
 
 def _do_fast_to_slow_swap(manager):
     """Finish the currently-active trajectory and start a new one with
-    the slow Lua, using the latest map→base_footprint pose. Reset
+    the slow Lua, using the latest map→base_link pose. Reset
     runtime-guard baselines so they don't false-trigger after the swap.
     """
     # Refuse to swap if a recovery is already in progress.
@@ -46,9 +46,9 @@ def _do_fast_to_slow_swap(manager):
         rospy.loginfo("[SWAP] fast → slow handoff starting.")
 
         # 1. Capture current pose from the fast Lua trajectory.
-        pose = manager.get_map_to_base_footprint()
+        pose = manager.get_map_to_base_link()
         if pose is None:
-            rospy.logerr("[SWAP] could not get map→base_footprint pose; "
+            rospy.logerr("[SWAP] could not get map→base_link pose; "
                          "aborting swap (fast Lua will keep running).")
             return
         x, y, yaw = pose

@@ -10,7 +10,7 @@ and publishes status feedback on /mode_status (std_msgs/String).
 Commands:
   "start_mapping"   — Finish current traj (if any), start mapping trajectory
   "stop_mapping"    — Save map, finish mapping traj, start localization traj
-                       with cached map→base_footprint pose
+                       with cached map→base_link pose
   "carto_start"     — Launch cartographer_node via roslaunch (configurable)
   "carto_stop"      — Kill cartographer_node
   "get_status"      — Publish current mode on /mode_status
@@ -70,7 +70,7 @@ class ModeManager:
                 os.path.dirname(rospkg.RosPack().get_path('cartographer_ros')),
                 os.pardir, os.pardir, 'map'))
         self.map_frame = rospy.get_param("~map_frame", "map")
-        self.base_frame = rospy.get_param("~base_frame", "base_footprint")
+        self.base_frame = rospy.get_param("~base_frame", "base_link")
         self.tf_timeout = rospy.get_param("~tf_timeout", 1.0)
         self.carto_launch_pkg = rospy.get_param(
             "~carto_launch_pkg", "cartographer_ros")
@@ -345,7 +345,7 @@ class ModeManager:
                                    "Failed to publish status: %s", e)
 
     def _get_pose(self):
-        """Look up map→base_footprint transform and return as Pose.
+        """Look up map→base_link transform and return as Pose.
 
         Retries with tf_timeout. Returns None on failure.
         """

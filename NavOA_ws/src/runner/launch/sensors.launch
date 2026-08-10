@@ -29,7 +29,7 @@
       <param name="scan_row_end"   type="int"   value="320"/>
       <param name="range_min"    type="double" value="0.0"/>
       <param name="range_max"    type="double" value="5"/>
-      <param name="output_frame" type="str"   value="base_footprint"/>
+      <param name="output_frame" type="str"   value="base_link"/>
       <param name="fy"           type="double" value="420.85"/>
       <param name="cy"           type="double" value="240.69"/>
       <param name="camera_height" type="double" value="0.3"/>
@@ -54,17 +54,18 @@
   </node>
 
   <node pkg="tf2_ros" type="static_transform_publisher" name="base_link_to_laser"
-      args="0 0 0.2 0 0 0 base_footprint laser_frame" />
+      args="0 0 0.2 0 0 0 base_link laser_frame" />
 
   <!-- 2-way merge: /camscan + /scan -> /mergescan  (ultrasonic removed; used as virtual bumper in vel_filter) -->
   <!-- <node pkg="ascamera" name="scan_merger" type="scan_merge.py" output="screen">
     <param name="topics"        type="yaml"  value="['/scan', '/camscan','/voscan']"/>
     <param name="angle_offsets" type="yaml"  value="[-0.7854, 0.0,0.0]"/>
-    <param name="output_frame"  type="str"   value="base_footprint"/>
+    <param name="output_frame"  type="str"   value="base_link"/>
     <param name="timeout"       type="double" value="1.0"/>
     <param name="pub_rate"     type="double" value="10"/>
   </node> -->
   <include file="$(find rf2o_laser_odometry)/launch/rf2o_laser_odometry.launch" />
+  <include file="$(find rf2o_laser_odometry)/launch/ekf_fusion.launch" />
   
   <node pkg="NavOA_ros" name="multi_ultrasonic_scan" type="multi_ultrasonic_scan.py" output="screen" if="$(arg use_ultrasonic)" />
   <!-- Bridge /cmd_vel and IMU over /dev/ttyS6 to the other PC -->

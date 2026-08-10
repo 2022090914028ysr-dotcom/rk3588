@@ -174,7 +174,7 @@ model:
 Run at **50 Hz**, the control loop does:
 
 ```
-1. Look up robot pose from TF (map→base_footprint)
+1. Look up robot pose from TF (map→base_link)
 2. Get current goal from /NavOA_goal or /NavOA_waypoints
 3. If no active goal, publish zero velocity
 4. Get laser scan from /scan

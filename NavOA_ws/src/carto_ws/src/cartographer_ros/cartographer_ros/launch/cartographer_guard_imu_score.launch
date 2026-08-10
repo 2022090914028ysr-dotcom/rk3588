@@ -46,7 +46,7 @@
     <param name="score_consecutive_frames" value="10" />
 
     <!-- ============================================================ -->
-    <!-- Offset-based triggering (map→base_footprint jump detection)    -->
+    <!-- Offset-based triggering (map→base_link jump detection)    -->
     <!--   Only active after cartographer has been running for          -->
     <!--   offset_startup_delay seconds.                               -->
     <!-- ============================================================ -->
@@ -55,7 +55,7 @@
     <param name="offset_consecutive_frames" value="1" />
     <param name="offset_startup_delay"      value="30.0" />
     <param name="map_frame"                 value="map" />
-    <param name="base_frame"                value="base_footprint" />
+    <param name="base_frame"                value="base_link" />
 
     <!-- ============================================================ -->
     <!-- Rotation-based triggering (yaw jump detection in map frame)   -->

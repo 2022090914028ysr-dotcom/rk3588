@@ -5,7 +5,7 @@
   <!-- LiDAR driver -->
   <include file="$(find lidar_ros)/launch/lidar.launch" />
 
-  <!-- Laser odometry and odom -> base_footprint TF -->
+  <!-- Laser odometry and odom -> base_link TF -->
   <include file="$(find rf2o_laser_odometry)/launch/rf2o_laser_odometry.launch" />
   <include file="$(find rf2o_laser_odometry)/launch/ekf_fusion.launch" />
 
@@ -17,7 +17,7 @@
   <!-- NavOA navigation node with the same map/base/lidar frames -->
   <!-- <include file="$(find NavOA_ros)/example/gazebo_limo/launch/NavOA_gazebo_limo.launch">
     <arg name="map_frame" value="map" />
-    <arg name="base_frame" value="base_footprint" />
+    <arg name="base_frame" value="base_link" />
     <arg name="lidar_frame" value="laser_frame" />
   </include> -->
 

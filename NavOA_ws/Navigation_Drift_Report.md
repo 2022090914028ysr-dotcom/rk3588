@@ -12,11 +12,11 @@ This causes the robot to appear aware of its own location, while the positions o
 
 - `lidar_ros/launch/lidar.launch`
   - Publishes `/scan`
-  - Provides static transform `base_footprint -> laser_frame`
+  - Provides static transform `base_link -> laser_frame`
 - `rf2o_laser_odometry/launch/rf2o_laser_odometry.launch`
   - Consumes `/scan`
   - Publishes `/odom_rf2o`
-  - Publishes a local `odom -> base_footprint` transform
+  - Publishes a local `odom -> base_link` transform
 - `rf2o_laser_odometry/launch/ekf_fusion.launch`
   - Runs `robot_localization/ekf_localization_node`
   - Loads `rf2o_laser_odometry/ekf_params.yaml`
@@ -47,7 +47,7 @@ Cartographer receives:
 
 In your config:
 - `map_frame = "map"`
-- `tracking_frame = "base_footprint"`
+- `tracking_frame = "base_link"`
 - `odom_frame = "odom"`
 - `provide_odom_frame = false`
 - `use_odometry = true`
@@ -62,24 +62,24 @@ This means Cartographer should:
 Ideal flow:
 
 ```
-/scan -> Cartographer frontend -> pose estimate in base_footprint
-/odom -> EKF -> odom -> base_footprint
+/scan -> Cartographer frontend -> pose estimate in base_link
+/odom -> EKF -> odom -> base_link
 Cartographer publishes map -> odom
 ```
 
 Then the full pose chain is:
 
 ```
-map -> odom -> base_footprint -> laser_frame
+map -> odom -> base_link -> laser_frame
 ```
 
 ### 3.3 What Cartographer actually does in the current launch
 
 The launch file `carto_localization.launch` passes a node-level parameter:
 
-- `published_frame = base_footprint`
+- `published_frame = base_link`
 
-That means the Cartographer node is likely publishing `map -> base_footprint` directly.
+That means the Cartographer node is likely publishing `map -> base_link` directly.
 
 This is a mismatch with the config file `limo_localization_fast.lua`, which sets `published_frame = "odom"`. The launch override is therefore the most important current issue.
 
@@ -89,9 +89,9 @@ This is a mismatch with the config file `limo_localization_fast.lua`, which sets
 
 The missing point is this:
 
-- EKF provides `/odom` and `odom -> base_footprint`
+- EKF provides `/odom` and `odom -> base_link`
 - Cartographer should publish `map -> odom`
-- But the launch file overrides Cartographer to publish `map -> base_footprint`
+- But the launch file overrides Cartographer to publish `map -> base_link`
 
 The result is that Cartographer is not anchored through the EKF odometry frame, so:
 
@@ -119,14 +119,14 @@ Slow recovery often comes from:
 - no good initial pose in the saved map frame
 - a large map with only local scan matching enabled
 - constraints or global localization not being triggered quickly enough
-- Cartographer effectively trying to relocalize using only map->base_footprint updates instead of map->odom
+- Cartographer effectively trying to relocalize using only map->base_link updates instead of map->odom
 
 ## 5. Why the Map Objects Look Disorganized
 
 ### 5.1 Two main causes
 
 1. **Frame publication mismatch**
-   - If Cartographer is publishing `map -> base_footprint`, it bypasses the EKF odometry anchor.
+   - If Cartographer is publishing `map -> base_link`, it bypasses the EKF odometry anchor.
    - This makes the base pose visually correct in some cases, but the internal map reference drifts relative to the planner map.
 
 2. **Dual map source mismatch**
@@ -145,7 +145,7 @@ Slow recovery often comes from:
 ### 6.1 Primary fix: align Cartographer with EKF odom
 
 In `src/NavOA_ros/example/gazebo_limo/launch/carto_localization.launch`:
-- remove or change the node param `published_frame = base_footprint`
+- remove or change the node param `published_frame = base_link`
 - set `published_frame = odom`
 - keep `odom_frame = odom`
 - keep `map_frame = map`
@@ -155,7 +155,7 @@ In your Cartographer config files:
 - keep `published_frame = "odom"`
 - keep `use_odometry = true`
 
-This will make Cartographer produce `map -> odom`, which is the proper link to the EKF-published `odom -> base_footprint`.
+This will make Cartographer produce `map -> odom`, which is the proper link to the EKF-published `odom -> base_link`.
 
 ### 6.2 Secondary fix: unify map sources
 
@@ -181,7 +181,7 @@ This helps Cartographer align the loaded map immediately instead of searching fo
 
 Check these in the running system:
 - `rosrun tf tf_echo map odom`
-- `rosrun tf tf_echo odom base_footprint`
+- `rosrun tf tf_echo odom base_link`
 - `rostopic echo -n 1 /odom/header`
 - `rostopic hz /scan`
 - `rosrun tf view_frames`
@@ -197,11 +197,11 @@ If the problem persists after fixing the frame flow:
 
 ## 7. Practical Step-by-Step Plan
 
-1. Inspect `carto_localization.launch` and remove the `published_frame = base_footprint` override.
+1. Inspect `carto_localization.launch` and remove the `published_frame = base_link` override.
 2. Confirm `limo_localization_fast.lua` and `limo_2d_reloc.lua` both publish `odom` and do not provide the odom frame.
-3. Confirm the EKF node is publishing `/odom` and `odom -> base_footprint`.
+3. Confirm the EKF node is publishing `/odom` and `odom -> base_link`.
 4. Verify the static `map_server` YAML map is derived from the same `.pbstream` used for localization.
-5. Start the system and verify `map -> odom -> base_footprint` continuously.
+5. Start the system and verify `map -> odom -> base_link` continuously.
 6. Publish a known `initialpose` after startup to speed recovery.
 7. Monitor `move_base` and RViz object positions for alignment.
 8. If needed, switch `move_base` to use Cartographer's live map instead of a separate static YAML map.
@@ -213,12 +213,12 @@ If the problem persists after fixing the frame flow:
 ```
 [LiDAR] --> /scan --> [RF2O] --> /odom_rf2o --> [EKF] --> /odom
                                    \                         
-                                    \--> odom->base_footprint  
+                                    \--> odom->base_link  
                                             |                 
                                             v                 
                                        [Cartographer]         
                                             |                 
-                                   map->base_footprint       
+                                   map->base_link       
                                             |                 
                                  [move_base/map_server]
                                             ^                 
@@ -231,7 +231,7 @@ If the problem persists after fixing the frame flow:
 [LiDAR] --> /scan --> [RF2O] --> /odom_rf2o --> [EKF] --> /odom --> [Cartographer]
                                             |                       |
                                             |                       v
-                                            +-> base_footprint   map->odom
+                                            +-> base_link   map->odom
                                                                     |
                                                          [move_base / map_server]
                                                             same map origin

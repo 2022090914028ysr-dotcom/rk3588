@@ -3,7 +3,7 @@ slam_toolbox:
     mode: mapping #to use localization, change to "localization"
     map_frame: map
     odom_frame: odom
-    base_frame: base_footprint
+    base_frame: base_link
     scan_topic: /scan
     use_sim_time: false
     map_save_period_sec: 0.0

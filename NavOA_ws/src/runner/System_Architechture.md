@@ -154,7 +154,7 @@ runner_node:    │
   1. Check cartographer is alive
   2. Get active trajectory ID
   3. Get reference trajectory (ID 0, FINISHED)
-  4. Cache robot pose from TF (map→base_footprint)
+  4. Cache robot pose from TF (map→base_link)
   5. /finish_trajectory     ← stops current trajectory
   6. /start_trajectory      ← starts mapping (no trimmer)
      config: livox_2d.lua

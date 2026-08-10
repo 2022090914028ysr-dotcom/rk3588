@@ -13,7 +13,7 @@
        -start_trajectory_with_default_topics=$(arg start_trajectory_with_default_topics)"
         output="screen">
     <remap from="scan" to="/scan" />
-    <remap from="odom" to="/odom_rf2o" />
+    <remap from="odom" to="/odom" />
   </node>
 
   <node name="cartographer_occupancy_grid_node" pkg="cartographer_ros"

@@ -39,7 +39,7 @@
                -load_state_filename $(arg pbstream_file)"
         output="screen">
     <remap from="scan" to="/scan" />
-    <remap from="odom" to="/odom_rf2o" />
+    <remap from="odom" to="/odom" />
   </node>
 
   <!-- Cartographer occupancy grid (remapped to avoid conflict with map_server) -->

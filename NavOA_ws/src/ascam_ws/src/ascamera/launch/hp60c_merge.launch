@@ -8,7 +8,7 @@
     <node pkg="ascamera" name="scan_merger" type="scan_merge.py" output="screen">
         <param name="topic_a"       type="str"   value="/scan"/>
         <param name="topic_b"       type="str"   value="/camscan"/>
-        <param name="output_frame"  type="str"   value="base_footprint"/>
+        <param name="output_frame"  type="str"   value="base_link"/>
         <param name="timeout"       type="double" value="1.0"/>
         <param name="angle_offset_a" type="double" value="-0.7854"/>
         <param name="angle_offset_b" type="double" value="0"/>   <!-- camscan -90 deg CCW -->

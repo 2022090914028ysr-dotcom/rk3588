@@ -1,6 +1,6 @@
 global_costmap:
   global_frame: map
-  robot_base_frame: base_footprint
+  robot_base_frame: base_link
   update_frequency: 1.0
   publish_frequency: 1.0
   transform_tolerance: 1  
@@ -26,8 +26,8 @@ global_costmap:
     
     
   inflation_layer:
-    inflation_radius: 0.15
-    cost_scaling_factor: 2.0
+    inflation_radius: 0.35
+    cost_scaling_factor: 10.0
     inscribed_radius: 0.15
     
   # 可选：发布话题配置

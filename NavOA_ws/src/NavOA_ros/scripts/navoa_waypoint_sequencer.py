@@ -33,7 +33,7 @@ def _turn_angle(p_prev: Tuple[float, float], p_curr: Tuple[float, float], p_next
 class WaypointSequencer:
     def __init__(self):
         self.map_frame = rospy.get_param('~map_frame', 'map')
-        self.base_frame = rospy.get_param('~base_frame', 'base_footprint')
+        self.base_frame = rospy.get_param('~base_frame', 'base_link')
         self.path_topic = rospy.get_param('~path_topic', '/move_base/GlobalPlanner/plan')
         self.goal_topic = rospy.get_param('~goal_topic', '/move_base_simple/goal')
         self.angle_threshold_deg = float(rospy.get_param('~angle_threshold_deg', 25.0))

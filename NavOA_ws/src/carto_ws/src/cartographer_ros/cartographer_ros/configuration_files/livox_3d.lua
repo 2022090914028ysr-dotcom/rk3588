@@ -1,5 +1,5 @@
--- Cartographer 3D Ë«´«¸ÐÆ÷½¨Í¼ÅäÖÃ
--- Livox 2D ¼¤¹â + HP60C Éî¶ÈÏà»úµãÔÆ
+-- Cartographer 3D Ë«ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Í¼ï¿½ï¿½ï¿½ï¿½
+-- Livox 2D ï¿½ï¿½ï¿½ï¿½ + HP60C ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 
 include "map_builder.lua"
 include "trajectory_builder.lua"
@@ -8,19 +8,19 @@ options = {
   map_builder = MAP_BUILDER,
   trajectory_builder = TRAJECTORY_BUILDER,
   map_frame = "map",
-  tracking_frame = "base_footprint",
+  tracking_frame = "base_link",
   published_frame = "odom",
   odom_frame = "odom",
-  provide_odom_frame = false,            -- rf2o ¸ºÔð·¢²¼ odom->base_footprint
+  provide_odom_frame = false,            -- rf2o ï¿½ï¿½ï¿½ð·¢²ï¿½base_linkotprint
   publish_frame_projected_to_2d = false,
   use_pose_extrapolator = true,
-  use_odometry = true,                   -- ¶©ÔÄ /odom_rf2o
+  use_odometry = true,                   -- ï¿½ï¿½ï¿½ï¿½ /odom_rf2o
   use_nav_sat = false,
   use_landmarks = false,
 
-  -- Livox 2D ¼¤¹â
+  -- Livox 2D ï¿½ï¿½ï¿½ï¿½
   num_laser_scans = 1,
-  -- HP60C Éî¶ÈÏà»úµãÔÆ
+  -- HP60C ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
   num_point_clouds = 1,
 
   num_multi_echo_laser_scans = 0,
@@ -38,25 +38,25 @@ options = {
   landmarks_sampling_ratio = 1.0,
 }
 
--- ÆôÓÃ 3D ¹ì¼£¹¹½¨Æ÷
+-- ï¿½ï¿½ï¿½ï¿½ 3D ï¿½ì¼£ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 MAP_BUILDER.use_trajectory_builder_3d = true
 
--- 3D ½¨Í¼²ÎÊý
+-- 3D ï¿½ï¿½Í¼ï¿½ï¿½ï¿½ï¿½
 TRAJECTORY_BUILDER_3D.num_accumulated_range_data = 30
 TRAJECTORY_BUILDER_3D.min_range = 0.1
 TRAJECTORY_BUILDER_3D.max_range = 4.0
 
--- ÌåËØÂË²¨£¨½µ²ÉÑù£©
+-- ï¿½ï¿½ï¿½ï¿½ï¿½Ë²ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 TRAJECTORY_BUILDER_3D.voxel_filter_size = 0.05
 TRAJECTORY_BUILDER_3D.high_resolution_adaptive_voxel_filter.max_length = 0.5
 TRAJECTORY_BUILDER_3D.high_resolution_adaptive_voxel_filter.min_num_points = 100
 
--- ²»Ê¹ÓÃ IMU
+-- ï¿½ï¿½Ê¹ï¿½ï¿½ IMU
 TRAJECTORY_BUILDER_3D.use_online_correlative_scan_matching = true
 TRAJECTORY_BUILDER_3D.real_time_correlative_scan_matcher.linear_search_window = 0.15
 TRAJECTORY_BUILDER_3D.real_time_correlative_scan_matcher.angular_search_window = math.rad(15.)
 
--- Ceres É¨ÃèÆ¥Åä
+-- Ceres É¨ï¿½ï¿½Æ¥ï¿½ï¿½
 TRAJECTORY_BUILDER_3D.ceres_scan_matcher.occupied_space_weight_0 = 1.0
 TRAJECTORY_BUILDER_3D.ceres_scan_matcher.occupied_space_weight_1 = 6.0
 TRAJECTORY_BUILDER_3D.ceres_scan_matcher.translation_weight = 10.0
@@ -65,7 +65,7 @@ TRAJECTORY_BUILDER_3D.ceres_scan_matcher.rotation_weight = 40.0
 -- Submap
 TRAJECTORY_BUILDER_3D.submaps.num_range_data = 90
 
--- »Ø»·¼ì²â
+-- ï¿½Ø»ï¿½ï¿½ï¿½ï¿½
 POSE_GRAPH.optimization_problem.huber_scale = 5e2
 POSE_GRAPH.optimize_every_n_nodes = 90
 POSE_GRAPH.constraint_builder.min_score = 0.65

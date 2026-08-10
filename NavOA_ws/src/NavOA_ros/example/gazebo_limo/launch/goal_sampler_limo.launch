@@ -10,7 +10,7 @@
   <arg name="sample_count" default="5" />
   <!-- Optional bbox filter: xmin xmax ymin ymax -->
   <arg name="area_bbox" default="" />
-  <arg name="base_frame" default="base_footprint" />
+  <arg name="base_frame" default="base_link" />
 
   <node name="goal_sampler" pkg="NavOA_ros" type="goal_publisher_node.py" output="screen">
     <param name="mode" value="sample_unknown" />

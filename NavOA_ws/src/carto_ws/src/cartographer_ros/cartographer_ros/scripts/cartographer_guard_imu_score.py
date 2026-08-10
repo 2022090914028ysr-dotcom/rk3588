@@ -10,8 +10,8 @@ Both paths use the same recovery: hard reset (kill nodes + roslaunch relaunch).
 Detection sources (all enabled by default):
   1. IMU:      roll/pitch fall detection → hard reset
   2. Score:    matching score below threshold for N consecutive frames → hard reset
-  3. Offset:   map→base_footprint position jump > threshold → hard reset
-  4. Rotation: map→base_footprint |Δyaw| > 90° → hard reset
+  3. Offset:   map→base_link position jump > threshold → hard reset
+  4. Rotation: map→base_link |Δyaw| > 90° → hard reset
 
 Both offset and rotation only become active after the cartographer node has
 been running for offset_startup_delay (default 120s).
@@ -61,7 +61,7 @@ class CartographerImuScoreGuard:
         self.score_consecutive_frames = rospy.get_param("~score_consecutive_frames", 10)
 
         # ==================================================================
-        # Offset-based triggering (map→base_footprint jump detection)
+        # Offset-based triggering (map→base_link jump detection)
         #   Monitors instantaneous position jumps in map frame.
         #   Only active after cartographer has been running for startup_delay.
         # ==================================================================
@@ -70,7 +70,7 @@ class CartographerImuScoreGuard:
         self.offset_consecutive_frames = rospy.get_param("~offset_consecutive_frames", 3)
         self.offset_startup_delay      = rospy.get_param("~offset_startup_delay", 120.0)
         self.map_frame                 = rospy.get_param("~map_frame", "map")
-        self.base_frame                = rospy.get_param("~base_frame", "base_footprint")
+        self.base_frame                = rospy.get_param("~base_frame", "base_link")
 
         # ==================================================================
         # Rotation-based triggering (yaw jump detection in map frame)
@@ -323,11 +323,11 @@ class CartographerImuScoreGuard:
             self.score_low_count = 0
 
     # ======================================================================
-    # Offset / Rotation timer callback (map→base_footprint)
+    # Offset / Rotation timer callback (map→base_link)
     # ======================================================================
 
     def offset_timer_callback(self, event):
-        """Check instantaneous position/rotation jumps of base_footprint.
+        """Check instantaneous position/rotation jumps of base_link.
 
         Only active after startup_delay (default 120s) has elapsed since the
         cartographer node started.

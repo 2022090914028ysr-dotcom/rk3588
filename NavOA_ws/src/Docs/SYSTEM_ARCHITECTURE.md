@@ -114,7 +114,7 @@ Derives human-readable status from raw ROS topics. Publishes four status topics:
 | `/localization_status` | `/matching_score` + timeout (5s) | LOCALIZED HIGH (≥0.7) / LOW (≥0.3) / LOST (<0.3) |
 | `/Mapping_status` | `/get_trajectory_states` service + `/app/map_status` | MAPPING ON / LOCALIZATION ON / INITIALIZING / LOST |
 | `/Nav_status` | `/move_base/status` + `/NavOA_cmd_vel` timeout (2s) | IDLE / NAVIGATING / ARRIVED / FAILED / CANCELLED |
-| `/monitor_map_boundary` | `/map` OccupancyGrid + TF map→base_footprint | INSIDE_MAP / NEAR_BOUNDARY / OUT_OF_MAP / (None during settle) |
+| `/monitor_map_boundary` | `/map` OccupancyGrid + TF map→base_link | INSIDE_MAP / NEAR_BOUNDARY / OUT_OF_MAP / (None during settle) |
 
 The map boundary monitor uses a `MapInfo` class that computes:
 - **rect**: Full map bounding box
@@ -154,7 +154,7 @@ runner_node:
   1. Check cartographer is alive (probe /get_trajectory_states)
   2. Get active trajectory ID (if any)
   3. Get reference trajectory — first FINISHED trajectory (ID 0)
-  4. Cache robot pose from TF (map→base_footprint)
+  4. Cache robot pose from TF (map→base_link)
   5. /finish_trajectory  ← stops current trajectory (if active)
   6. /start_trajectory   ← starts mapping trajectory
      config: livox_2d.lua
@@ -171,7 +171,7 @@ Web: "stop_mapping" or "mode:localization"
                 │
 runner_node:
   1. Check cartographer is alive
-  2. Cache robot pose from TF (map→base_footprint)
+  2. Cache robot pose from TF (map→base_link)
   3. /write_state  ← save map to map_<timestamp>.pbstream
   4. Find reference trajectory (ID 0 — FINISHED submaps)
   5. /finish_trajectory  ← stops mapping trajectory
@@ -275,7 +275,7 @@ full.launch (mode:=manager)
 ├── sensors.launch
 │   ├── ascamera (HP60C depth camera)
 │   ├── lidar_node (NVistar VP100 LiDAR)
-│   ├── static TF (base_footprint → laser_frame)
+│   ├── static TF (base_link → laser_frame)
 │   ├── rf2o_laser_odometry
 │   ├── multi_ultrasonic_scan
 │   ├── serial_cmd_vel_imu_bridge

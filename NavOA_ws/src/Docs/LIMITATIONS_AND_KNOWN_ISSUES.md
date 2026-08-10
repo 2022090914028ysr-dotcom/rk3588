@@ -11,14 +11,14 @@
 
 **Source:** [Navigation Drift Executive Summary](../../Navigation_Drift_Executive_Summary.md)
 
-**Problem:** Cartographer is publishing `map → base_footprint` directly instead of `map → odom`. This bypasses the EKF odometry frame, causing global map alignment drift and inconsistent object positioning.
+**Problem:** Cartographer is publishing `map → base_link` directly instead of `map → odom`. This bypasses the EKF odometry frame, causing global map alignment drift and inconsistent object positioning.
 
 **Current (broken) flow:**
 ```
 [LiDAR] → RF2O → EKF → /odom
-                 \ → base_footprint
+                 \ → base_link
                         |
-                    Cartographer → map → base_footprint ← WRONG
+                    Cartographer → map → base_link ← WRONG
                         |
                     move_base / map_server
 ```
@@ -26,7 +26,7 @@
 **Desired flow:**
 ```
 [LiDAR] → RF2O → EKF → /odom → Cartographer
-                 \ → base_footprint        |
+                 \ → base_link        |
                                               ▼
                                           map → odom ← CORRECT
                                               |

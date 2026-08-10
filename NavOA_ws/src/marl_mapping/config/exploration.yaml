@@ -3,7 +3,7 @@
 
 robot_name: "car1"
 map_frame: "map"
-base_frame: "base_footprint"
+base_frame: "base_link"
 
 # Map parameters
 map_size_cm: 2500      # 25m x 25m

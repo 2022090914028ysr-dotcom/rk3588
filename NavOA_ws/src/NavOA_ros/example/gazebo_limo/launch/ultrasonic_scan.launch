@@ -7,8 +7,8 @@
     <param name="frame_id" type="string" value="ultrasonic_frame"/>
   </node>
   
-  <!-- Static TF transform: base_footprint -> ultrasonic_frame -->
+  <!-- Static TF transform: base_link -> ultrasonic_frame -->
   <!-- args: x y z yaw pitch roll parent_frame child_frame period_ms -->
   <node pkg="tf" type="static_transform_publisher" name="base_to_ultrasonic"
-    args="0.19 0.0 0.2 0.0 0.0 0.0 /base_footprint /ultrasonic_frame 40"/>
+    args="0.19 0.0 0.2 0.0 0.0 0.0 /base_link /ultrasonic_frame 40"/>
 </launch>

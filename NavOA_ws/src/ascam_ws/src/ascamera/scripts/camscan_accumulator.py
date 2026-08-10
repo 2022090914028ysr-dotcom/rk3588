@@ -15,7 +15,7 @@ class CamscanAccumulator:
 
         self.topic_in = rospy.get_param('~topic_in', '/camscan')
         self.topic_out = rospy.get_param('~topic_out', '/camscan_wide')
-        self.target_frame = rospy.get_param('~target_frame', 'base_footprint')
+        self.target_frame = rospy.get_param('~target_frame', 'base_link')
         self.map_frame = rospy.get_param('~map_frame', 'map')
         self.cache_duration = rospy.Duration(rospy.get_param('~cache_sec', 5.0))
         self.pub_rate = rospy.get_param('~pub_rate', 10.0)
@@ -61,7 +61,7 @@ class CamscanAccumulator:
         for r, a in zip(ranges, angles):
             if r <= scan.range_min or r >= scan.range_max or r >= self.max_range:
                 continue
-            # point in base_footprint frame
+            # point in base_link frame
             bx = r * math.cos(a)
             by = r * math.sin(a)
             # rotate + translate to map frame

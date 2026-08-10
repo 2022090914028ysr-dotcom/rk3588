@@ -18,7 +18,7 @@
 
 
   <!-- <node pkg="tf" type="static_transform_publisher" name="base_link_to_laser"
-    args="0.0 0.0 0.0 -1.57 0.0 0.0 /base_footprint /laser_frame 40" />
+    args="0.0 0.0 0.0 -1.57 0.0 0.0 /base_link /laser_frame 40" />
 
  <include file="$(find rf2o_laser_odometry)/launch/rf2o_laser_odometry.launch" />
  
@@ -28,7 +28,7 @@
         args="-configuration_directory $(find cartographer_ros)/configuration_files
                -configuration_basename livox_2d.lua" output="screen">
     <remap from="scan" to="/scan" />
-    <remap from="odom" to="/odom_rf2o" />
+    <remap from="odom" to="/odom" />
   </node>
 
 

@@ -65,7 +65,7 @@ lidar_ros/
 
 From `lidar.launch`:
 ```
-base_footprint → laser_frame
+base_link → laser_frame
   x: 0.19 m
   y: 0.0 m
   z: 0.20 m
@@ -261,7 +261,7 @@ Range-flow based 2D laser odometry. Estimates planar motion (x, y, yaw) from con
 - `laser_scan_topic`: `/scan`
 - `odom_topic`: `/odom_rf2o`
 - `publish_tf`: `true`
-- `base_frame_id`: `base_footprint`
+- `base_frame_id`: `base_link`
 - `freq`: 20.0 Hz
 
 ### 6.3 EKF Fusion (robot_localization)

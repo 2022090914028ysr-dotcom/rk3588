@@ -37,7 +37,7 @@
 
     <!-- TF frames -->
     <param name="map_frame" value="map" />
-    <param name="base_frame" value="base_footprint" />
+    <param name="base_frame" value="base_link" />
     <param name="tf_timeout" value="1.0" />
 
     <!-- ROS service names (usually left at default) -->

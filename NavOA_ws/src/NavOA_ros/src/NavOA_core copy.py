@@ -30,7 +30,7 @@ class NavOA_core:
         # ros parameters
         self.planner_config_file = rospy.get_param("~config_file", None)
         self.map_frame = rospy.get_param("~map_frame", "odom")
-        self.base_frame = rospy.get_param("~base_frame", "base_footprint")
+        self.base_frame = rospy.get_param("~base_frame", "base_link")
         self.lidar_frame = rospy.get_param("~lidar_frame", "laser_frame")
         self.marker_size = float(rospy.get_param("~marker_size", "0.05"))
         self.marker_z = float(rospy.get_param("~marker_z", "1.0"))

@@ -169,7 +169,7 @@
 | `range_min` | `0.0` | 最小有效距离（m，launch 覆盖 0.1→0.0） |
 | `range_max` | `5.0` | 最大有效距离（m，launch 覆盖 10.0→5.0） |
 | `scan_time` | `1/30` | 单次扫描时间（秒） |
-| `output_frame` | `base_footprint` | 输出坐标系（launch 覆盖 laser_frame→base_footprint） |
+| `output_frame` | `base_link` | 输出坐标系（launch 覆盖 laser_frame→base_link） |
 | `fy` | `420.85` | 相机 y 方向焦距（像素，launch 覆盖 210.43→420.85） |
 | `cy` | `240.69` | 相机 y 方向主点（像素，launch 覆盖 120.35→240.69） |
 | `camera_height` | `0.3` | 相机离地高度（m） |
@@ -185,7 +185,7 @@
 |------|--------|------|
 | `topic_in` | `/camscan` | 输入窄 FOV scan |
 | `topic_out` | `/camscan_wide` | 输出宽 FOV scan |
-| `target_frame` | `base_footprint` | 目标坐标系 |
+| `target_frame` | `base_link` | 目标坐标系 |
 | `map_frame` | `map` | 地图坐标系 |
 | `cache_sec` | `2.0` | 缓存时长（秒，launch 覆盖 5.0→2.0，更短=更实时） |
 | `pub_rate` | `10.0` | 发布频率（Hz） |
@@ -230,7 +230,7 @@
 |------|--------|------|
 | `config_file` | `NavOA_planner_limo.yaml` | 规划器 YAML 配置文件路径 |
 | `map_frame` | `map` | 地图坐标系 |
-| `base_frame` | `base_footprint` | 机器人基坐标系 |
+| `base_frame` | `base_link` | 机器人基坐标系 |
 | `lidar_frame` | `laser_frame` | 激光雷达坐标系 |
 | `ref_speed` | `0.5` | 参考速度（m/s） |
 | `scan_range` | `0.1 5.0` | 激光雷达有效距离范围（m） |
@@ -288,7 +288,7 @@
 | 参数 | 实际值 | 说明 |
 |------|--------|------|
 | `map_frame` | `map` | 地图坐标系 |
-| `base_frame` | `base_footprint` | 机器人基坐标系 |
+| `base_frame` | `base_link` | 机器人基坐标系 |
 | `map_topic` | `/map` | 地图话题 |
 | `odom_topic` | `/odom_rf2o` | 里程计话题 |
 | `goal_topic` | `/move_base_simple/goal` | 目标点发布话题 |

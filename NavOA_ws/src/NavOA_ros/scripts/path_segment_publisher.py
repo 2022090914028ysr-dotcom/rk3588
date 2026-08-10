@@ -21,7 +21,7 @@ class PathToGoalFollower:
         # 终点到达阈值：必须非常接近终点（0.15米）才算完成，防止终点处飘移
         self.final_tolerance = 0.15 
         
-        self.base_frame = rospy.get_param('~base_frame', 'base_footprint')
+        self.base_frame = rospy.get_param('~base_frame', 'base_link')
         self.map_frame = rospy.get_param('~map_frame', 'map')
 
         # === 变量初始化 ===

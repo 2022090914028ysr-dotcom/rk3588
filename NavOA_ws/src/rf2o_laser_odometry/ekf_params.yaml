@@ -10,7 +10,7 @@ publish_tf: true
 # 坐标系
 map_frame: map
 odom_frame: odom
-base_link_frame: base_footprint
+base_link_frame: base_link
 world_frame: odom               # 纯里程计模式
 
 # ==============================
@@ -32,22 +32,20 @@ odom0_pose_rejection_threshold: 3.0   # 防止大跳变
 odom0_pose_covariance_diagonal: [0.01, 0.01, 0.001, 0.001, 0.001, 0.02]  # Yaw 协方差稍大（容忍小抖）
 
 # ==============================
-# 输入2: 普通商用 IMU（无磁力计！）
+# 输入2: 腿式里程计（SMX/Odom）
 # ==============================
-imu0: /imu
-imu0_config: [false, false, false,
-              false, false, false,    # ❌ 绝不使用 IMU 航向（会漂！）
-              false, false, false,
-              false, false, true,     # ✅ 仅使用 Z 轴角速度（ω_z）
-              false, false, false]    # ❌ 不用加速度
-imu0_differential: false
-imu0_relative: false
-imu0_queue_size: 10
-imu0_remove_gravitational_acceleration: true
-imu0_twist_rejection_threshold: 2.0   # 剔除异常角速度
-
-# 仅设置角速度协方差（反映 IMU 陀螺精度）
-imu0_angular_velocity_covariance_diagonal: [0.01, 0.01, 0.002]  # Z 轴最准，设小一点
+odom1: SMX/Odom
+odom1_config: [true,  true,  false,   # X, Y
+               false, false, true,    # Yaw
+               false, false, false,
+               false, false, false,
+               false, false, false]
+odom1_differential: false
+odom1_relative: false
+odom1_queue_size: 5
+odom1_nodelay: true
+odom1_pose_rejection_threshold: 3.0
+odom1_pose_covariance_diagonal: [0.1, 0.1, 0.001, 0.001, 0.001, 0.1]  # 腿式精度低于激光，协方差较大
 
 # ==============================
 # 协方差调参（旋转稳定性关键！）

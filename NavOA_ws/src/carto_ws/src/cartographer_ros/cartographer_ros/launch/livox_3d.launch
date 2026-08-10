@@ -16,9 +16,9 @@
     <param name="angle_corp_string" type="string" value="" />
   </node>
 
-  <!-- Livox -> base_footprint (height=0.5m) -->
+  <!-- Livox -> base_link (height=0.5m) -->
   <node pkg="tf" type="static_transform_publisher" name="base_link_to_laser"
-    args="0.0 0.0 0.5 -1.57 0.0 0.0 /base_footprint /laser_frame 40" />
+    args="0.0 0.0 0.5 -1.57 0.0 0.0 /base_link /laser_frame 40" />
 
   <!-- ===== HP60C Depth Camera (point cloud enabled) ===== -->
   <node pkg="ascamera" name="ascamera_hp60c" type="ascamera_node" respawn="true" output="screen">
@@ -35,9 +35,9 @@
     <param name="pub_tfTree"   type="boolean" value="false"/>
   </node>
 
-  <!-- HP60C -> base_footprint (height=0.25m) -->
-  <node pkg="tf" type="static_transform_publisher" name="base_footprint_to_camera"
-    args="0.0 0.0 0.25 0.0 0.0 0.0 /base_footprint /ascamera_hp60c_ascamera_0 40" />
+  <!-- HP60C -> base_link (height=0.25m) -->
+  <node pkg="tf" type="static_transform_publisher" name="base_link_to_camera"
+    args="0.0 0.0 0.25 0.0 0.0 0.0 /base_link /ascamera_hp60c_ascamera_0 40" />
 
   <!-- ===== RF2O Odometry ===== -->
   <include file="$(find rf2o_laser_odometry)/launch/rf2o_laser_odometry.launch" />

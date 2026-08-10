@@ -32,7 +32,7 @@ class ExplorationNode:
 
         # ---- Parameters ----
         self.map_frame = rospy.get_param('~map_frame', 'map')
-        self.base_frame = rospy.get_param('~base_frame', 'base_footprint')
+        self.base_frame = rospy.get_param('~base_frame', 'base_link')
         self.map_topic = rospy.get_param('~map_topic', '/map')
         self.odom_topic = rospy.get_param('~odom_topic', '/odom_rf2o')
         self.goal_topic = rospy.get_param('~goal_topic', '/move_base_simple/goal')

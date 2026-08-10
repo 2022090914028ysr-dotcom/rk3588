@@ -7,7 +7,7 @@
 
   <arg name="robot_name" default="car1" />
   <arg name="map_frame" default="map" />
-  <arg name="base_frame" default="base_footprint" />
+  <arg name="base_frame" default="base_link" />
 
   <!-- Topics -->
   <arg name="map_topic" default="/map" />

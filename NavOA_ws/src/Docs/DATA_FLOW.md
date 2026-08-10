@@ -20,7 +20,7 @@ map
   │  (published by rf2o_laser_odometry → /odom_rf2o)
   │  OR (published by EKF fusion → /odom)
   │
-  base_footprint
+  base_link
   │
   │  (static TF, in sensors.launch)
   │  x=0.19, y=0, z=0.20, yaw=-1.57
@@ -33,8 +33,8 @@ map
 | Transform | Publisher | Notes |
 |-----------|-----------|-------|
 | `map → odom` | Cartographer or map_server | Config-dependent: Cartographer `provide_odom_frame=false` means rf2o provides this |
-| `odom → base_footprint` | rf2o_laser_odometry (or EKF) | Published at 20 Hz via `/odom_rf2o` |
-| `base_footprint → laser_frame` | Static TF | Fixed offset: (0.19, 0, 0.20) with yaw -90° |
+| `odom → base_link` | rf2o_laser_odometry (or EKF) | Published at 20 Hz via `/odom_rf2o` |
+| `base_link → laser_frame` | Static TF | Fixed offset: (0.19, 0, 0.20) with yaw -90° |
 
 ### Current TF Issue (Known)
 
@@ -43,11 +43,11 @@ From the [Navigation Drift Executive Summary](../Navigation_Drift_Executive_Summ
 **Current (broken) flow:**
 ```
 [LiDAR] → RF2O → EKF → /odom
-                 \ → base_footprint
+                 \ → base_link
                         |
                     Cartographer
                         |
-                    map → base_footprint   ← WRONG!
+                    map → base_link   ← WRONG!
                         |
                     move_base / map_server
 ```
@@ -55,14 +55,14 @@ From the [Navigation Drift Executive Summary](../Navigation_Drift_Executive_Summ
 **Desired flow:**
 ```
 [LiDAR] → RF2O → EKF → /odom → Cartographer
-                 \ → base_footprint        |
+                 \ → base_link        |
                                              ▼
                                          map → odom   ← CORRECT
                                              |
                                      move_base / map_server
 ```
 
-Cartographer is publishing `map → base_footprint` directly instead of `map → odom`. This bypasses the EKF odometry frame, causing global map alignment drift.
+Cartographer is publishing `map → base_link` directly instead of `map → odom`. This bypasses the EKF odometry frame, causing global map alignment drift.
 
 ---
 
@@ -316,8 +316,8 @@ Using protocol 0x0208 (PROTOCOL_MODEL_NORMAL_NO_QUALITY):
 |-------|-----------|
 | `map` | World-fixed, origin at start of first mapping trajectory. X=forward, Y=left, Z=up |
 | `odom` | World-fixed, drifting reference for local consistency. Same orientation as `map` |
-| `base_footprint` | Robot base, projected to ground plane. X=robot forward, Y=robot left, Z=up |
-| `laser_frame` | LiDAR origin. Rotated -90° yaw from base_footprint (LiDAR scans horizontal plane) |
+| `base_link` | Robot base, projected to ground plane. X=robot forward, Y=robot left, Z=up |
+| `laser_frame` | LiDAR origin. Rotated -90° yaw from base_link (LiDAR scans horizontal plane) |
 
 **NavOA coordinate conventions (in robot frame):**
 - +X: forward

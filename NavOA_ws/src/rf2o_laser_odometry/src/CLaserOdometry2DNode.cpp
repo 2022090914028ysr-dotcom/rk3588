@@ -74,9 +74,9 @@ CLaserOdometry2DNode::CLaserOdometry2DNode() :
   ros::NodeHandle pn("~");
   pn.param<std::string>("laser_scan_topic",laser_scan_topic,"/scan");
   pn.param<std::string>("odom_topic", odom_topic, "/odom");
-  pn.param<std::string>("base_frame_id", base_frame_id, "/base_footprint");
+  pn.param<std::string>("base_frame_id", base_frame_id, "/base_link");
   pn.param<std::string>("odom_frame_id", odom_frame_id, "/odom");
-  pn.param<bool>("publish_tf", publish_tf, true);
+  publish_tf = false;  // hardcoded: EKF now publishes odom→base_link TF
   pn.param<std::string>("init_pose_from_topic", init_pose_from_topic, "/base_pose_ground_truth");
   pn.param<double>("freq",freq,10.0);
   pn.param<bool>("verbose", verbose, false);
@@ -123,8 +123,8 @@ bool CLaserOdometry2DNode::setLaserPoseFromTf()
   transform.setIdentity();
   try
   {
-    tf_listener.waitForTransform("/base_footprint","/laser_frame", ros::Time(), ros::Duration(5.0));
-    tf_listener.lookupTransform("/base_footprint","/laser_frame", ros::Time(0), transform);
+    tf_listener.waitForTransform("/base_link","/laser_frame", ros::Time(), ros::Duration(5.0));
+    tf_listener.lookupTransform("/base_link","/laser_frame", ros::Time(0), transform);
     retrieved = true;
   }
   catch (tf::TransformException &ex)

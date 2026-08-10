@@ -164,13 +164,13 @@ NavOA_ws/
 | **IMU** | WIT-series (WT901?) | `/dev/ttyS6`, 230400 baud, → `/imu` |
 | **Ultrasonic** | DYP-A21 x3 (front/left/right) | UART, → `/ultrasonic/*` |
 | **Motor Controller** | Separate MCU board | `/dev/ttyS1`, 460800 baud, CSV protocol |
-| **LiDAR Mount** | Forward-facing, rotated 90° | TF: `base_footprint → laser_frame` at (0.19, 0, 0.2, yaw=-1.57) |
+| **LiDAR Mount** | Forward-facing, rotated 90° | TF: `base_link → laser_frame` at (0.19, 0, 0.2, yaw=-1.57) |
 
 **TF Tree:**
 ```
-map → odom → base_footprint → laser_frame
+map → odom → base_link → laser_frame
                   ↓
-            (rf2o publishes odom→base_footprint)
+            (rf2o publishes odom→base_link)
 ```
 
 ---

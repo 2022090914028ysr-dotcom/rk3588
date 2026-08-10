@@ -205,7 +205,7 @@ STATE_RECOVERING ──→ recovery complete ──→ STATE_IDLE
 1. Finish latest active trajectory via `/finish_trajectory`
 2. Start fast reloc trajectory with `livox_2d_localization_fast_reloc.lua` (blind, no initial pose)
 3. Wait for robot upright (IMU roll/pitch < 5° for 5 consecutive frames)
-4. Wait `recovery_settle_duration` (2s), then capture `map→base_footprint` TF pose (up to 30 retries)
+4. Wait `recovery_settle_duration` (2s), then capture `map→base_link` TF pose (up to 30 retries)
 5. Finish fast reloc trajectory
 6. Start new trajectory with default config (`livox_2d_localization.lua`) + captured pose via `start_trajectory_with_pose`
 
@@ -216,7 +216,7 @@ STATE_RECOVERING ──→ recovery complete ──→ STATE_IDLE
 2. Finish latest active trajectory
 3. Start fast_reloc trajectory (blind, no pose)
 4. Wait 60 seconds for reloc to converge
-5. Capture `map→base_footprint` TF pose
+5. Capture `map→base_link` TF pose
 6. Finish fast_reloc trajectory
 7. Start default trajectory with captured pose
 
@@ -231,7 +231,7 @@ boot:
         │
         └── wait 20 seconds
               │
-              ├── Capture map→base_footprint pose
+              ├── Capture map→base_link pose
               ├── Finish fast trajectory
               └── Start slow trajectory (livox_2d_localization.lua) with captured pose
                     │

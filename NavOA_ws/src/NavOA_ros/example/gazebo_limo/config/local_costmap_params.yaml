@@ -1,6 +1,6 @@
 local_costmap:
   global_frame: map
-  robot_base_frame: base_footprint
+  robot_base_frame: base_link
   update_frequency: 10.0
   publish_frequency: 10.0
   transform_tolerance: 1
@@ -39,5 +39,5 @@ local_costmap:
 
   inflation_layer:
     enabled: true
-    inflation_radius: 0.0
-    cost_scaling_factor: 2.0
+    inflation_radius: 0.25
+    cost_scaling_factor: 10.0

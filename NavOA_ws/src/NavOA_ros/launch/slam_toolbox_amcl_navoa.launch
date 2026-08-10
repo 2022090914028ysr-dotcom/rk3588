@@ -2,7 +2,7 @@
   <arg name="use_sim_time" default="false" />
   <arg name="map_file" default="$(find NavOA_ros)/example/gazebo_limo/maps/slamtoolbox_map.yaml" />
   <arg name="odom_frame" default="odom" />
-  <arg name="base_frame" default="base_footprint" />
+  <arg name="base_frame" default="base_link" />
   <arg name="scan_topic" default="/scan" />
   <arg name="odom_topic" default="/odom" />
 
@@ -35,7 +35,7 @@
 
   <!-- <include file="$(find NavOA_ros)/example/gazebo_limo/launch/NavOA_gazebo_limo.launch">
     <arg name="map_frame" value="map" />
-    <arg name="base_frame" value="base_footprint" />
+    <arg name="base_frame" value="base_link" />
     <arg name="lidar_frame" value="laser_frame" />
   </include> -->
 

@@ -33,7 +33,7 @@
     <!-- Optional seeded hard restart mode -->
     <param name="recovery_mode"               value="seeded_hard_restart" />
     <param name="map_frame"                   value="map" />
-    <param name="robot_frame"                 value="base_footprint" />
+    <param name="robot_frame"                 value="base_link" />
     <param name="start_service"               value="/start_trajectory" />
     <param name="seed_pose_max_age"           value="30.0" />
     <param name="seed_start_timeout"          value="20.0" />

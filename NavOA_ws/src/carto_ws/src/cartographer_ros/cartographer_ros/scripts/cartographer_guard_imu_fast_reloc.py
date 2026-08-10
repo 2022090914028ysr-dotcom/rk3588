@@ -6,7 +6,7 @@ cartographer_trajectory_manager.py
 
 Cartographer 轨迹管理工具，提供以下功能：
   1. 查阅活跃状态的轨迹 ID
-  2. 获取 map→base_footprint 变换（监听 TF 的 map→odom 和 odom→base_footprint 并合成）
+  2. 获取 map→base_link 变换（监听 TF 的 map→odom 和 odom→base_link 并合成）
   3. 关闭最新的活跃轨迹
   4. 按照指定配置文件创建新轨迹
   5. 按照指定配置文件和初始位姿创建新轨迹
@@ -55,7 +55,7 @@ class CartographerTrajectoryManager:
         # ── TF 帧 ───────────────────────────────────────────────────────
         self.map_frame           = rospy.get_param("~map_frame",           "map")
         self.odom_frame          = rospy.get_param("~odom_frame",          "odom")
-        self.robot_frame         = rospy.get_param("~robot_frame",         "base_footprint")
+        self.robot_frame         = rospy.get_param("~robot_frame",         "base_link")
         self.tf_lookup_timeout   = rospy.get_param("~tf_lookup_timeout",    0.1)
 
         # ── IMU 摔倒检测 ─────────────────────────────────────────────────
@@ -135,16 +135,16 @@ class CartographerTrajectoryManager:
             return None
 
     # ═══════════════════════════════════════════════════════════════════════
-    # 2. 获取 map→base_footprint 变换
+    # 2. 获取 map→base_link 变换
     # ═══════════════════════════════════════════════════════════════════════
 
-    def get_map_to_base_footprint(self):
-        """监听 TF，合成 map→odom 和 odom→base_footprint，返回 map→base_footprint。
+    def get_map_to_base_link(self):
+        """监听 TF，合成 map→odom 和 odom→base_link，返回 map→base_link。
 
         返回 (x, y, yaw_rad) 元组，失败时返回 None。
         """
         try:
-            # 直接查找 map→base_footprint（TF2 会自动合成链）
+            # 直接查找 map→base_link（TF2 会自动合成链）
             trans = self.tf_buffer.lookup_transform(
                 self.map_frame, self.robot_frame,
                 rospy.Time(0), rospy.Duration(self.tf_lookup_timeout))
@@ -153,14 +153,14 @@ class CartographerTrajectoryManager:
             q   = trans.transform.rotation
             yaw = euler_from_quaternion([q.x, q.y, q.z, q.w])[2]
             rospy.loginfo(
-                f"get_map_to_base_footprint (direct): "
+                f"get_map_to_base_link (direct): "
                 f"x={x:.3f}, y={y:.3f}, yaw={math.degrees(yaw):.1f}deg")
             return (x, y, yaw)
         except Exception as exc_direct:
-            # 直接查找失败，尝试手动合成 map→odom × odom→base_footprint
+            # 直接查找失败，尝试手动合成 map→odom × odom→base_link
             rospy.logwarn(
-                f"get_map_to_base_footprint: direct lookup failed ({exc_direct}), "
-                "trying manual composition map→odom × odom→base_footprint")
+                f"get_map_to_base_link: direct lookup failed ({exc_direct}), "
+                "trying manual composition map→odom × odom→base_link")
             try:
                 map_to_odom = self.tf_buffer.lookup_transform(
                     self.map_frame, self.odom_frame,
@@ -175,17 +175,17 @@ class CartographerTrajectoryManager:
                 y = (map_to_odom.transform.translation.y
                      + odom_to_base.transform.translation.y)
 
-                # 简化处理：取 odom→base_footprint 的 yaw
+                # 简化处理：取 odom→base_link 的 yaw
                 q_base = odom_to_base.transform.rotation
                 yaw = euler_from_quaternion([q_base.x, q_base.y, q_base.z, q_base.w])[2]
 
                 rospy.loginfo(
-                    f"get_map_to_base_footprint (composed): "
+                    f"get_map_to_base_link (composed): "
                     f"x={x:.3f}, y={y:.3f}, yaw={math.degrees(yaw):.1f}deg")
                 return (x, y, yaw)
             except Exception as exc_compose:
                 rospy.logerr(
-                    f"get_map_to_base_footprint: composition also failed: {exc_compose}")
+                    f"get_map_to_base_link: composition also failed: {exc_compose}")
                 return None
 
     # ═══════════════════════════════════════════════════════════════════════
@@ -386,7 +386,7 @@ class CartographerTrajectoryManager:
         1. 关闭最新的活跃轨迹
         2. 启动 fast_reloc 配置的新轨迹（无初始位姿）
         3. 等待机器人站起来稳定
-        4. 尝试获取 map→base_footprint 位姿作为初始位姿
+        4. 尝试获取 map→base_link 位姿作为初始位姿
         5. 关闭 fast_reloc 轨迹
         6. 使用默认配置和初始位姿启动新轨迹
         """
@@ -434,13 +434,13 @@ class CartographerTrajectoryManager:
             f"RECOVERY [3/6]: 机器人已直立，等待 {self.recovery_settle_duration}s 让定位稳定...")
         rospy.sleep(self.recovery_settle_duration)
 
-        # ── 步骤 4: 尝试获取 map→base_footprint 位姿 ─────────────────────
-        rospy.logwarn("RECOVERY [4/6]: 尝试获取 map→base_footprint 位姿...")
+        # ── 步骤 4: 尝试获取 map→base_link 位姿 ─────────────────────
+        rospy.logwarn("RECOVERY [4/6]: 尝试获取 map→base_link 位姿...")
         pose = None
         for attempt in range(1, self.recovery_pose_max_retries + 1):
             if rospy.is_shutdown():
                 return
-            pose = self.get_map_to_base_footprint()
+            pose = self.get_map_to_base_link()
             if pose is not None:
                 rospy.logwarn(
                     f"RECOVERY [4/6]: 第 {attempt} 次尝试成功获取位姿: "

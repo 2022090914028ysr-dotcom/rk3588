@@ -3,7 +3,7 @@
   cartographer_guard.launch（v1 干净版）
 
   TF 树（实际机器人）：
-    map → odom → base_footprint → laser_frame
+    map → odom → base_link → laser_frame
 
   v1 重点：
   - 配合 v1 lua 跑（threads=8, num_range_data=50, optimize_every_n_nodes=30, voxel=0.05, resolution=0.05）
@@ -20,7 +20,7 @@
         name="cartographer_guard"
         output="screen">
 
-    <param name="base_frame" value="base_footprint" />
+    <param name="base_frame" value="base_link" />
 
     <!-- 话题配置 -->
     <param name="score_topic" value="/matching_score" />

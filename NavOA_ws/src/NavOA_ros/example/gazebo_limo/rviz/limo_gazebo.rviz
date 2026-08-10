@@ -78,7 +78,7 @@ Visualization Manager:
         All Enabled: false
         ascamera_hp60c_camera_link_0:
           Value: true
-        base_footprint:
+        base_link:
           Value: true
         imu_link:
           Value: true
@@ -97,7 +97,7 @@ Visualization Manager:
       Tree:
         map:
           odom:
-            base_footprint:
+            base_link:
               ascamera_hp60c_camera_link_0:
                 {}
               imu_link:
@@ -274,7 +274,7 @@ Visualization Manager:
       Length: 1
       Name: Axes
       Radius: 0.10000000149011612
-      Reference Frame: base_footprint
+      Reference Frame: base_link
       Show Trail: false
       Value: true
     - Class: rviz/Camera

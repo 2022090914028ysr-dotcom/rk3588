@@ -11,7 +11,7 @@ via `rosbridge_server`.
 # Source the workspace
 source /opt/ros/noetic/setup.bash
 source ~/Robit_SlamNav/NavOA_ws/devel_isolated/setup.bash
-
+conda activate control
 # Mapping mode (build a new map)
 roslaunch runner mapping.launch
 
@@ -191,7 +191,7 @@ instead of killing and restarting the node:
 ### stop_mapping (Map → Localize)
 
 ```
-1. TF lookup map→base_footprint   → save current pose
+1. TF lookup map→base_link   → save current pose
 2. /write_state                    → save .pbstream to disk
 3. /get_trajectory_states          → find a stable reference trajectory
 4. /finish_trajectory              → stop the mapping trajectory
@@ -310,7 +310,7 @@ a new trajectory via `/start_trajectory`. The `_get_reference_trajectory_id()`
 method handles this automatically.
 
 ### TF availability for mode switches
-`stop_mapping` requires a valid `map → base_footprint` TF transform. If the
+`stop_mapping` requires a valid `map → base_link` TF transform. If the
 lidar is blocked or rf2o hasn't initialized, the switch will abort with
 `MODE_ERROR`. Wait for `rostopic echo /matching_score` to show a value before
 triggering mode switches.

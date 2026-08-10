@@ -12,7 +12,7 @@ This is not a simple TF loss. The current system has a frame and map alignment m
 
 ## Core Root Cause
 
-Cartographer is being forced by launch parameters to publish `map -> base_footprint`, while the system should instead publish `map -> odom` and let EKF provide `odom -> base_footprint`.
+Cartographer is being forced by launch parameters to publish `map -> base_link`, while the system should instead publish `map -> odom` and let EKF provide `odom -> base_link`.
 
 That means the localization chain is not properly anchored to the EKF odometry frame, so object pose references and planner map alignment become inconsistent.
 
@@ -28,11 +28,11 @@ That means the localization chain is not properly anchored to the EKF odometry f
 
 ```
 [LiDAR] -> RF2O -> EKF -> /odom
-                      \-> base_footprint
+                      \-> base_link
                             |
                         Cartographer
                             |
-                       map -> base_footprint
+                       map -> base_link
                             |
                        move_base / map_server
 ```
@@ -41,7 +41,7 @@ That means the localization chain is not properly anchored to the EKF odometry f
 
 ```
 [LiDAR] -> RF2O -> EKF -> /odom -> Cartographer
-                      \-> base_footprint        |
+                      \-> base_link        |
                                                  v
                                              map -> odom
                                                  |
@@ -57,17 +57,17 @@ That means the localization chain is not properly anchored to the EKF odometry f
 
 ## Expected Outcome
 
-- Stable `map -> odom -> base_footprint` pose chain
+- Stable `map -> odom -> base_link` pose chain
 - Consistent object positions between Cartographer localization and the planner map
 - Faster relocalization and reduced map pose disorder
 - More reliable navigation planning and execution
 
 ## Action Plan
 
-- Inspect `carto_localization.launch` and remove the `published_frame = base_footprint` override.
+- Inspect `carto_localization.launch` and remove the `published_frame = base_link` override.
 - Confirm `limo_localization_fast.lua` and `limo_2d_reloc.lua` publish `odom` only.
 - Verify `map_server` loads the same map source as Cartographer.
-- Validate with `tf_echo map odom` and `tf_echo odom base_footprint`.
+- Validate with `tf_echo map odom` and `tf_echo odom base_link`.
 - If needed, use Cartographer’s live occupancy grid instead of a separate static YAML map.
 
 ## Management Summary

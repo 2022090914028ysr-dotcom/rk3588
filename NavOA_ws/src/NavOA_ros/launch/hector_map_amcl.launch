@@ -1,7 +1,7 @@
 <launch>
   <arg name="map_file" default="$(find NavOA_ros)/example/gazebo_limo/maps/hector_map.yaml"/>
   <arg name="odom_frame" default="odom"/>
-  <arg name="base_frame" default="base_footprint"/>
+  <arg name="base_frame" default="base_link"/>
   <arg name="scan_topic" default="/scan"/>
   <arg name="odom_topic" default="/odom"/> <!-- or /odom_rf2o if needed -->
 

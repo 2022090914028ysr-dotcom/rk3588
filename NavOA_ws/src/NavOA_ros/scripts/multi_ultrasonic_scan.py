@@ -8,7 +8,7 @@ Default sensor layout:
   /dev/ttyS6 -- right  +75 deg
 
 Each sensor's single-point reading is expanded to a beam width (default 30 deg),
-producing a sensor_msgs/LaserScan with frame_id = "base_footprint".
+producing a sensor_msgs/LaserScan with frame_id = "base_link".
 
 Protocol (same as a21_ultrasonic_mm.py):
   FF Data_H Data_L SUM
@@ -174,7 +174,7 @@ class MultiUltrasonicScan:
         """Build a LaserScan message from current sensor caches."""
         msg = LaserScan()
         msg.header.stamp = rospy.Time.now()
-        msg.header.frame_id = "base_footprint"
+        msg.header.frame_id = "base_link"
         msg.angle_min = self.angle_min
         msg.angle_max = self.angle_max
         msg.angle_increment = self.angle_increment
@@ -242,7 +242,7 @@ def main():
     sys.argv = [sys.argv[0]] + ros_args
 
     parser = argparse.ArgumentParser(
-        description="Multi DYP-A21 -> /scan LaserScan (frame: base_footprint)"
+        description="Multi DYP-A21 -> /scan LaserScan (frame: base_link)"
     )
 
     # ---- serial ports ----

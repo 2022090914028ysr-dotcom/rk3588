@@ -12,7 +12,7 @@
   <!-- cartographer_node loads the .pbstream and auto-starts a trajectory
        using the FAST Lua (livox_2d_localization_fast_reloc.lua). The
        switch_lua node schedules a one-shot fast→slow swap at T=20 s,
-       capturing the current map→base_footprint pose so localization
+       capturing the current map→base_link pose so localization
        continues seamlessly under the slow Lua. The same node also runs
        the runtime score / offset / rotation guards. -->
   <node name="cartographer_node" pkg="cartographer_ros" type="cartographer_node"
@@ -20,7 +20,7 @@
                -configuration_basename livox_2d_localization_fast_reloc.lua
                -load_state_filename $(arg load_state_filename)" output="screen">
     <remap from="scan" to="/scan" />
-    <remap from="odom" to="/odom_rf2o" />
+    <remap from="odom" to="/odom" />
   </node>
 
 

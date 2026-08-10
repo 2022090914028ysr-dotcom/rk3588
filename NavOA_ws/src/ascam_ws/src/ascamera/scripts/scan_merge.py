@@ -104,7 +104,7 @@ class ScanMerger:
                 rospy.get_param('~angle_offset_b', -1.5708),
             ]
 
-        self.output_frame = rospy.get_param('~output_frame', 'base_footprint')
+        self.output_frame = rospy.get_param('~output_frame', 'base_link')
         self.timeout = rospy.Duration(rospy.get_param('~timeout', 1.0))
         self.resolution = rospy.get_param('~merge_resolution', 0.005)  # rad
         self.pub_rate = rospy.get_param('~pub_rate', 50.0)

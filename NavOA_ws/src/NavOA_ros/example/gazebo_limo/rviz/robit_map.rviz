@@ -77,7 +77,7 @@ Visualization Manager:
       Frame Timeout: 15
       Frames:
         All Enabled: false
-        base_footprint:
+        base_link:
           Value: true
         imu_link:
           Value: true
@@ -96,7 +96,7 @@ Visualization Manager:
       Tree:
         map:
           odom:
-            base_footprint:
+            base_link:
               imu_link:
                 {}
               laser_frame:
@@ -271,7 +271,7 @@ Visualization Manager:
       Length: 1
       Name: Axes
       Radius: 0.10000000149011612
-      Reference Frame: base_footprint
+      Reference Frame: base_link
       Show Trail: false
       Value: true
   Enabled: true

@@ -1,0 +1,79 @@
+<?xml version="1.0"?>
+<!--
+  AMCL 并行定位 launch
+  - map_server 提供静态地图（用 cartographer 建图导出的 my_map.yaml）
+  - amcl 用粒子滤波独立估计位姿，与 cartographer 并行
+  - 关键：tf_broadcast=false 让 cartographer 独占 map→odom，AMCL 只发 /amcl_pose
+
+  与 livox_2d_localization.launch + cartographer_guard.launch 一起启动
+-->
+<launch>
+
+  <arg name="map_file" default="$(find cartographer_ros)/../map/my_map.yaml" />
+  <arg name="scan_topic" default="/scan" />
+  <arg name="odom_topic" default="/rf2o_laser_odometry/odom_rf2o" />
+  <arg name="base_frame" default="base_link" />
+  <arg name="odom_frame" default="odom" />
+  <arg name="global_frame" default="map" />
+
+  <!-- 静态地图 -->
+  <node name="map_server" pkg="map_server" type="map_server" args="$(arg map_file)" output="screen" />
+
+  <!-- AMCL 节点 -->
+  <node name="amcl" pkg="amcl" type="amcl" output="screen">
+
+    <!-- 关键：禁用 TF 广播，让 cartographer 独占 map→odom -->
+    <param name="tf_broadcast" value="false" />
+
+    <!-- Frame 配置 -->
+    <param name="odom_frame_id"   value="$(arg odom_frame)" />
+    <param name="base_frame_id"   value="$(arg base_frame)" />
+    <param name="global_frame_id" value="$(arg global_frame)" />
+
+    <!-- 话题 remap -->
+    <remap from="scan" to="$(arg scan_topic)" />
+    <remap from="odom" to="$(arg odom_topic)" />
+
+    <!-- 粒子滤波 -->
+    <param name="min_particles" value="500" />
+    <param name="max_particles" value="3000" />
+    <param name="kld_err"       value="0.05" />
+    <param name="kld_z"         value="0.99" />
+    <param name="update_min_d"  value="0.1" />
+    <param name="update_min_a"  value="0.1" />
+    <param name="resample_interval"    value="1" />
+    <param name="transform_tolerance"  value="0.5" />
+    <param name="recovery_alpha_slow"  value="0.0" />
+    <param name="recovery_alpha_fast"  value="0.0" />
+    <param name="gui_publish_rate"     value="10.0" />
+
+    <!-- 雷达模型 -->
+    <param name="laser_model_type"  value="likelihood_field" />
+    <param name="laser_max_beams"   value="60" />
+    <param name="laser_min_range"   value="-1.0" />
+    <param name="laser_max_range"   value="-1.0" />
+    <param name="laser_likelihood_max_dist" value="2.0" />
+    <param name="laser_z_hit"   value="0.95" />
+    <param name="laser_z_short" value="0.0" />
+    <param name="laser_z_max"   value="0.05" />
+    <param name="laser_z_rand"  value="0.0" />
+    <param name="laser_sigma_hit" value="0.2" />
+
+    <!-- 里程计模型（rf2o 是 2D 雷达里程计，按 diff 类型）-->
+    <param name="odom_model_type" value="diff" />
+    <param name="odom_alpha1" value="0.2" />
+    <param name="odom_alpha2" value="0.2" />
+    <param name="odom_alpha3" value="0.2" />
+    <param name="odom_alpha4" value="0.2" />
+
+    <!-- 初始位姿（启动时假位置，guard 会通过 /initialpose 重置）-->
+    <param name="initial_pose_x" value="0.0" />
+    <param name="initial_pose_y" value="0.0" />
+    <param name="initial_pose_a" value="0.0" />
+    <param name="initial_cov_xx" value="0.25" />
+    <param name="initial_cov_yy" value="0.25" />
+    <param name="initial_cov_aa" value="0.07" />
+
+  </node>
+
+</launch>

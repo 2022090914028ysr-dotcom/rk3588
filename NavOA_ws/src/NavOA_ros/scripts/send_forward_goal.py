@@ -13,7 +13,7 @@ def publish_forward_goal():
     rospy.init_node('send_forward_goal')
 
     target_frame = rospy.get_param('~target_frame', 'map')
-    base_frame = rospy.get_param('~base_frame', 'base_footprint')
+    base_frame = rospy.get_param('~base_frame', 'base_link')
     distance = float(rospy.get_param('~distance', 10.0))
     z = float(rospy.get_param('~z', 0.0))
     yaw_offset = float(rospy.get_param('~yaw_offset', 0.0))

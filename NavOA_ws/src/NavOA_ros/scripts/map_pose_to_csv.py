@@ -41,7 +41,7 @@ class MapPoseToCsvRecorder:
         rospy.init_node("map_pose_to_csv", anonymous=False)
 
         self.source_frame = rospy.get_param("~source_frame", "map")
-        self.target_frame = rospy.get_param("~target_frame", "base_footprint")
+        self.target_frame = rospy.get_param("~target_frame", "base_link")
         self.output_csv = rospy.get_param("~output_csv", default_output_path())
         self.rate_hz = float(rospy.get_param("~rate_hz", 10.0))
         self.max_samples = int(rospy.get_param("~max_samples", 0))
