@@ -15,6 +15,7 @@ find_package(catkin REQUIRED COMPONENTS
   nav_msgs
   sensor_msgs
   std_srvs
+  actionlib_msgs
   tf
   rosgraph_msgs
   cartographer_ros_msgs
@@ -167,6 +168,9 @@ include_directories(
 ## Mark executable scripts (Python etc.) for installation
 ## in contrast to setup.py, you can choose the destination
 catkin_install_python(PROGRAMS
+  scripts/path_segment_publisher.py
+  scripts/vel_filter.py
+  scripts/NavOA_node.py
   scripts/teleop_bridge.py
   scripts/velocity_publisher.py
   scripts/velocity_subscriber.py
@@ -181,6 +185,8 @@ catkin_install_python(PROGRAMS
   scripts/error_collector.py
 
   scripts/imu_publisher.py
+  scripts/imu_mux.py
+  scripts/multi_ultrasonic_scan.py
   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
 

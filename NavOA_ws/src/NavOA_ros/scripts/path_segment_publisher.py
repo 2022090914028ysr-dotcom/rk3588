@@ -1,11 +1,15 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+import copy
 import rospy
 import math
 import tf
 from nav_msgs.msg import Path
 from geometry_msgs.msg import PoseStamped
+from actionlib_msgs.msg import GoalID
+from std_msgs.msg import String
+from std_srvs.srv import Empty
 
 class PathToGoalFollower:
     def __init__(self):
@@ -24,22 +28,58 @@ class PathToGoalFollower:
         self.base_frame = rospy.get_param('~base_frame', 'base_link')
         self.map_frame = rospy.get_param('~map_frame', 'map')
 
+        # Generic navigation recovery.  This node sits between move_base and
+        # NavOA, so the protection also applies to manual RViz goals.
+        self.progress_timeout = max(
+            0.0, float(rospy.get_param('~progress_timeout', 25.0)))
+        self.progress_distance = max(
+            0.01, float(rospy.get_param('~progress_distance', 0.20)))
+        self.replan_cooldown = max(
+            0.0, float(rospy.get_param('~replan_cooldown', 5.0)))
+        self.max_replan_attempts = max(
+            0, int(rospy.get_param('~max_replan_attempts', 3)))
+        self.empty_plan_threshold = max(
+            1, int(rospy.get_param('~empty_plan_threshold', 3)))
+        self.clear_costmaps_service = rospy.get_param(
+            '~clear_costmaps_service', '/move_base/clear_costmaps')
+        self.clear_costmaps_timeout = max(
+            0.1, float(rospy.get_param('~clear_costmaps_timeout', 2.0)))
+
         # === 变量初始化 ===
         self.waypoints = []        # 存储切分后的子目标
         self.current_goal_idx = 0  # 当前正在追踪的点索引
         self.active_path = False   # 是否处于激活状态
         self.tf_listener = tf.TransformListener()
+        self.requested_goal = None
+        self.empty_plan_count = 0
+        self.replan_attempts = 0
+        self.best_goal_distance = None
+        self.last_progress_time = rospy.Time.now()
+        self.last_replan_time = rospy.Time(0)
+        self.recovery_in_progress = False
+        self.pending_internal_goal_stamp = None
 
         # === 核心订阅与发布 ===
         
         # 1. 监听用户在 Rviz 的点击 (用于立即打断旧任务)
         rospy.Subscriber('/move_base_simple/goal', PoseStamped, self.goal_reset_callback)
 
+        # A move_base cancel must also stop the last split goal retained by
+        # NavOA; otherwise NavOA continues driving after move_base has stopped.
+        rospy.Subscriber('/move_base/cancel', GoalID, self.cancel_callback)
+
         # 2. 监听全局规划器生成的长路径 (用于生成新任务)
         rospy.Subscriber('/move_base/GlobalPlanner/plan', Path, self.path_callback)
         
         # 3. 发布给 NavOA 的切分点 (注意：Launch文件中需将 NavOA 的输入 remap 到这里)
         self.goal_pub = rospy.Publisher('/split_goal', PoseStamped, queue_size=1)
+        self.goal_replan_pub = rospy.Publisher(
+            '/move_base_simple/goal', PoseStamped, queue_size=1)
+        self.cancel_pub = rospy.Publisher('/move_base/cancel', GoalID, queue_size=1)
+        self.recovery_status_pub = rospy.Publisher(
+            '/navoa/recovery_status', String, queue_size=1, latch=True)
+        self.clear_costmaps = rospy.ServiceProxy(
+            self.clear_costmaps_service, Empty)
 
         rospy.loginfo("Path Segment Publisher Initialized.")
         rospy.loginfo("Logic: Loose tolerance for mid-points (%.2fm), Strict for final (%.2fm).", 
@@ -53,17 +93,53 @@ class PathToGoalFollower:
         当用户点击新目标时触发。
         立即清空当前队列，防止机器人试图跑完旧路径的剩余点。
         """
-        rospy.loginfo("New goal received! Resetting current path immediately...")
+        is_internal = (
+            self.pending_internal_goal_stamp is not None and
+            msg.header.stamp == self.pending_internal_goal_stamp)
+        self.pending_internal_goal_stamp = None
+        self.requested_goal = copy.deepcopy(msg)
+        self.last_progress_time = rospy.Time.now()
+        self.empty_plan_count = 0
+        if is_internal:
+            # The recovery path was already stopped before republishing.  Do
+            # not clear a new global plan if this loopback callback arrives
+            # after move_base has produced it.
+            rospy.loginfo("Internally republished goal accepted for replanning.")
+            return
+
+        self.replan_attempts = 0
+        self.best_goal_distance = None
+        rospy.loginfo("New goal received; stopping the old split path.")
         self.active_path = False
         self.waypoints = []
         self.current_goal_idx = 0
+        self.publish_hold_goal('new-goal')
+
+    def cancel_callback(self, _msg):
+        """Stop NavOA's retained split goal when move_base is cancelled."""
+        self.active_path = False
+        self.waypoints = []
+        self.current_goal_idx = 0
+        self.publish_hold_goal('move-base-cancel')
+        self._publish_recovery_status('cancelled')
 
     def path_callback(self, msg):
         """
         当接收到全局路径时触发。
         """
         if len(msg.poses) == 0:
+            self.empty_plan_count += 1
+            self.active_path = False
+            self.waypoints = []
+            self.publish_hold_goal('empty-global-plan')
+            rospy.logwarn_throttle(
+                2.0, "Global planner returned an empty path (%d/%d).",
+                self.empty_plan_count, self.empty_plan_threshold)
+            if self.empty_plan_count >= self.empty_plan_threshold:
+                self._trigger_replan('empty-global-plan', clear_costmaps=True)
             return
+
+        self.empty_plan_count = 0
 
         rospy.loginfo("Received new global plan with %d poses.", len(msg.poses))
 
@@ -121,6 +197,10 @@ class PathToGoalFollower:
         except (tf.LookupException, tf.ConnectivityException, tf.ExtrapolationException):
             return
 
+        self._monitor_navigation_progress(robot_x, robot_y)
+        if not self.active_path:
+            return
+
         # 2. 获取当前目标坐标
         if self.current_goal_idx >= len(self.waypoints):
             return 
@@ -165,6 +245,122 @@ class PathToGoalFollower:
             rospy.loginfo(">> Publishing goal %d/%d to /split_goal: x=%.2f, y=%.2f", 
                           self.current_goal_idx + 1, len(self.waypoints), 
                           goal.pose.position.x, goal.pose.position.y)
+
+    def _monitor_navigation_progress(self, robot_x, robot_y):
+        """Request a fresh global route when the robot makes no progress."""
+        if (self.progress_timeout <= 0.0 or self.requested_goal is None or
+                self.recovery_in_progress):
+            return
+        goal_frame = (self.requested_goal.header.frame_id or
+                      self.map_frame).lstrip('/')
+        if goal_frame != self.map_frame.lstrip('/'):
+            rospy.logwarn_throttle(
+                10.0, "Cannot monitor goal progress in frame '%s'", goal_frame)
+            return
+
+        goal_pos = self.requested_goal.pose.position
+        distance = math.hypot(goal_pos.x - robot_x, goal_pos.y - robot_y)
+        now = rospy.Time.now()
+        if self.best_goal_distance is None:
+            self.best_goal_distance = distance
+            self.last_progress_time = now
+            return
+
+        if distance <= self.best_goal_distance - self.progress_distance:
+            self.best_goal_distance = distance
+            self.last_progress_time = now
+            self.replan_attempts = 0
+            return
+
+        stalled_for = (now - self.last_progress_time).to_sec()
+        if stalled_for >= self.progress_timeout:
+            rospy.logwarn(
+                "No goal progress for %.1fs (distance=%.2fm); requesting "
+                "a different global route.", stalled_for, distance)
+            # Do not clear live obstacle observations here.  The newly added
+            # global obstacle layer must retain them so GlobalPlanner routes
+            # around the blockage instead of selecting the same path again.
+            self._trigger_replan('no-navigation-progress',
+                                 clear_costmaps=False)
+
+    def _trigger_replan(self, reason, clear_costmaps):
+        if self.requested_goal is None or self.recovery_in_progress:
+            return False
+
+        now = rospy.Time.now()
+        if ((now - self.last_replan_time).to_sec() < self.replan_cooldown):
+            return False
+        if self.replan_attempts >= self.max_replan_attempts:
+            rospy.logerr(
+                "Navigation recovery exhausted after %d attempts; stopping "
+                "the current mission.", self.replan_attempts)
+            self.active_path = False
+            self.waypoints = []
+            self.publish_hold_goal('recovery-exhausted')
+            self._publish_recovery_status('failed:%s' % reason)
+            self.cancel_pub.publish(GoalID())
+            return False
+
+        self.recovery_in_progress = True
+        self.replan_attempts += 1
+        self.last_replan_time = now
+        self.last_progress_time = now
+        self.active_path = False
+        self.waypoints = []
+        self.publish_hold_goal(reason)
+
+        if clear_costmaps:
+            try:
+                rospy.wait_for_service(
+                    self.clear_costmaps_service,
+                    timeout=self.clear_costmaps_timeout)
+                self.clear_costmaps()
+                rospy.logwarn("Cleared move_base costmaps before replanning.")
+            except (rospy.ROSException, rospy.ServiceException) as exc:
+                rospy.logwarn("Failed to clear move_base costmaps: %s", exc)
+
+        goal = copy.deepcopy(self.requested_goal)
+        goal.header.stamp = rospy.Time.now()
+        self.pending_internal_goal_stamp = goal.header.stamp
+        self.goal_replan_pub.publish(goal)
+        self.empty_plan_count = 0
+        self._publish_recovery_status(
+            'replan:%s:%d/%d' % (
+                reason, self.replan_attempts, self.max_replan_attempts))
+        rospy.logwarn(
+            "Republished navigation goal for replanning (%s, attempt %d/%d).",
+            reason, self.replan_attempts, self.max_replan_attempts)
+        self.recovery_in_progress = False
+        return True
+
+    def publish_hold_goal(self, reason):
+        """Send NavOA a goal at the current pose to stop stale-path motion."""
+        try:
+            trans, rot = self.tf_listener.lookupTransform(
+                self.map_frame, self.base_frame, rospy.Time(0))
+        except (tf.LookupException, tf.ConnectivityException,
+                tf.ExtrapolationException):
+            rospy.logwarn_throttle(
+                5.0, "Cannot publish NavOA hold goal: TF unavailable")
+            return False
+
+        hold = PoseStamped()
+        hold.header.frame_id = self.map_frame
+        hold.header.stamp = rospy.Time.now()
+        hold.pose.position.x = trans[0]
+        hold.pose.position.y = trans[1]
+        hold.pose.position.z = trans[2]
+        hold.pose.orientation.x = rot[0]
+        hold.pose.orientation.y = rot[1]
+        hold.pose.orientation.z = rot[2]
+        hold.pose.orientation.w = rot[3]
+        self.goal_pub.publish(hold)
+        rospy.logwarn_throttle(
+            2.0, "Holding NavOA at current pose (%s).", reason)
+        return True
+
+    def _publish_recovery_status(self, status):
+        self.recovery_status_pub.publish(String(data=status))
 
     def calculate_distance(self, p1, p2):
         return math.sqrt((p1.x - p2.x)**2 + (p1.y - p2.y)**2)

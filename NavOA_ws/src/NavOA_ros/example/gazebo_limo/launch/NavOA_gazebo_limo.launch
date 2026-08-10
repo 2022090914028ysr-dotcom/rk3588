@@ -26,6 +26,14 @@
     <arg name="reverse_side_stop_distance" default="0.25"/>
     <arg name="reverse_side_hold_duration" default="2.5"/>
 
+    <!-- Path-level recovery shared by manual navigation and exploration. -->
+    <arg name="path_progress_timeout" default="25.0"/>
+    <arg name="path_progress_distance" default="0.20"/>
+    <arg name="path_replan_cooldown" default="5.0"/>
+    <arg name="path_max_replan_attempts" default="3"/>
+    <arg name="empty_plan_threshold" default="3"/>
+    <arg name="clear_costmaps_service" default="/move_base/clear_costmaps"/>
+
     <arg name="return_to_previous_goal_enabled" default="true"/>
     <arg name="goal_timeout_button_enabled" default="false"/>
     <arg name="goal_timeout_button_topic" default="/app_controller/button"/>
@@ -35,13 +43,22 @@
     <arg name="goal_timeout_button_release_delay" default="0.10"/>
     <arg name="goal_timeout_button_send_release" default="true"/>
 
-    <node name="path_segment_publisher" pkg="NavOA_ros" type="path_segment_publisher.py" output="screen" launch-prefix="python3"/>
+    <node name="path_segment_publisher" pkg="NavOA_ros" type="path_segment_publisher.py" output="screen" launch-prefix="python3">
+      <param name="map_frame" value="$(arg map_frame)" />
+      <param name="base_frame" value="$(arg base_frame)" />
+      <param name="progress_timeout" value="$(arg path_progress_timeout)" />
+      <param name="progress_distance" value="$(arg path_progress_distance)" />
+      <param name="replan_cooldown" value="$(arg path_replan_cooldown)" />
+      <param name="max_replan_attempts" value="$(arg path_max_replan_attempts)" />
+      <param name="empty_plan_threshold" value="$(arg empty_plan_threshold)" />
+      <param name="clear_costmaps_service" value="$(arg clear_costmaps_service)" />
+    </node>
     <node name="vel_filter" pkg="NavOA_ros" type="vel_filter.py" output="screen" launch-prefix="python3">
       <param name="cmd_in_topic" value="/cmd_vel_tem" />
       <param name="cmd_out_topic" value="$(arg vel_filter_cmd_out_topic)" />
       <param name="cmd_timeout" value="0.5" />
       <param name="publish_rate" value="100.0" />
-      <param name="max_forward_speed" value="0.5" />
+      <param name="max_forward_speed" value="0.3" />
       <param name="max_angular_speed" value="0.5" />
       <param name="wz_scale" value="1" />
       <param name="enable_ultrasonic_bumper" value="true" />
@@ -95,9 +112,9 @@
         <!-- Keep NavOA output off /cmd_vel; vel_filter is the only writer to /cmd_vel. -->
         <!-- <remap from="/NavOA_cmd_vel" to="/cmd_vel"/> -->
         <!-- <remap from="/NavOA_goal" to="/move_base_simple/goal"/> -->
-        <remap from="/NavOA_goal" to="/split_goal"/>
+        <!-- <remap from="/NavOA_goal" to="/split_goal"/> -->
         
-        <!-- <remap from="/initial_path" to="/move_base/GlobalPlanner/plan"/> -->
+        <remap from="/initial_path" to="/move_base/GlobalPlanner/plan"/>
 
     </node>
 

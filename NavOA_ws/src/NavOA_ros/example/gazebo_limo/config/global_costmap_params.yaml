@@ -1,14 +1,15 @@
 global_costmap:
   global_frame: map
   robot_base_frame: base_link
-  update_frequency: 1.0
-  publish_frequency: 1.0
+  update_frequency: 5.0
+  publish_frequency: 2.0
   transform_tolerance: 1  
   
   
 
   plugins:
     - {name: static_layer, type: "costmap_2d::StaticLayer"}
+    - {name: obstacle_layer, type: "costmap_2d::ObstacleLayer"}
     - {name: inflation_layer, type: "costmap_2d::InflationLayer"}
     
 
@@ -23,10 +24,33 @@ global_costmap:
     trinary_costmap: true
     lethal_cost_threshold: 50
     unknown_cost_value: -1
+
+  # Feed live obstacles into the global planner.  Previously only the local
+  # costmap/NavOA saw them, so global replanning repeatedly selected the same
+  # blocked route.
+  obstacle_layer:
+    enabled: true
+    observation_sources: scan
+    footprint_clearing_enabled: true
+    combination_method: 1
+    scan:
+      data_type: LaserScan
+      topic: /scan
+      marking: true
+      clearing: true
+      inf_is_valid: true
+      max_obstacle_height: 2.0
+      min_obstacle_height: 0.0
+      expected_update_rate: 0.0
+      observation_persistence: 0.0
+      obstacle_range: 2.5
+      raytrace_range: 3.0
     
     
   inflation_layer:
-    inflation_radius: 0.35
+    # Match the local costmap.  The previous 0.35 m radius could surround the
+    # robot with stale inflated costs even after the physical obstacle moved.
+    inflation_radius: 0.25
     cost_scaling_factor: 10.0
     inscribed_radius: 0.15
     

@@ -16,6 +16,8 @@ import rospy
 
 from geometry_msgs.msg import PoseStamped, PointStamped, TransformStamped, Point
 from nav_msgs.msg import OccupancyGrid, Odometry, Path
+from actionlib_msgs.msg import GoalID
+from std_msgs.msg import String
 
 from visualization_msgs.msg import Marker, MarkerArray
 
@@ -36,7 +38,8 @@ class ExplorationNode:
         self.map_topic = rospy.get_param('~map_topic', '/map')
         self.odom_topic = rospy.get_param('~odom_topic', '/odom_rf2o')
         self.goal_topic = rospy.get_param('~goal_topic', '/move_base_simple/goal')
-        self.goal_tolerance = rospy.get_param('~goal_tolerance', 0.5)    # meters
+        self.cancel_topic = rospy.get_param('~cancel_topic', '/move_base/cancel')
+        self.goal_tolerance = rospy.get_param('~goal_tolerance', 0.3)    # meters
         self.goal_timeout = rospy.get_param('~goal_timeout', 60.0)       # seconds
         self.idle_wait = rospy.get_param('~idle_wait', 1.0)
         self.post_reach_wait = rospy.get_param('~post_reach_wait', 2.5)  # sec to wait after reaching goal
@@ -58,6 +61,20 @@ class ExplorationNode:
         # Fallback: manual inflation when costmap not available
         self.inflation_cells = rospy.get_param('~inflation_cells', 6)
 
+        # ---- Progress display / ETA ----
+        self._progress_enabled = rospy.get_param('~progress_enabled', True)
+        self._progress_topic = rospy.get_param(
+            '~progress_topic', '/exploration/progress')
+        self._progress_update_interval = max(
+            0.5, float(rospy.get_param('~progress_update_interval', 5.0)))
+        self._progress_bar_width = max(
+            10, int(rospy.get_param('~progress_bar_width', 30)))
+        self._progress_eta_window = max(
+            20.0, float(rospy.get_param('~progress_eta_window', 120.0)))
+        self._exploration_target_ratio = min(
+            1.0, max(0.01, float(rospy.get_param(
+                '~exploration_target_ratio', 0.95))))
+
         self.vis_enabled = rospy.get_param('~visualization', True)
         self.save_data = rospy.get_param('~save_data', True)
         self.data_dir = rospy.get_param('~data_dir',
@@ -75,7 +92,12 @@ class ExplorationNode:
         self.explored_map = None
         self.frontier_map = None
         self.safe_free_map = None     # free cells outside inflation radius (fallback)
-        self.costmap = None           # 2D array from move_base global costmap
+        self.costmap = None           # costmap aligned to the internal map grid
+        self._raw_costmap = None      # raw 2D array from move_base
+        self._costmap_origin = None
+        self._costmap_res = None
+        self._costmap_frame = None
+        self._costmap_yaw = 0.0
         self.free_mask = None          # truly-free cells (cost==0) for frontier detection
         self.robot_pos = [0.0, 0.0, 0.0]       # world (x, y, z)
         self.robot_quat = [0.0, 0.0, 0.0, 1.0]
@@ -84,6 +106,10 @@ class ExplorationNode:
         self.step_count = 0
         self.explored_ratio = 0.0
         self.is_exploring = False
+        self.exploration_state = 'INITIALIZING'
+        self._exploration_start_time = None
+        self._progress_samples = deque()
+        self._progress_eta_seconds = None
         self.visited_goals = set()          # track visited grid cells to avoid repeats
         self._failed_frontiers = set()      # frontiers that failed path planning
         self.goal_stuck_count = 0           # consecutive timeouts on same area
@@ -94,6 +120,7 @@ class ExplorationNode:
         self._max_stuck_duration = 120.0    # give up completely after this long
         self._post_reach_time = None        # timestamp when last goal was reached
         self._last_goal_world = None        # world coords of the last successfully sent goal
+        self._last_goal_grid = None         # grid coords in the current map metadata
         self._local_radius = rospy.get_param('~local_radius', 60)  # grid cells (~3m at 0.05 res)
         self._use_regional_explore = rospy.get_param('~regional_explore', True)
 
@@ -144,6 +171,9 @@ class ExplorationNode:
 
         # ---- Publishers ----
         self.goal_pub = rospy.Publisher(self.goal_topic, PoseStamped, queue_size=1)
+        self.cancel_pub = rospy.Publisher(self.cancel_topic, GoalID, queue_size=1)
+        self.progress_pub = rospy.Publisher(
+            self._progress_topic, String, queue_size=1, latch=True)
         self.frontier_marker_pub = rospy.Publisher(
             '/exploration/frontiers', MarkerArray, queue_size=1)
         self.goal_marker_pub = rospy.Publisher(
@@ -167,6 +197,10 @@ class ExplorationNode:
 
         # ---- Timer ----
         rospy.Timer(rospy.Duration(self.idle_wait), self.exploration_loop)
+        if self._progress_enabled:
+            rospy.Timer(rospy.Duration(self._progress_update_interval),
+                        self._progress_timer_callback)
+        rospy.on_shutdown(self._on_shutdown)
 
         # ---- Data dir ----
         if self.save_data:
@@ -184,6 +218,11 @@ class ExplorationNode:
         # Work directly with raw cartographer map, then optionally pad
         # the canvas with unknown cells so Rviz Publish Point works
         # over a larger area.
+        old_origin = tuple(self.map_origin)
+        old_res = self.map_res
+        old_width = self.map_width
+        old_height = self.map_height
+
         raw_w = msg.info.width
         raw_h = msg.info.height
         res = msg.info.resolution
@@ -225,12 +264,24 @@ class ExplorationNode:
             self.map_origin = [ox, oy, oz]
             raw = np.array(msg.data, dtype=np.int8).reshape((raw_h, raw_w))
 
+        metadata_changed = (
+            old_width > 0 and
+            (old_width != self.map_width or
+             old_height != self.map_height or
+             abs(old_res - self.map_res) > 1e-9 or
+             abs(old_origin[0] - self.map_origin[0]) > 1e-9 or
+             abs(old_origin[1] - self.map_origin[1]) > 1e-9))
+        if metadata_changed:
+            self._reproject_grid_state(
+                old_origin, old_res,
+                tuple(self.map_origin), self.map_res,
+                self.map_width, self.map_height)
+
         # obstacle: value > 50 (occupied), explored: value >= 0 (known)
         self.obstacle_map = (raw > 50).astype(np.uint8)
         self.explored_map = (raw >= 0).astype(np.uint8)
 
         # ---- Compute inflation kernels once ----
-        kernel = np.ones((3, 3), dtype=np.uint8)
         ksize = 2 * self.inflation_cells + 1
         inf_kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE,
                                                 (ksize, ksize))
@@ -241,25 +292,10 @@ class ExplorationNode:
         self.safe_free_map = ((self.explored_map > 0) &
                               (obs_inflated == 0))
 
-        # ---- free_mask: truly-free cells for frontier detection ----
-        # Prefer move_base costmap (cost==0 = no inflation, truly reachable).
-        # Fall back to safe_free_map when costmap is unavailable.
-        if (self.costmap is not None and
-                self.costmap.shape[0] == self.map_height and
-                self.costmap.shape[1] == self.map_width):
-            self.free_mask = (self.costmap == 0)
-            rospy.loginfo_throttle(30,
-                "[Explore] free_mask from costmap: %.0f%% truly-free cells",
-                100.0 * np.sum(self.free_mask) / max(self.free_mask.size, 1))
-        else:
-            self.free_mask = self.safe_free_map
-            rospy.loginfo_throttle(30,
-                "[Explore] free_mask from safe_free_map (costmap unavailable)")
-
-        # frontier_map: free cells adjacent to unknown
-        unknown = (self.explored_map == 0).astype(np.uint8)
-        dil_unk = cv2.dilate(unknown, kernel, iterations=1)
-        self.frontier_map = (self.free_mask & (dil_unk > 0)).astype(np.uint8)
+        # Align the raw move_base costmap to this (possibly padded) map,
+        # then refresh the reachability and frontier masks.
+        self._align_costmap_to_map()
+        self._refresh_free_and_frontier_maps()
 
         obs = np.sum(self.obstacle_map)
         total = self.obstacle_map.size
@@ -470,12 +506,175 @@ class ExplorationNode:
         self.region_marker_pub.publish(m)
 
     def costmap_callback(self, msg):
-        """Store move_base global costmap for accurate reachability."""
+        """Store and align move_base global costmap for reachability."""
         try:
-            self.costmap = np.array(msg.data, dtype=np.int8).reshape(
+            self._raw_costmap = np.array(msg.data, dtype=np.int8).reshape(
                 (msg.info.height, msg.info.width))
+            self._costmap_origin = (msg.info.origin.position.x,
+                                    msg.info.origin.position.y)
+            self._costmap_res = msg.info.resolution
+            self._costmap_frame = msg.header.frame_id
+            q = msg.info.origin.orientation
+            self._costmap_yaw = math.atan2(
+                2.0 * (q.w * q.z + q.x * q.y),
+                1.0 - 2.0 * (q.y * q.y + q.z * q.z))
+            self._align_costmap_to_map()
+            self._refresh_free_and_frontier_maps()
         except Exception as e:
             rospy.logwarn_throttle(10, "[Explore] costmap parse error: %s", e)
+
+    def _align_costmap_to_map(self):
+        """Align the raw costmap to the internal map origin/resolution/size.
+
+        The internal map can include a large unknown padding border, while
+        move_base's costmap normally keeps the original /map dimensions.
+        Cells outside the costmap are kept unknown (-1), never free.
+        """
+        if (self._raw_costmap is None or self._costmap_origin is None or
+                self._costmap_res is None or self._costmap_res <= 0 or
+                self.map_width <= 0 or self.map_height <= 0):
+            self.costmap = None
+            return
+
+        cost_frame = (self._costmap_frame or '').lstrip('/')
+        map_frame = (self.map_frame or '').lstrip('/')
+        if cost_frame and cost_frame != map_frame:
+            rospy.logwarn_throttle(
+                10, "[Explore] costmap frame '%s' != map frame '%s'; "
+                "using inflated map fallback", cost_frame, map_frame)
+            self.costmap = None
+            return
+
+        # OccupancyGrid rotation is uncommon for global costmaps.  Refuse to
+        # silently mis-index a rotated grid; the inflated-map fallback is safe.
+        if abs(self._costmap_yaw) > 1e-6:
+            rospy.logwarn_throttle(
+                10, "[Explore] rotated costmap origin (yaw=%.6f) is not "
+                "supported; using inflated map fallback", self._costmap_yaw)
+            self.costmap = None
+            return
+
+        src = self._raw_costmap
+        src_h, src_w = src.shape
+        aligned = np.full((self.map_height, self.map_width), -1,
+                          dtype=np.int8)
+
+        # Fast, exact path for the normal case: equal resolutions and origins
+        # separated by an integer number of cells (including map padding).
+        if abs(self._costmap_res - self.map_res) <= 1e-9:
+            off_x_f = ((self._costmap_origin[0] - self.map_origin[0]) /
+                       self.map_res)
+            off_y_f = ((self._costmap_origin[1] - self.map_origin[1]) /
+                       self.map_res)
+            off_x = int(round(off_x_f))
+            off_y = int(round(off_y_f))
+            if abs(off_x_f - off_x) <= 1e-5 and abs(off_y_f - off_y) <= 1e-5:
+                dst_x0 = max(0, off_x)
+                dst_y0 = max(0, off_y)
+                src_x0 = max(0, -off_x)
+                src_y0 = max(0, -off_y)
+                copy_w = min(src_w - src_x0, self.map_width - dst_x0)
+                copy_h = min(src_h - src_y0, self.map_height - dst_y0)
+                if copy_w > 0 and copy_h > 0:
+                    aligned[dst_y0:dst_y0 + copy_h,
+                            dst_x0:dst_x0 + copy_w] = src[
+                                src_y0:src_y0 + copy_h,
+                                src_x0:src_x0 + copy_w]
+                self.costmap = aligned
+                return
+
+        # Generic axis-aligned resampling for differing resolutions or
+        # fractional origin offsets.  Nearest source cell preserves costs.
+        world_x = self.map_origin[0] + np.arange(self.map_width) * self.map_res
+        world_y = self.map_origin[1] + np.arange(self.map_height) * self.map_res
+        src_x = np.floor((world_x - self._costmap_origin[0]) /
+                         self._costmap_res + 1e-9).astype(np.int64)
+        src_y = np.floor((world_y - self._costmap_origin[1]) /
+                         self._costmap_res + 1e-9).astype(np.int64)
+        valid_x = (src_x >= 0) & (src_x < src_w)
+        valid_y = (src_y >= 0) & (src_y < src_h)
+        if np.any(valid_x) and np.any(valid_y):
+            aligned[np.ix_(valid_y, valid_x)] = src[
+                np.ix_(src_y[valid_y], src_x[valid_x])]
+        self.costmap = aligned
+
+    def _refresh_free_and_frontier_maps(self):
+        """Refresh masks after either /map or costmap changes."""
+        if self.explored_map is None or self.obstacle_map is None:
+            return
+
+        if (self.costmap is not None and
+                self.costmap.shape == self.explored_map.shape):
+            # Intersect with the SLAM map so costmap unknown/default values can
+            # never turn unexplored padding into frontier candidates.
+            self.free_mask = ((self.costmap == 0) &
+                              (self.explored_map > 0) &
+                              (self.obstacle_map == 0))
+            rospy.loginfo_throttle(
+                30, "[Explore] free_mask from aligned costmap: %.0f%% "
+                "truly-free cells",
+                100.0 * np.sum(self.free_mask) /
+                max(self.free_mask.size, 1))
+        else:
+            self.free_mask = self.safe_free_map
+            rospy.loginfo_throttle(
+                30, "[Explore] free_mask from safe_free_map "
+                "(costmap unavailable)")
+
+        kernel = np.ones((3, 3), dtype=np.uint8)
+        unknown = (self.explored_map == 0).astype(np.uint8)
+        dil_unk = cv2.dilate(unknown, kernel, iterations=1)
+        self.frontier_map = (self.free_mask &
+                             (dil_unk > 0)).astype(np.uint8)
+
+    def _reproject_grid_state(self, old_origin, old_res, new_origin,
+                              new_res, new_width, new_height):
+        """Keep cached grid coordinates stable when SLAM metadata changes."""
+        if old_res <= 0 or new_res <= 0:
+            return
+
+        def world_to_new(wx, wy):
+            gx = int((wx - new_origin[0]) / new_res)
+            gy = int((wy - new_origin[1]) / new_res)
+            if 0 <= gx < new_width and 0 <= gy < new_height:
+                return (gx, gy)
+            return None
+
+        def reproject_point(point):
+            wx = old_origin[0] + point[0] * old_res
+            wy = old_origin[1] + point[1] * old_res
+            return world_to_new(wx, wy)
+
+        def reproject_set(points):
+            projected = set()
+            for point in points:
+                new_point = reproject_point(point)
+                if new_point is not None:
+                    projected.add(new_point)
+            return projected
+
+        self.visited_goals = reproject_set(self.visited_goals)
+        self._failed_frontiers = reproject_set(self._failed_frontiers)
+        self._loop_closure_visited_now = reproject_set(
+            self._loop_closure_visited_now)
+
+        projected_history = []
+        for wx, wy, _gx, _gy, timestamp in self._loop_closure_history:
+            new_grid = world_to_new(wx, wy)
+            if new_grid is not None:
+                projected_history.append(
+                    (wx, wy, new_grid[0], new_grid[1], timestamp))
+        self._loop_closure_history = projected_history
+
+        if self._last_goal_world is not None:
+            self._last_goal_grid = world_to_new(*self._last_goal_world)
+        elif self._last_goal_grid is not None:
+            self._last_goal_grid = reproject_point(self._last_goal_grid)
+
+        rospy.loginfo(
+            "[Explore] Map metadata changed; reprojected cached grid state "
+            "to origin=(%.3f,%.3f), res=%.4f",
+            new_origin[0], new_origin[1], new_res)
 
     def plan_callback(self, msg):
         """Monitor /move_base/GlobalPlanner/plan.
@@ -503,13 +702,150 @@ class ExplorationNode:
                               self.current_goal_world[0],
                               self.current_goal_world[1])
                 # Mark as failed frontier so we don't retry it
-                self._failed_frontiers.add(self._last_goal_grid)
+                if self._last_goal_grid is not None:
+                    self._failed_frontiers.add(self._last_goal_grid)
                 self.current_goal_world = None
                 self.goal_sent_time = None
                 self.plan_empty_count = 0
         else:
             # Plan is non-empty -- reset debounce counter
             self.plan_empty_count = 0
+
+    # ================================================================
+    #  Progress display / ETA
+    # ================================================================
+    def _derive_exploration_state(self):
+        """Return a concise state name derived from current node state."""
+        if not self.is_exploring:
+            return self.exploration_state
+        if self._loop_closure_phase:
+            return 'LOOP_CLOSURE'
+        if (self._enable_region_filter and
+                self._region_shape_mode == 'polygon' and
+                self.exploration_region_mask is None):
+            return 'WAITING_REGION'
+        if self.current_goal_world is not None:
+            return 'NAVIGATING'
+        if self._post_reach_time is not None:
+            return 'UPDATING_MAP'
+        if self._no_frontier_since is not None:
+            return 'WAITING_FRONTIERS'
+        if self._stuck_since is not None:
+            return 'STUCK_RETRY'
+        return 'SELECTING_GOAL'
+
+    def _progress_timer_callback(self, _event):
+        if (not self.is_exploring and
+                self.exploration_state in ('COMPLETED', 'STOPPED')):
+            return
+        self._publish_progress()
+
+    def _estimate_eta(self, now_sec, completion):
+        """Estimate seconds remaining from recent smoothed progress.
+
+        A least-squares slope over the configured time window is less noisy
+        than using only the last two map updates.  Non-positive or very small
+        progress deliberately produces no ETA because dynamic SLAM map growth
+        can temporarily reduce the displayed completion percentage.
+        """
+        if completion >= 1.0:
+            self._progress_eta_seconds = 0.0
+            return 0.0
+        if not self.is_exploring:
+            self._progress_eta_seconds = None
+            return None
+
+        if (self._progress_samples and
+                now_sec < self._progress_samples[-1][0]):
+            # /clock can jump backwards when simulation restarts.
+            self._progress_samples.clear()
+        self._progress_samples.append((now_sec, completion))
+        cutoff = now_sec - self._progress_eta_window
+        while (len(self._progress_samples) > 1 and
+               self._progress_samples[0][0] < cutoff):
+            self._progress_samples.popleft()
+
+        if len(self._progress_samples) < 3:
+            self._progress_eta_seconds = None
+            return None
+
+        first_time = self._progress_samples[0][0]
+        duration = now_sec - first_time
+        net_gain = completion - self._progress_samples[0][1]
+        if duration < 10.0 or net_gain < 0.001:
+            self._progress_eta_seconds = None
+            return None
+
+        xs = [sample[0] - first_time for sample in self._progress_samples]
+        ys = [sample[1] for sample in self._progress_samples]
+        mean_x = sum(xs) / len(xs)
+        mean_y = sum(ys) / len(ys)
+        denominator = sum((x - mean_x) ** 2 for x in xs)
+        if denominator <= 0:
+            self._progress_eta_seconds = None
+            return None
+        rate = sum((x - mean_x) * (y - mean_y)
+                   for x, y in zip(xs, ys)) / denominator
+        if rate <= 1e-6:
+            self._progress_eta_seconds = None
+            return None
+
+        estimate = (1.0 - completion) / rate
+        # Values beyond seven days are not useful for a mobile-robot session.
+        if not math.isfinite(estimate) or estimate < 0 or estimate > 604800:
+            self._progress_eta_seconds = None
+            return None
+
+        if self._progress_eta_seconds is None:
+            self._progress_eta_seconds = estimate
+        else:
+            self._progress_eta_seconds = (
+                0.7 * self._progress_eta_seconds + 0.3 * estimate)
+        return self._progress_eta_seconds
+
+    @staticmethod
+    def _format_duration(seconds):
+        if seconds is None or not math.isfinite(seconds) or seconds < 0:
+            return '--:--:--'
+        total = int(round(seconds))
+        days, remainder = divmod(total, 86400)
+        hours, remainder = divmod(remainder, 3600)
+        minutes, secs = divmod(remainder, 60)
+        if days > 0:
+            return '%dd %02d:%02d:%02d' % (days, hours, minutes, secs)
+        return '%02d:%02d:%02d' % (hours, minutes, secs)
+
+    def _publish_progress(self):
+        """Log and publish a human-readable exploration progress bar."""
+        if not self._progress_enabled:
+            return
+
+        now = rospy.Time.now()
+        now_sec = now.to_sec()
+        coverage = min(1.0, max(0.0, float(self.explored_ratio)))
+        completion = min(1.0, coverage / self._exploration_target_ratio)
+        filled = int(round(completion * self._progress_bar_width))
+        bar = ('#' * filled +
+               '-' * (self._progress_bar_width - filled))
+
+        if self._exploration_start_time is None:
+            elapsed = None
+        else:
+            elapsed = max(
+                0.0, (now - self._exploration_start_time).to_sec())
+        eta = self._estimate_eta(now_sec, completion)
+        state = self._derive_exploration_state()
+        self.exploration_state = state
+
+        line = (
+            '[ExploreProgress] [%s] %5.1f%% | coverage=%5.1f/%4.1f%% | '
+            'state=%s | elapsed=%s | ETA=%s | step=%d/%d' % (
+                bar, completion * 100.0, coverage * 100.0,
+                self._exploration_target_ratio * 100.0, state,
+                self._format_duration(elapsed), self._format_duration(eta),
+                self.step_count, self.max_steps))
+        self.progress_pub.publish(String(data=line))
+        rospy.loginfo('%s', line)
 
     # ================================================================
     #  Main loop
@@ -522,9 +858,10 @@ class ExplorationNode:
         if self.step_count >= self.max_steps:
             rospy.loginfo("[Explore] Max steps %d", self.max_steps)
             self.stop_exploration(); return
-        if self.explored_ratio > 0.95:
-            rospy.loginfo("[Explore] %.1f%% explored (>=95%%), stopping",
-                          self.explored_ratio * 100)
+        if self.explored_ratio >= self._exploration_target_ratio:
+            rospy.loginfo("[Explore] %.1f%% explored (>=%0.1f%%), stopping",
+                          self.explored_ratio * 100,
+                          self._exploration_target_ratio * 100)
             self.stop_exploration(); return
 
         # --- check current goal ---
@@ -537,9 +874,13 @@ class ExplorationNode:
             # Re-detect frontiers from the latest map while moving.
             # If the target frontier cluster has vanished (area now fully
             # explored), abort the stale goal and pick a new one immediately.
+            # Loop-closure goals intentionally revisit already-explored cells,
+            # so applying this check to them would abort every revisit.
             now = rospy.Time.now()
-            if (self._last_frontier_update is None or
-                    (now - self._last_frontier_update).to_sec() >= self._frontier_update_interval):
+            if (not self._loop_closure_phase and
+                    (self._last_frontier_update is None or
+                     (now - self._last_frontier_update).to_sec() >=
+                     self._frontier_update_interval)):
                 self._last_frontier_update = now
                 if (self._last_goal_grid is not None and
                         self.obstacle_map is not None and
@@ -861,7 +1202,7 @@ class ExplorationNode:
             if self.costmap is not None:
                 ch, cw = self.costmap.shape
                 if 0 <= gx < cw and 0 <= gy < ch:
-                    if self.costmap[gy, gx] > 0:
+                    if self.costmap[gy, gx] != 0:
                         continue
 
             candidates.append((gx, gy, d2))
@@ -1078,18 +1419,45 @@ class ExplorationNode:
     #  Lifecycle
     # ================================================================
     def start_exploration(self):
+        self.exploration_state = 'STARTING'
+        self._publish_progress()
         rospy.loginfo("[Explore] START -> %s", self.goal_topic)
         # Give nav stack time to initialize costmaps
         rospy.loginfo("[Explore] Waiting 3s for nav stack init...")
         rospy.sleep(3.0)
         self.is_exploring = True
+        self.exploration_state = 'SELECTING_GOAL'
+        self._exploration_start_time = rospy.Time.now()
+        self._progress_samples.clear()
+        self._progress_eta_seconds = None
         self.step_count = 0
+        self._publish_progress()
 
     def stop_exploration(self):
         self.is_exploring = False
+        self._cancel_navigation()
         self.current_goal_world = None
+        if self.explored_ratio >= self._exploration_target_ratio:
+            self.exploration_state = 'COMPLETED'
+        else:
+            self.exploration_state = 'STOPPED'
+        self._publish_progress()
         rospy.loginfo("[Explore] STOP %.1f%%", self.explored_ratio * 100)
         self._save_map()
+
+    def _cancel_navigation(self):
+        """Cancel all goals on the configured move_base action server."""
+        # An empty GoalID with a zero timestamp is actionlib's cancel-all
+        # request.  Clearing Python state alone does not stop move_base.
+        self.cancel_pub.publish(GoalID())
+        rospy.loginfo("[Explore] Cancelled active move_base goal(s) via %s",
+                      self.cancel_topic)
+
+    def _on_shutdown(self):
+        """Do not leave move_base driving if this node is terminated."""
+        if self.is_exploring or self.current_goal_world is not None:
+            self._cancel_navigation()
+            self.current_goal_world = None
 
     def _save_map(self):
         if not self.save_data or self.obstacle_map is None or self.explored_map is None:
@@ -1106,6 +1474,8 @@ class ExplorationNode:
         rospy.loginfo("[Explore] Map saved -> %s", self.data_dir)
 
     def run(self):
+        self.exploration_state = 'WAITING_MAP'
+        self._publish_progress()
         rospy.loginfo("[Explore] Waiting for /map ...")
         t0 = rospy.Time.now() + rospy.Duration(60.0)
         while not rospy.is_shutdown():

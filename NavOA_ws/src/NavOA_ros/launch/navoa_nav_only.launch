@@ -14,6 +14,16 @@
   <arg name="map_file" default="$(find cartographer_ros)/../../../map/meeting_room/test001.yaml" />
   <arg name="global_map_topic" default="/map"/>
   <arg name="move_base_cmd_topic" default="/move_base_cmd_vel"/>
+  <!-- Navigation recovery: do not allow planning or local avoidance to hang forever. -->
+  <arg name="oscillation_timeout" default="15.0"/>
+  <arg name="oscillation_distance" default="0.15"/>
+  <arg name="max_planning_retries" default="3"/>
+  <arg name="path_progress_timeout" default="25.0"/>
+  <arg name="path_progress_distance" default="0.20"/>
+  <arg name="path_replan_cooldown" default="5.0"/>
+  <arg name="path_max_replan_attempts" default="3"/>
+  <arg name="empty_plan_threshold" default="3"/>
+  <arg name="clear_costmaps_service" default="/move_base/clear_costmaps"/>
   <arg name="launch_rviz" default="false"/>
   <arg name="rviz_config" default="$(find NavOA_ros)/example/gazebo_limo/rviz/robit_map.rviz"/>
 
@@ -25,16 +35,18 @@
   <node pkg="move_base" type="move_base" respawn="false" name="move_base" output="screen">
     <!-- NavOA handles final motion commands via vel_filter; keep move_base cmd_vel separate. -->
     <remap from="/cmd_vel" to="$(arg move_base_cmd_topic)" />
-    <param name="oscillation_timeout" value="0.0" />
-    <param name="oscillation_distance" value="0.0" />
-    <param name="max_planning_retries" value="-1" />
+    <param name="oscillation_timeout" value="$(arg oscillation_timeout)" />
+    <param name="oscillation_distance" value="$(arg oscillation_distance)" />
+    <param name="max_planning_retries" value="$(arg max_planning_retries)" />
     <param name="transform_tolerance" value="1.0" />
     <param name="controller_frequency" value="5.0" />
     <param name="controller_patience" value="15.0" />
     <param name="planner_patience" value="5.0" />
     <param name="base_global_planner" value="global_planner/GlobalPlanner" />
     <param name="planner_frequency" value="2.0" />
-    <param name="recovery_behavior_enabled" value="false" />
+    <!-- Enable costmap recovery/replanning. Rotation recovery stays disabled
+         because NavOA, rather than move_base cmd_vel, controls the robot. -->
+    <param name="recovery_behavior_enabled" value="true" />
     <param name="clearing_rotation_allowed" value="false" />
 
     <rosparam file="$(find NavOA_ros)/example/gazebo_limo/config/costmap_common_params.yaml" command="load" ns="global_costmap" />
@@ -57,6 +69,12 @@
     <arg name="vel_filter_cmd_out_topic" value="/cmd_vel"/>
     <arg name="ultrasonic_evade_lateral_speed" value="0.5"/>
     <arg name="return_to_previous_goal_enabled" value="false"/>
+    <arg name="path_progress_timeout" value="$(arg path_progress_timeout)"/>
+    <arg name="path_progress_distance" value="$(arg path_progress_distance)"/>
+    <arg name="path_replan_cooldown" value="$(arg path_replan_cooldown)"/>
+    <arg name="path_max_replan_attempts" value="$(arg path_max_replan_attempts)"/>
+    <arg name="empty_plan_threshold" value="$(arg empty_plan_threshold)"/>
+    <arg name="clear_costmaps_service" value="$(arg clear_costmaps_service)"/>
     <arg name="goal_timeout_button_enabled" value="true"/>
     <arg name="goal_timeout_button_topic" value="/app_controller/button"/>
     <arg name="goal_timeout_button_id" value="9"/>
