@@ -147,6 +147,20 @@ class NavOA_core:
 
         self.goal_tolerance = float(rospy.get_param('~goal_tolerance', 0.20))
 
+        # Rotate in place before handing control to the optimizer when the
+        # active goal lies far off the robot heading, especially behind it.
+        self.heading_align_enabled = bool(rospy.get_param("~heading_align_enabled", True))
+        self.heading_align_enter_angle = abs(float(rospy.get_param("~heading_align_enter_angle", 1.0)))
+        self.heading_align_exit_angle = abs(float(rospy.get_param("~heading_align_exit_angle", 0.25)))
+        self.heading_align_min_distance = max(
+            0.0, float(rospy.get_param("~heading_align_min_distance", 0.30))
+        )
+        self.heading_align_kp = max(0.0, float(rospy.get_param("~heading_align_kp", 1.2)))
+        self.heading_align_angular_speed = abs(
+            float(rospy.get_param("~heading_align_angular_speed", 0.45))
+        )
+        self._heading_align_active = False
+
         # Previous/return goal logic
         self.previous_goal = None
         self.goal_reached_time = rospy.Time(0)
@@ -320,6 +334,10 @@ class NavOA_core:
 
             if self.NavOA_planner.initial_path is None or self.planning_finished:
                 self.vel_pub.publish(Twist())
+                r.sleep()
+                continue
+
+            if self._publish_heading_alignment_if_needed():
                 r.sleep()
                 continue
 
@@ -538,6 +556,7 @@ class NavOA_core:
 
         self.NavOA_planner.update_initial_path_from_goal(self.robot_state, self.goal)
         self.NavOA_planner.reset()
+        self._heading_align_active = False
 
         self.planning_finished = False
 
@@ -620,6 +639,59 @@ class NavOA_core:
             action.angular.z = steer
 
             return action
+
+    def _publish_heading_alignment_if_needed(self):
+        if (
+            not self.heading_align_enabled
+            or self.goal is None
+            or self.robot_state is None
+            or self.heading_align_angular_speed <= 0.0
+        ):
+            self._heading_align_active = False
+            return False
+
+        dx = self.goal[0, 0] - self.robot_state[0, 0]
+        dy = self.goal[1, 0] - self.robot_state[1, 0]
+        distance_to_goal = np.hypot(dx, dy)
+        if distance_to_goal <= self.heading_align_min_distance:
+            self._heading_align_active = False
+            return False
+
+        target_yaw = atan2(dy, dx)
+        yaw_error = self._wrap_pi(target_yaw - self.robot_state[2, 0])
+        abs_error = abs(yaw_error)
+
+        if self._heading_align_active:
+            if abs_error <= self.heading_align_exit_angle:
+                self._heading_align_active = False
+                self.vel_pub.publish(Twist())
+                rospy.loginfo_throttle(
+                    1.0,
+                    "[NavOA] Heading aligned; resuming NavOA tracking.",
+                )
+                return True
+        elif abs_error >= self.heading_align_enter_angle:
+            self._heading_align_active = True
+            rospy.loginfo(
+                "[NavOA] Goal is %.1f deg off heading; rotating in place first.",
+                np.degrees(yaw_error),
+            )
+        else:
+            return False
+
+        twist = Twist()
+        angular = self.heading_align_kp * yaw_error
+        angular = max(
+            -self.heading_align_angular_speed,
+            min(self.heading_align_angular_speed, angular),
+        )
+        twist.angular.z = angular
+        self.vel_pub.publish(twist)
+        return True
+
+    @staticmethod
+    def _wrap_pi(angle):
+        return (angle + np.pi) % (2.0 * np.pi) - np.pi
 
     def _return_to_previous_goal(self):
         if self.previous_goal is None or self.robot_state is None:

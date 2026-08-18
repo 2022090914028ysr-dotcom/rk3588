@@ -63,22 +63,9 @@
     <param name="pub_rate"     type="double" value="10"/>
   </node> -->
   <include file="$(find rf2o_laser_odometry)/launch/rf2o_laser_odometry.launch" />
-  
+  <include file="$(find rf2o_laser_odometry)/launch/ekf_fusion.launch" />
   <node pkg="NavOA_ros" name="multi_ultrasonic_scan" type="multi_ultrasonic_scan.py" output="screen" if="$(arg use_ultrasonic)" />
-  <!-- Bridge /cmd_vel and IMU over /dev/ttyS6 to the other PC -->
-  <node pkg="NavOA_ros" type="serial_cmd_vel_imu_bridge.py" name="serial_cmd_vel_imu_bridge" output="screen">
-    <param name="serial_port" value="/dev/ttyS1" />
-    <param name="baudrate" value="460800" />
-    <param name="serial_timeout" value="0.02" />
-    <param name="cmd_send_rate_hz" value="80.0" />
-    <param name="tx_queue_size" value="200" />
-    <param name="serial_flush_interval" value="0.05" />
-    <param name="cmd_vel_topic" value="/cmd_vel" />
-    <param name="button_topic" value="/app_controller/button" />
-    <!-- Publish IMU from serial onto /imu_serial; mux will prioritize this -->
-    <param name="imu_topic" value="/imu_serial" />
-    <param name= "event_topic" value="/nav_serial/event" />
-  </node>
+
 
   <!-- IMU mux: prefer serial IMU (/imu_serial), fall back to ROS /imu -->
   <node pkg="NavOA_ros" type="imu_mux.py" name="imu_mux" output="screen">

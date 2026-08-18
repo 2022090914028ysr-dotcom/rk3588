@@ -53,7 +53,7 @@ TRAJECTORY_BUILDER_2D.real_time_correlative_scan_matcher.rotation_delta_cost_wei
 
 -- 回环优化
 POSE_GRAPH.optimization_problem.huber_scale = 1e2
-POSE_GRAPH.optimize_every_n_nodes = 50
+POSE_GRAPH.optimize_every_n_nodes = 00
 
 POSE_GRAPH.constraint_builder.min_score = 0.70            -- 提高回环匹配门槛，减少误匹配
 POSE_GRAPH.constraint_builder.sampling_ratio = 0.3

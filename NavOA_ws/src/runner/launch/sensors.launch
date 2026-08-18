@@ -55,6 +55,8 @@
 
   <node pkg="tf2_ros" type="static_transform_publisher" name="base_link_to_laser"
       args="0 0 0.2 0 0 0 base_link laser_frame" />
+  <node pkg="tf2_ros" type="static_transform_publisher" name="base_link_to_imu"
+      args="0 0 0 0 0 0 base_link imu_link" />
 
   <!-- 2-way merge: /camscan + /scan -> /mergescan  (ultrasonic removed; used as virtual bumper in vel_filter) -->
   <!-- <node pkg="ascamera" name="scan_merger" type="scan_merge.py" output="screen">
@@ -65,7 +67,41 @@
     <param name="pub_rate"     type="double" value="10"/>
   </node> -->
   <include file="$(find rf2o_laser_odometry)/launch/rf2o_laser_odometry.launch" />
+  <!-- EKF fusion: rf2o (/odom_rf2o) + leg (SMX/Odom) + IMU (/imu/data) -> /odom + odom->base_link TF.
+       When the EKF is ON it is the SOLE publisher of /odom AND odom->base_link TF, so:
+         - the relays below must stay OFF (EKF supplies /odom directly), and
+         - rf2o publish_tf AND the leg node publish_tf must BOTH be false. -->
   <include file="$(find rf2o_laser_odometry)/launch/ekf_fusion.launch" />
+
+  <!-- ODOM SOURCE — relay to /odom so move_base's local planner gets velocity.
+       EKF mode (default): EKF publishes /odom directly -> keep BOTH relays off.
+       rf2o-only: comment the EKF <include> above, uncomment the rf2o relay.
+       leg-only: comment the EKF <include> above, uncomment the leg relay. -->
+  <!-- <node pkg="topic_tools" type="relay" name="rf2o_odom_relay" args="/odom_rf2o /odom" /> -->
+  <!-- <node pkg="topic_tools" type="relay" name="leg_odom_relay" args="/SMX/Odom /odom" /> -->
+
+  <!-- Split leg yaw onto its own topic for the EKF's absolute-yaw input (odom2 in
+       ekf_params.yaml). SMX/Odom position stays differential (odom1); yaw is fused
+       absolute (odom2) as the coarse heading anchor that breaks 180° scan-matching
+       symmetry. topic_tools relay = zero-code copy of the message. -->
+  <node pkg="topic_tools" type="relay" name="leg_yaw_relay" args="SMX/Odom /SMX/Odom_yaw" />
+
+  <!-- Keep the leg odometry (SMX/Odom) origin aligned with rf2o.
+       Startup:   aligns the leg to rf2o's CURRENT pose (the robot may already have
+       turned before this 3 s delay fires — zeroing to identity left it ~40° off in
+       the v2 bag). Falls back to identity only if rf2o isn't fresh yet.
+       Reconnect: if the leg drops out and resumes, re-anchors it to rf2o's CURRENT pose.
+       Persistent node: the latch must stay alive to re-deliver the reset to a
+       restarted fusion_estimator_node. -->
+  <node pkg="NavOA_ros" type="align_leg_origin.py" name="align_leg_origin"
+        output="screen" required="false">
+    <param name="delay_s" value="3.0" />
+    <param name="leg_topic" value="SMX/Odom" />
+    <param name="rf2o_topic" value="/odom_rf2o" />
+    <param name="dropout_timeout" value="1.0" />
+  </node>
+
+  
   
   <node pkg="NavOA_ros" name="multi_ultrasonic_scan" type="multi_ultrasonic_scan.py" output="screen" if="$(arg use_ultrasonic)" />
   <!-- Bridge /cmd_vel and IMU over /dev/ttyS6 to the other PC -->

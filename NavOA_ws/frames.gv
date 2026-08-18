@@ -1,9 +1,10 @@
 digraph G {
-"base_link" -> "laser_frame"[label="Broadcaster: /base_link_to_laser\nAverage rate: 10000.000 Hz\nMost recent transform: 0.000 ( 1786333714.583 sec old)\nBuffer length: 0.000 sec\n"];
-"odom" -> "base_link"[label="Broadcaster: /ekf_se\nAverage rate: 30.294 Hz\nMost recent transform: 1786333713.004 ( 1.580 sec old)\nBuffer length: 3.400 sec\n"];
-"map" -> "odom"[label="Broadcaster: /cartographer_node\nAverage rate: 83.874 Hz\nMost recent transform: 1786333713.001 ( 1.582 sec old)\nBuffer length: 3.398 sec\n"];
+"base_link" -> "imu_link"[label="Broadcaster: /base_link_to_imu\nAverage rate: 10000.000 Hz\nMost recent transform: 0.000 ( 1786613416.424 sec old)\nBuffer length: 0.000 sec\n"];
+"odom" -> "base_link"[label="Broadcaster: /fusion_estimator_node\nAverage rate: 199.998 Hz\nMost recent transform: 1786613416.384 ( 0.039 sec old)\nBuffer length: 4.910 sec\n"];
+"base_link" -> "laser_frame"[label="Broadcaster: /base_link_to_laser\nAverage rate: 10000.000 Hz\nMost recent transform: 0.000 ( 1786613416.424 sec old)\nBuffer length: 0.000 sec\n"];
+"map" -> "odom"[label="Broadcaster: /cartographer_node\nAverage rate: 86.212 Hz\nMost recent transform: 1786613416.419 ( 0.004 sec old)\nBuffer length: 4.953 sec\n"];
 edge [style=invis];
  subgraph cluster_legend { style=bold; color=black; label ="view_frames Result";
-"Recorded at time: 1786333714.583"[ shape=plaintext ] ;
+"Recorded at time: 1786613416.424"[ shape=plaintext ] ;
  }->"map";
 }

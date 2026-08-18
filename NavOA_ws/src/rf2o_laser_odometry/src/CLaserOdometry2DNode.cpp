@@ -76,7 +76,7 @@ CLaserOdometry2DNode::CLaserOdometry2DNode() :
   pn.param<std::string>("odom_topic", odom_topic, "/odom");
   pn.param<std::string>("base_frame_id", base_frame_id, "/base_link");
   pn.param<std::string>("odom_frame_id", odom_frame_id, "/odom");
-  publish_tf = false;  // hardcoded: EKF now publishes odom→base_link TF
+  pn.param<bool>("publish_tf", publish_tf, false);  // read from launch; default false (EKF owns TF when fused)
   pn.param<std::string>("init_pose_from_topic", init_pose_from_topic, "/base_pose_ground_truth");
   pn.param<double>("freq",freq,10.0);
   pn.param<bool>("verbose", verbose, false);
@@ -243,6 +243,21 @@ void CLaserOdometry2DNode::publish()
   odom.pose.pose.position.y = robot_pose_.translation()(1);
   odom.pose.pose.position.z = 0.0;
   odom.pose.pose.orientation = tf::createQuaternionMsgFromYaw(rf2o::getYaw(robot_pose_.rotation()));
+  // Covariance for the EKF (robot_localization): a 6x6 row-major matrix, diagonal
+  // at indices [0]=x, [7]=y, [14]=z, [21]=roll, [28]=pitch, [35]=yaw. rf2o is a 2D
+  // scan-matcher, so only x/y/yaw are observable; the rest stay 0. These MUST be
+  // non-zero: a zero covariance makes the EKF treat the measurement as perfectly
+  // precise and "snap" the fused estimate to rf2o on every update (its docs warn
+  // against under-reported covariance). x/y at 0.01 keeps rf2o as the absolute
+  // POSITION anchor (~0.10 m std).
+  // Yaw is deliberately inflated to 0.04 rad^2 (std ~0.20 rad / 11.5°): v4 bag
+  // (vs the yesense IMU, 234 s) showed rf2o over-turns during loops, drifting
+  // +40° relative to both leg and IMU, while the leg stayed within 0.1°. So the
+  // EKF's heading must be anchored by leg (odom2, yaw cov 0.007) + IMU gyro, not
+  // by rf2o's scan-match yaw. Position stays rf2o's job.
+  odom.pose.covariance[0]  = 0.01;   // x   variance (m^2),  std ~0.10 m
+  odom.pose.covariance[7]  = 0.01;   // y   variance (m^2),  std ~0.10 m
+  odom.pose.covariance[35] = 0.04;   // yaw variance (rad^2), std ~0.20 rad (11.5°)
   //set the velocity
   odom.child_frame_id = base_frame_id;
   odom.twist.twist.linear.x = lin_speed;    //linear speed

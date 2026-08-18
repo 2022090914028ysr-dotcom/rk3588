@@ -21,6 +21,12 @@
     <arg name="rknn_core" default="auto"/>
     <arg name="refresh_initial_path" default='true'/>
     <arg name="control_rate" default="50.0"/>
+    <arg name="heading_align_enabled" default="true"/>
+    <arg name="heading_align_enter_angle" default="1.0"/>
+    <arg name="heading_align_exit_angle" default="0.25"/>
+    <arg name="heading_align_angular_speed" default="1.0"/>
+    <arg name="heading_align_kp" default="1.2"/>
+    <arg name="heading_align_min_distance" default="0.30"/>
     <arg name="vel_filter_cmd_out_topic" default="/cmd_vel"/>
     <arg name="ultrasonic_evade_lateral_speed" default="0.5"/>
     <arg name="reverse_side_stop_distance" default="0.25"/>
@@ -32,6 +38,8 @@
     <arg name="path_replan_cooldown" default="5.0"/>
     <arg name="path_max_replan_attempts" default="3"/>
     <arg name="empty_plan_threshold" default="3"/>
+    <arg name="path_segment_length" default="0.5"/>
+    <arg name="path_reach_tolerance" default="0.25"/>
     <arg name="clear_costmaps_service" default="/move_base/clear_costmaps"/>
 
     <arg name="return_to_previous_goal_enabled" default="true"/>
@@ -51,6 +59,8 @@
       <param name="replan_cooldown" value="$(arg path_replan_cooldown)" />
       <param name="max_replan_attempts" value="$(arg path_max_replan_attempts)" />
       <param name="empty_plan_threshold" value="$(arg empty_plan_threshold)" />
+      <param name="segment_length" value="$(arg path_segment_length)" />
+      <param name="reach_tolerance" value="$(arg path_reach_tolerance)" />
       <param name="clear_costmaps_service" value="$(arg clear_costmaps_service)" />
     </node>
     <node name="vel_filter" pkg="NavOA_ros" type="vel_filter.py" output="screen" launch-prefix="python3">
@@ -59,7 +69,7 @@
       <param name="cmd_timeout" value="0.5" />
       <param name="publish_rate" value="100.0" />
       <param name="max_forward_speed" value="0.3" />
-      <param name="max_angular_speed" value="0.5" />
+      <param name="max_angular_speed" value="1.5" />
       <param name="wz_scale" value="1" />
       <param name="enable_ultrasonic_bumper" value="true" />
       <param name="ultrasonic_stop_distance" value="0.16" />
@@ -106,15 +116,21 @@
         <param name="rknn_core" value="$(arg rknn_core)"/>
         <param name="refresh_initial_path" value="$(arg refresh_initial_path)"/>
         <param name="control_rate" value="$(arg control_rate)"/>
+        <param name="heading_align_enabled" value="$(arg heading_align_enabled)"/>
+        <param name="heading_align_enter_angle" value="$(arg heading_align_enter_angle)"/>
+        <param name="heading_align_exit_angle" value="$(arg heading_align_exit_angle)"/>
+        <param name="heading_align_angular_speed" value="$(arg heading_align_angular_speed)"/>
+        <param name="heading_align_kp" value="$(arg heading_align_kp)"/>
+        <param name="heading_align_min_distance" value="$(arg heading_align_min_distance)"/>
         <remap from="/scan" to="/scan"/>
         <!-- <remap from="/scan" to="/mergescan"/> -->
         <remap from="/NavOA_cmd_vel" to="/cmd_vel_tem"/>
         <!-- Keep NavOA output off /cmd_vel; vel_filter is the only writer to /cmd_vel. -->
         <!-- <remap from="/NavOA_cmd_vel" to="/cmd_vel"/> -->
         <!-- <remap from="/NavOA_goal" to="/move_base_simple/goal"/> -->
-        <!-- <remap from="/NavOA_goal" to="/split_goal"/> -->
+        <remap from="/NavOA_goal" to="/split_goal"/>
         
-        <remap from="/initial_path" to="/move_base/GlobalPlanner/plan"/>
+        <!-- <remap from="/initial_path" to="/move_base/GlobalPlanner/plan"/> -->
 
     </node>
 

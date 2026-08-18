@@ -9,3 +9,4 @@ logs/
 *.pyc
 __pycache__/
 *.zip
+evaluation/

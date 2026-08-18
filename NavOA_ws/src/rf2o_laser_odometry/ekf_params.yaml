@@ -28,24 +28,86 @@ odom0_queue_size: 5
 odom0_nodelay: true
 odom0_pose_rejection_threshold: 3.0   # 防止大跳变
 
-# 显式设置协方差：告诉 EKF rf2o 的精度
-odom0_pose_covariance_diagonal: [0.01, 0.01, 0.001, 0.001, 0.001, 0.02]  # Yaw 协方差稍大（容忍小抖）
+# 协方差来自 /odom_rf2o 消息本身（robot_localization 没有 odomN_pose_covariance_diagonal
+# 参数，此前的同名参数被静默忽略）。rf2o 节点现已填充真实协方差：
+#   x/y = 0.01（位置锚点），yaw = 0.04（v4 实测 rf2o 转弯时相对 leg/IMU 过转 +40°，
+#   故航向应信任 leg(odom2) + IMU，而不是 rf2o 的扫描匹配航向）。
+# 若 EKF 航向仍被 rf2o 拉偏，可进一步把 yaw 放宽到 0.08。
 
 # ==============================
-# 输入2: 腿式里程计（SMX/Odom）
+# 输入2: 腿式里程计位置（SMX/Odom，差分模式）
 # ==============================
 odom1: SMX/Odom
 odom1_config: [true,  true,  false,   # X, Y
-               false, false, true,    # Yaw
+               false, false, false,   # Yaw（不在此融合——绝对航向由 odom2 提供）
                false, false, false,
                false, false, false,
                false, false, false]
-odom1_differential: false
+odom1_differential: true    # 差分模式：只融合相邻帧的“增量运动”，对原点重置免疫
 odom1_relative: false
 odom1_queue_size: 5
 odom1_nodelay: true
 odom1_pose_rejection_threshold: 3.0
-odom1_pose_covariance_diagonal: [0.1, 0.1, 0.001, 0.001, 0.001, 0.1]  # 腿式精度低于激光，协方差较大
+# 协方差来自 SMX/Odom 消息本身（x/y≈0.267, yaw≈0.007）。腿式精度低于激光，由 rf2o 锚定。
+#
+# 为什么 odom1_differential 要设为 true（v2 bag 的关键修复）：
+#   腿里程计（远程 PC 192.168.110.132 的 fusion_estimator_node）掉线重连后会以任意新原点
+#   重新发布。v2 bag 实测：重连后航向相对 rf2o 偏转 ~180°、位置相差 ~1.2m，且 align_leg_origin
+#   只在启动时执行一次、不会再次对齐。以“绝对位姿”融合时，EKF 会被这个错位位姿拉偏 → /odom 跳变。
+#   改为差分模式后，EKF 只对“相邻两帧之差”求速度再积分：
+#     - 绝对原点（以及重连后的 180° 偏转）被差分消掉，不影响融合；
+#     - 重连瞬间的位姿跳变被摊到整个掉线间隔（dt 大 → 伪速度很小，~1.2m/28.8s≈0.04 m/s）；
+#     - 重连后各帧增量恢复正常，EKF 继续用腿的增量运动（这是腿里程计最可靠的部分）。
+#   注意：差分模式下 odom1_config 的 X/Y 会自动映射为线速度 vx/vy；绝对航向不再由
+#   本输入提供（改由 odom2 以绝对 yaw 融合），故 yaw 项已置 false。
+
+# ==============================
+# 输入3: 腿式里程计绝对航向（/SMX/Odom_yaw —— SMX/Odom 的 topic_tools relay）
+# ==============================
+# 单独以“绝对 yaw”融合腿的航向，作为粗航向先验（coarse heading prior）：
+#   - 特征稀疏区 rf2o 的扫描匹配会因对称性歧义翻转 ~180°，此时 EKF 需要一个独立的
+#     绝对航向锚点来打破歧义；腿 yaw（校准后 ±3° 静态 / ±11° 快速转弯）足够胜任。
+#   - 位置仍保持差分（odom1），因为腿原点任意、每次重启都会变；绝对航向依赖
+#     align_leg_origin 在启动/重连时把腿 yaw 对齐到 rf2o 坐标系。
+odom2: /SMX/Odom_yaw
+odom2_config: [false, false, false,   # X, Y（不融合——位置仍由 odom1 差分提供）
+               false, false, true,    # Yaw（绝对航向）
+               false, false, false,
+               false, false, false,
+               false, false, false]
+odom2_differential: false    # 绝对航向（非差分）
+odom2_relative: false
+odom2_queue_size: 5
+odom2_nodelay: true
+odom2_pose_rejection_threshold: 3.0
+# 协方差来自 SMX/Odom 消息本身（yaw≈0.007 rad² ≈ 4.8°）。校准后腿 yaw 精度 ±3°（静态）/
+# ±11°（快速转弯），4.8° 大致匹配；若 EKF 被腿 yaw 过度拉偏，可放宽到 ~0.03 rad²（10°）。
+
+# ==============================
+# 输入4: IMU（/imu/data — yesense 惯导，远程 PC 192.168.110.132）
+# ==============================
+# 只融合 Yaw 角速度（Z gyro），不融合绝对姿态或线加速度。
+# 原因：
+#   - 双足步态下绝对姿态不可靠（加速度干扰重力方向）
+#   - 线加速度噪声极大（足部冲击）
+#   - 角速度是最干净的 IMU 信号，可直接约束 yaw 漂移（静态 yaw 漂移 ~13°/5min）
+imu0: /imu/data
+imu0_config: [
+  false, false, false,   # X,  Y,  Z  position
+  false, false, false,   # roll, pitch, yaw  absolute orientation (NOT fused)
+  false, false, false,   # Vx, Vy, Vz  linear velocity
+  false, false, true,    # ωx, ωy, ωz  angular velocity — ONLY ωz (yaw rate)
+  false, false, false    # Ax, Ay, Az  linear acceleration (NOT fused)
+]
+imu0_differential: false
+imu0_relative: false
+imu0_queue_size: 5
+imu0_nodelay: true
+imu0_remove_gravitational_acceleration: false
+
+# yesense 不发布协方差（全零），手动指定 Z 陀螺噪声
+# 5e-4 rad²/s² ≈ 典型工业级 MEMS 陀螺噪声密度 @200Hz
+imu0_angular_velocity_covariance_diagonal: [0.0, 0.0, 5e-4]
 
 # ==============================
 # 协方差调参（旋转稳定性关键！）

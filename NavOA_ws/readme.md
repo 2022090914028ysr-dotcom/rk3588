@@ -151,10 +151,10 @@ Important: After finishing mapping and before killing the current SLAM terminal,
 rosservice call /finish_trajectory 0
 
 
-rosservice call /write_state "{filename: '/home/ubuntu/Robit_SlamNav/NavOA_ws/src/carto_ws/map/meeting_room/test11.pbstream', include_unfinished_submaps: true}"
+rosservice call /write_state "{filename: '/home/ubuntu/Robit_SlamNav/NavOA_ws/src/carto_ws/map/meeting_room/corridor.pbstream', include_unfinished_submaps: true}"
 
 ```
-rosrun map_server map_saver -f /home/ubuntu/Robit_SlamNav/NavOA_ws/src/carto_ws/map/meeting_room/test001
+rosrun map_server map_saver -f /home/ubuntu/Robit_SlamNav/NavOA_ws/src/carto_ws/map/meeting_room/corridor
 
 # Must save as `.pbstream` format, and modify the save path to your own address.
 
@@ -199,6 +199,41 @@ roslaunch cartographer_ros cartographer_guard_imu_score.launch
 roslaunch lidar_ros lidar_full.launch
 
 roslaunch marl_mapping exploration.launch
+
+### ROS BAG Collection and Analysis
+
+# 1. Restart sensors.launch (picks up existing config + new leg cov from remote)
+roslaunch runner sensors.launch
+
+# 2. Record the five scenarios (same command as before)
+
+rosbag record -O Odom_test1/figure8_v4.bag /odom /odom_rf2o SMX/Odom /imu/data /tf /tf_static /scan
+python3.8 scripts/analyze_bag.py Odom_test1/figure8_v4.bag figure8_v4 -o analysis_output3 2>&1 | grep -v "^$"
+
+
+rosbag record -O evaluation/Odom_test1/static.bag /odom /odom_rf2o SMX/Odom /imu/data /tf /tf_static /scan
+
+# ... repeat for figure8, blank_corridor, lidar_cross, kidnap
+
+# 3. Analyze
+python3.8 scripts/analyze_bag.py evaluation/Odom_test1/static.bag static -o analysis_output3
+
+## Full_stack Analysis 
+cd /home/ubuntu/Robit_SlamNav/NavOA_ws/evaluation
+source /opt/ros/noetic/setup.bash
+rosbag record -o evaluation/full_stack_v5 \
+  /odom /odom_rf2o /SMX/Odom \
+  /tf /tf_static \
+  /scan \
+  /imu/data \
+  /move_base/GlobalPlanner/plan \
+  /move_base/TrajectoryPlannerROS/local_plan \
+  /move_base/current_goal /move_base/goal /move_base/result /move_base/status \
+  /cmd_vel /map
+
+## After recorded it, analyze with:
+source /opt/ros/noetic/setup.bash
+python3.8 scripts/analyze_navigation.py evaluation/full_stack_v4_2026-08-18-11-23-16.bag -o evaluation/full_stack_v4
 
 rosrun tf tf_echo map odom 1
 rosrun tf tf_echo map imu_link 1

@@ -24,7 +24,15 @@
         <param name = "pub_tfTree" type="boolean" value="true"/>
 
     </node>
-
+    
+    <!-- Rotate the HP60C RGB + depth images 90deg for display (no driver changes).
+         Run alongside hp60c.launch, then view:
+           /ascamera_hp60c/rgb0/image_rotated
+           /ascamera_hp60c/depth0/image_rotated -->
+    <node name="ascam_image_rotate" pkg="ascamera" type="ascam_image_rotate.py" output="screen">
+        <!-- rotation: 90cw | 90ccw | 180 -->
+        <param name="rotation" value="90ccw"/>
+    </node>
 <!-- add nodes to enable multi camera activation: usb_bus_no and usb_path should be different -->
     <!-- <node pkg="ascamera" name="ascamera_hp60c_ln_2" type="ascamera_node" respawn="true" output="screen">
         <param name = "usb_bus_no" type="int" value="2"/>

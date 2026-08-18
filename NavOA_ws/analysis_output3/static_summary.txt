@@ -1,0 +1,38 @@
+================================================================================
+VALIDATION SUMMARY — static
+================================================================================
+Bag              : evaluation/Odom_test1/static.bag
+Duration         : 301.4 s
+Common timeline  : 30144 pts @ 100.0 Hz (interpolated)
+
+---- Covariance Audit ----
+/odom (fused)    : HAS covariance — cov[X]=0.0026, cov[Y]=0.0026, cov[Yaw]=0.0038
+/odom_rf2o (rf2o): NO covariance — all zeros in first 10 messages
+SMX/Odom (leg)   : HAS covariance — cov[X]=0.0269, cov[Y]=0.0269, cov[Yaw]=0.0006
+
+---- Frame Check ----
+Fused frame      : odom
+rf2o frame       : odom
+Leg frame        : odom
+Same frame?      : True
+
+---- Input Disagreement ----
+Max disagreement : 0.3250 m at t=246.3s
+Median disagreement: 0.2721 m
+90th percentile  : 0.2990 m
+
+---- Covariance Response (the key metric) ----
+Correlation (ρ)  : -0.029  (Pearson r between disagreement and fused position σ)
+Covariance grew? : NO — fused position σ did NOT rise (ratio=1.02×, σ_high=0.0792m vs σ_normal=0.0777m). *** Filter is OVERCONFIDENT — covariance does not reflect input disagreement. ***
+
+---- Drift (position / yaw from start) ----
+                Position Drift [m]     Yaw Drift [deg]
+Fused EKF        :   0.1173               8.523
+rf2o only        :   0.1125               7.943
+Leg odom only    :   0.0051               0.251
+
+---- Message Counts ----
+/odom             : 9044
+/odom_rf2o        : 3022
+SMX/Odom          : 59912
+================================================================================

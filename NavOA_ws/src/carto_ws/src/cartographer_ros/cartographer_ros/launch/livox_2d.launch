@@ -28,7 +28,9 @@
         args="-configuration_directory $(find cartographer_ros)/configuration_files
                -configuration_basename livox_2d.lua" output="screen">
     <remap from="scan" to="/scan" />
-    <remap from="odom" to="/odom" />
+    <remap from="odom" to="/odom" />                 <!-- EKF mode (default): fused odom -->
+    <!-- <remap from="odom" to="/odom_rf2o" /> -->   <!-- rf2o-only: comment above, uncomment this -->
+    <!-- <remap from="odom" to="/SMX/Odom" /> -->    <!-- leg-only: comment above, uncomment this -->
   </node>
 
 

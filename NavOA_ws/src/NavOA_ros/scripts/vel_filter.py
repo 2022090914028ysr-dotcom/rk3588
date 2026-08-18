@@ -44,6 +44,12 @@ class VelocityFilter:
         # Use <=0 to disable.
         self.max_forward_speed = float(rospy.get_param('~max_forward_speed', 0.0))
         self.max_angular_speed = float(rospy.get_param('~max_angular_speed', 0.0))
+        # Differential-drive pivot rule: once the final command reaches the
+        # configured angular-speed limit, remove all translation so the robot
+        # rotates about its current position instead of drawing a tight arc.
+        self.pivot_at_max_angular_speed = bool(
+            rospy.get_param('~pivot_at_max_angular_speed', True)
+        )
 
         # Global angular velocity scale (applied to all modes).
         self.wz_scale = float(rospy.get_param('~wz_scale', 1.0))
@@ -222,6 +228,19 @@ class VelocityFilter:
         if self.deadband_angular_z > 0.0 and abs(twist.angular.z) < self.deadband_angular_z:
             twist.angular.z = 0.0
         return twist
+
+    def _apply_max_angular_pivot(self, twist: Twist) -> bool:
+        """Zero translation when the final yaw rate reaches its limit."""
+        if (not self.pivot_at_max_angular_speed or
+                self.max_angular_speed <= 0.0):
+            return False
+        tolerance = max(1e-6, self.max_angular_speed * 1e-6)
+        if abs(twist.angular.z) < self.max_angular_speed - tolerance:
+            return False
+        twist.linear.x = 0.0
+        twist.linear.y = 0.0
+        twist.linear.z = 0.0
+        return True
 
     def _publish_debug(self, cmd_in: Twist, cmd_out: Twist):
         msg = (
@@ -659,6 +678,7 @@ class VelocityFilter:
 
     def callback(self, msg: Twist):
         self._last_cmd_time = rospy.Time.now()
+        self._has_valid_cmd = True
 
         modified = copy.deepcopy(msg)
         self._last_mode = 'pass_through'
@@ -677,11 +697,12 @@ class VelocityFilter:
                     az = modified.angular.z
                     if abs(az) > self.max_angular_speed:
                         modified.angular.z = math.copysign(self.max_angular_speed, az)
+                pivoting = self._apply_max_angular_pivot(modified)
                 modified = self._apply_deadband(modified)
                 self._latest_output = modified
-                self._last_mode = us_mode
+                self._last_mode = (us_mode + '_pivot') if pivoting else us_mode
                 self._publish_debug(msg, modified)
-                self._publish_status(modified, us_mode)
+                self._publish_status(modified, self._last_mode)
                 return
 
         # ---- camscan bias: when camscan sees front obstacle but lidar doesn't ----
@@ -698,11 +719,12 @@ class VelocityFilter:
             if abs(az) > self.max_angular_speed:
                 modified.angular.z = math.copysign(self.max_angular_speed, az)
 
+        pivoting = self._apply_max_angular_pivot(modified)
         modified = self._apply_deadband(modified)
         self._latest_output = modified
-        self._last_mode = 'pass_through'
+        self._last_mode = 'max_angular_pivot' if pivoting else 'pass_through'
         self._publish_debug(msg, modified)
-        self._publish_status(modified, 'pass_through')
+        self._publish_status(modified, self._last_mode)
 
 
 if __name__ == '__main__':

@@ -11,7 +11,7 @@
 
   <arg name="use_sim_time" default="false"/>
   <arg name="enable_map_server" default="false"/>
-  <arg name="map_file" default="$(find cartographer_ros)/../../../map/meeting_room/test001.yaml" />
+  <arg name="map_file" default="$(find cartographer_ros)/../../../map/meeting_room/corridor.yaml" />
   <arg name="global_map_topic" default="/map"/>
   <arg name="move_base_cmd_topic" default="/move_base_cmd_vel"/>
   <!-- Navigation recovery: do not allow planning or local avoidance to hang forever. -->
@@ -23,6 +23,8 @@
   <arg name="path_replan_cooldown" default="5.0"/>
   <arg name="path_max_replan_attempts" default="3"/>
   <arg name="empty_plan_threshold" default="3"/>
+  <arg name="path_segment_length" default="0.5"/>
+  <arg name="path_reach_tolerance" default="0.25"/>
   <arg name="clear_costmaps_service" default="/move_base/clear_costmaps"/>
   <arg name="launch_rviz" default="false"/>
   <arg name="rviz_config" default="$(find NavOA_ros)/example/gazebo_limo/rviz/robit_map.rviz"/>
@@ -43,7 +45,9 @@
     <param name="controller_patience" value="15.0" />
     <param name="planner_patience" value="5.0" />
     <param name="base_global_planner" value="global_planner/GlobalPlanner" />
-    <param name="planner_frequency" value="2.0" />
+    <!-- Plan on a new goal/recovery event instead of continuously refreshing
+         the global plan while NavOA is following split goals. -->
+    <param name="planner_frequency" value="0.0" />
     <!-- Enable costmap recovery/replanning. Rotation recovery stays disabled
          because NavOA, rather than move_base cmd_vel, controls the robot. -->
     <param name="recovery_behavior_enabled" value="true" />
@@ -74,6 +78,8 @@
     <arg name="path_replan_cooldown" value="$(arg path_replan_cooldown)"/>
     <arg name="path_max_replan_attempts" value="$(arg path_max_replan_attempts)"/>
     <arg name="empty_plan_threshold" value="$(arg empty_plan_threshold)"/>
+    <arg name="path_segment_length" value="$(arg path_segment_length)"/>
+    <arg name="path_reach_tolerance" value="$(arg path_reach_tolerance)"/>
     <arg name="clear_costmaps_service" value="$(arg clear_costmaps_service)"/>
     <arg name="goal_timeout_button_enabled" value="true"/>
     <arg name="goal_timeout_button_topic" value="/app_controller/button"/>

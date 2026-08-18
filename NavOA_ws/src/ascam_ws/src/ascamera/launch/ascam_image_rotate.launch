@@ -1,0 +1,10 @@
+<launch>
+    <!-- Rotate the HP60C RGB + depth images 90deg for display (no driver changes).
+         Run alongside hp60c.launch, then view:
+           /ascamera_hp60c/rgb0/image_rotated
+           /ascamera_hp60c/depth0/image_rotated -->
+    <node name="ascam_image_rotate" pkg="ascamera" type="ascam_image_rotate.py" output="screen">
+        <!-- rotation: 90cw | 90ccw | 180 -->
+        <param name="rotation" value="90ccw"/>
+    </node>
+</launch>
