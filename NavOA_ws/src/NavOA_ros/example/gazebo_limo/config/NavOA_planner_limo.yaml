@@ -11,7 +11,7 @@ robot:
   kinematics: 'diff'
   max_speed: [0.3, 1.2]
   max_acce: [0.3, 1.2]
-  length: 0.60
+  length: 0.25
   width: 0.30
 
 # initial path

@@ -23,10 +23,19 @@ class PathToGoalFollower:
         self.reach_tolerance = rospy.get_param('~reach_tolerance', 0.5) 
         
         # 终点到达阈值：必须非常接近终点（0.15米）才算完成，防止终点处飘移
-        self.final_tolerance = 0.15 
-        
+        self.final_tolerance = rospy.get_param('~final_tolerance', 0.15)
+
         self.base_frame = rospy.get_param('~base_frame', 'base_link')
         self.map_frame = rospy.get_param('~map_frame', 'map')
+
+        # === 可配置话题 (SCAN 集成时通过 launch 覆盖) ===
+        self.path_topic = rospy.get_param(
+            '~path_topic', '/move_base/GlobalPlanner/plan')
+        self.split_goal_topic = rospy.get_param(
+            '~split_goal_topic', '/split_goal')
+        self.goal_input_topic = rospy.get_param(
+            '~goal_input_topic', '/move_base_simple/goal')
+        self.cancel_topic = rospy.get_param('~cancel_topic', '/move_base/cancel')
 
         # Generic navigation recovery.  This node sits between move_base and
         # NavOA, so the protection also applies to manual RViz goals.
@@ -62,20 +71,20 @@ class PathToGoalFollower:
         # === 核心订阅与发布 ===
         
         # 1. 监听用户在 Rviz 的点击 (用于立即打断旧任务)
-        rospy.Subscriber('/move_base_simple/goal', PoseStamped, self.goal_reset_callback)
+        rospy.Subscriber(self.goal_input_topic, PoseStamped, self.goal_reset_callback)
 
         # A move_base cancel must also stop the last split goal retained by
         # NavOA; otherwise NavOA continues driving after move_base has stopped.
-        rospy.Subscriber('/move_base/cancel', GoalID, self.cancel_callback)
+        rospy.Subscriber(self.cancel_topic, GoalID, self.cancel_callback)
 
         # 2. 监听全局规划器生成的长路径 (用于生成新任务)
-        rospy.Subscriber('/move_base/GlobalPlanner/plan', Path, self.path_callback)
-        
+        rospy.Subscriber(self.path_topic, Path, self.path_callback)
+
         # 3. 发布给 NavOA 的切分点 (注意：Launch文件中需将 NavOA 的输入 remap 到这里)
-        self.goal_pub = rospy.Publisher('/split_goal', PoseStamped, queue_size=1)
+        self.goal_pub = rospy.Publisher(self.split_goal_topic, PoseStamped, queue_size=1)
         self.goal_replan_pub = rospy.Publisher(
-            '/move_base_simple/goal', PoseStamped, queue_size=1)
-        self.cancel_pub = rospy.Publisher('/move_base/cancel', GoalID, queue_size=1)
+            self.goal_input_topic, PoseStamped, queue_size=1)
+        self.cancel_pub = rospy.Publisher(self.cancel_topic, GoalID, queue_size=1)
         self.recovery_status_pub = rospy.Publisher(
             '/navoa/recovery_status', String, queue_size=1, latch=True)
         self.clear_costmaps = rospy.ServiceProxy(

@@ -1,0 +1,61 @@
+<launch>
+  <!-- Combined SCAN-Planner + NavOA real-robot launcher.
+       Chain:
+         /move_base_simple/goal -> SCAN-Planner (controller_mode:=none)
+             -> /planning/bspline -> bspline_to_path -> /planning/path
+             -> path_segment_publisher -> /split_goal -> NavOA
+             -> /NavOA_cmd_vel -> vel_filter -> base cmd_vel
+
+       SCAN  = route source (depth camera, forward 3D).
+       NavOA = local avoider (2D LiDAR, 360 deg).
+       vel_filter = the ONLY publisher to the base velocity topic. -->
+
+  <!-- Frames / TF: world_frame, base_frame, lidar_frame must form one TF tree. -->
+  <arg name="world_frame" default="odom"/>
+  <arg name="base_frame" default="base_link"/>
+  <arg name="lidar_frame" default="laser_frame"/>
+
+  <!-- Robot / sensor topics (overridable from the command line). -->
+  <arg name="body_pose_topic" default="/odom"/>
+  <arg name="sensor_pose_topic" default="/odom"/>
+  <arg name="cloud_topic" default="/LIO/clouds_lidar"/>
+  <arg name="cloud_is_world" default="false"/>
+  <arg name="depth_topic" default="/ascamera_hp60c/depth0/image_raw"/>
+  <arg name="scan_topic" default="/scan"/>
+  <arg name="cmd_vel_topic" default="/cmd_vel"/>
+  <arg name="use_rknn" default="true"/>
+
+  <!-- 1. SCAN-Planner in pure-planning mode (no closed/open-loop controller,
+         so SCAN never publishes velocities to the base). -->
+  <include file="$(find scan_planner)/launch/run.launch">
+    <arg name="is_real_world" value="true"/>
+    <arg name="sensor_type" value="depth"/>
+    <arg name="world_frame" value="$(arg world_frame)"/>
+    <arg name="body_pose_topic" value="$(arg body_pose_topic)"/>
+    <arg name="sensor_pose_topic" value="$(arg sensor_pose_topic)"/>
+    <arg name="cloud_topic" value="$(arg cloud_topic)"/>
+    <arg name="cloud_is_world" value="$(arg cloud_is_world)"/>
+    <arg name="depth_topic" value="$(arg depth_topic)"/>
+    <arg name="controller_mode" value="none"/>
+  </include>
+
+  <!-- 2. Convert SCAN's B-spline trajectory into a standard nav_msgs/Path. -->
+  <node pkg="scan_planner" name="bspline_to_path" type="bspline_to_path" output="screen">
+    <param name="input_topic" value="/planning/bspline"/>
+    <param name="output_topic" value="/planning/path"/>
+    <param name="frame_id" value="$(arg world_frame)"/>
+    <param name="flatten_z" value="true"/>
+  </node>
+
+  <!-- 3. path_segment_publisher + NavOA + vel_filter.
+         path_topic is pointed at SCAN's output instead of move_base's global plan. -->
+  <include file="$(find NavOA_ros)/example/gazebo_limo/launch/NavOA_gazebo_limo.launch">
+    <arg name="map_frame" value="$(arg world_frame)"/>
+    <arg name="base_frame" value="$(arg base_frame)"/>
+    <arg name="lidar_frame" value="$(arg lidar_frame)"/>
+    <arg name="scan_topic" value="$(arg scan_topic)"/>
+    <arg name="vel_filter_cmd_out_topic" value="$(arg cmd_vel_topic)"/>
+    <arg name="path_topic" value="/planning/path"/>
+    <arg name="use_rknn" value="$(arg use_rknn)"/>
+  </include>
+</launch>

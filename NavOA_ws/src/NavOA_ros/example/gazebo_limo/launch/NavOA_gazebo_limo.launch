@@ -5,9 +5,10 @@
     <env name="PYTHONPATH" value="$(find NavOA_ros)/NavOA:$(optenv PYTHONPATH)"/>
     
     <arg name="config_file" default='$(find NavOA_ros)/example/gazebo_limo/config/NavOA_planner_limo.yaml'/>
-    <arg name="map_frame" default='map'/>
+    <arg name="map_frame" default='odom'/>
     <arg name="base_frame" default='base_link'/>
     <arg name="lidar_frame" default='laser_frame'/>
+    <arg name="scan_topic" default="/scan"/>
     <arg name="scan_range" default='0.1 5.0'/>
     <arg name="ref_speed" default="0.5"/>
     <arg name="scan_angle_range" default='-3.14 3.14'/>
@@ -33,7 +34,7 @@
     <arg name="reverse_side_hold_duration" default="2.5"/>
 
     <!-- Path-level recovery shared by manual navigation and exploration. -->
-    <arg name="path_progress_timeout" default="25.0"/>
+    <arg name="path_progress_timeout" default="0.0"/>
     <arg name="path_progress_distance" default="0.20"/>
     <arg name="path_replan_cooldown" default="5.0"/>
     <arg name="path_max_replan_attempts" default="3"/>
@@ -41,8 +42,9 @@
     <arg name="path_segment_length" default="0.5"/>
     <arg name="path_reach_tolerance" default="0.25"/>
     <arg name="clear_costmaps_service" default="/move_base/clear_costmaps"/>
+    <arg name="path_topic" default="/move_base/GlobalPlanner/plan"/>
 
-    <arg name="return_to_previous_goal_enabled" default="true"/>
+    <arg name="return_to_previous_goal_enabled" default="false"/>
     <arg name="goal_timeout_button_enabled" default="false"/>
     <arg name="goal_timeout_button_topic" default="/app_controller/button"/>
     <arg name="goal_timeout_button_id" default="9"/>
@@ -52,6 +54,7 @@
     <arg name="goal_timeout_button_send_release" default="true"/>
 
     <node name="path_segment_publisher" pkg="NavOA_ros" type="path_segment_publisher.py" output="screen" launch-prefix="python3">
+      <param name="path_topic" value="$(arg path_topic)" />
       <param name="map_frame" value="$(arg map_frame)" />
       <param name="base_frame" value="$(arg base_frame)" />
       <param name="progress_timeout" value="$(arg path_progress_timeout)" />
@@ -64,6 +67,7 @@
       <param name="clear_costmaps_service" value="$(arg clear_costmaps_service)" />
     </node>
     <node name="vel_filter" pkg="NavOA_ros" type="vel_filter.py" output="screen" launch-prefix="python3">
+      <param name="scan_topic" value="$(arg scan_topic)" />
       <param name="cmd_in_topic" value="/cmd_vel_tem" />
       <param name="cmd_out_topic" value="$(arg vel_filter_cmd_out_topic)" />
       <param name="cmd_timeout" value="0.5" />
@@ -122,7 +126,7 @@
         <param name="heading_align_angular_speed" value="$(arg heading_align_angular_speed)"/>
         <param name="heading_align_kp" value="$(arg heading_align_kp)"/>
         <param name="heading_align_min_distance" value="$(arg heading_align_min_distance)"/>
-        <remap from="/scan" to="/scan"/>
+        <remap from="/scan" to="$(arg scan_topic)"/>
         <!-- <remap from="/scan" to="/mergescan"/> -->
         <remap from="/NavOA_cmd_vel" to="/cmd_vel_tem"/>
         <!-- Keep NavOA output off /cmd_vel; vel_filter is the only writer to /cmd_vel. -->
