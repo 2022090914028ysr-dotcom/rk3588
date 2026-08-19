@@ -1,0 +1,74 @@
+<launch>
+  <!-- real or sim -->
+  <arg name="is_real_world" default="true"/>
+
+  <!-- navigation mode -->
+  <!-- 1: use 2D Nav Goal to select final goal  -->
+  <!-- 2: use keypoints to navigate in multi-floor scene -->
+  <!-- 3: use reference path to follow and avoid obstacles -->
+  <arg name="navi_mode" default="1"/>
+  <arg name="sensor_type" default="depth"/>
+  <arg name="world_frame" default="odom"/>
+  <arg name="launch_go2_support" default="false"/>
+  <arg name="launch_odom_visualization" default="false"/>
+
+  <!-- Robot/sensor interfaces. Defaults preserve the original SCAN setup,
+       while default= lets an integration launch override each topic. -->
+  <arg name="body_pose_topic" default="$(eval '/odom' if arg('is_real_world') else '/quad_0/body_pose')" />
+  <arg name="sensor_pose_topic" default="$(eval '/odom' if arg('is_real_world') else ('/quad_0/camera_pose' if arg('sensor_type') == 'depth' else '/quad_0/lidar_pose'))" />
+  <arg name="cloud_topic" default="$(eval '/LIO/clouds_lidar' if arg('is_real_world') else '/pcl_render_node/cloud')"/>
+  <arg name="cloud_is_world" default="$(eval 'false' if arg('is_real_world') else 'true')"/>
+  <arg name="depth_topic" default="$(eval '/ascamera_hp60c/depth0/image_raw' if arg('is_real_world') else '/pcl_render_node/depth')"/>
+  <param name="body_pose_topic" value="$(arg body_pose_topic)" type="str"/>
+
+  <!-- main algorithm params -->
+  <include file="$(find scan_planner)/launch/advanced_param.xml">
+
+    <!-- sensor choose -->
+    <arg name="sensor_type" value="$(arg sensor_type)"/>
+    <arg name="body_pose_topic" value="$(arg body_pose_topic)" />
+    <arg name="sensor_pose_topic" value="$(arg sensor_pose_topic)" />
+    
+    <!-- lidar topic -->
+    <arg name="cloud_topic" value="$(arg cloud_topic)"/>
+    <arg name="cloud_is_world" value="$(arg cloud_is_world)"/>
+    
+    <!-- depth topic -->
+    <arg name="depth_topic" value="$(arg depth_topic)"/>
+    <arg name="cx" value="$(eval 317.4617919921875 if arg('is_real_world') else 321.04638671875)"/>
+    <arg name="cy" value="$(eval 240.69256591796875 if arg('is_real_world') else 243.44969177246094)"/>
+    <arg name="fx" value="$(eval 421.33001708984375 if arg('is_real_world') else 387.229248046875)"/>
+    <arg name="fy" value="$(eval 420.8514709472656 if arg('is_real_world') else 387.229248046875)"/>
+
+    <arg name="is_real_world" value="$(arg is_real_world)"/>
+    <arg name="navi_mode" value="$(arg navi_mode)" />
+    <arg name="world_frame" value="$(arg world_frame)" />
+  </include>
+
+  <!-- controller mode -->
+  <!-- open_loop: publish trajectory-following odometry for multi-floor simulation -->
+  <!-- closed_loop: track the trajectory for 2D simulation or real-world control -->
+  <arg name="controller_mode" default="none"/>
+
+  <node if="$(eval arg('controller_mode') == 'open_loop')" pkg="scan_planner" name="open_loop_controller" type="open_loop_controller" output="screen"/>
+  <group if="$(eval arg('controller_mode') == 'closed_loop')">
+    <node pkg="scan_planner" name="closed_loop_controller" type="closed_loop_controller" output="screen"/>
+    <node unless="$(arg is_real_world)" pkg="scan_planner" name="go2_kinematic_sim" type="go2_kinematic_sim" output="screen"/>
+  </group>
+
+  <!-- go2 model -->
+  <group if="$(arg launch_go2_support)">
+    <param name="robot_description" textfile="$(find go2_description)/urdf/go2_description.urdf" />
+    <node pkg="robot_state_publisher" type="robot_state_publisher" name="go2_robot_state_publisher" output="screen"/>
+    <node pkg="scan_planner" name="go2_gait_publisher" type="go2_gait_publisher" output="screen"/>
+  </group>
+
+  <!-- use simulator -->
+  <include file="$(find scan_planner)/launch/simulator.xml">
+    <arg name="is_real_world" value="$(arg is_real_world)" />
+    <arg name="navi_mode" value="$(arg navi_mode)" />
+    <arg name="sensor_type" value="$(arg sensor_type)" />
+    <arg name="launch_odom_visualization" value="$(arg launch_odom_visualization)" />
+  </include>
+
+</launch>
