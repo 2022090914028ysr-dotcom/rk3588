@@ -31,6 +31,7 @@
 using namespace std;
 namespace tf {
 class TransformBroadcaster;
+class TransformListener;
 }
 
 // voxel hashing
@@ -88,6 +89,8 @@ struct MappingParameters {
   string sensor_type_;
   bool cloud_is_world_;
   bool need_extrinsic_;
+  string extrinsic_parent_frame_;
+  string extrinsic_child_frame_;
   Eigen::Matrix4d lidar_extrinsic_;
   Eigen::Matrix4d depth_extrinsic_;
 
@@ -201,6 +204,7 @@ public:
 private:
   MappingParameters mp_;
   MappingData md_;
+  bool depth_extrinsic_initialized_ = false;
 
   // get depth image and sensor pose
   void depthPoseCallback(const sensor_msgs::ImageConstPtr& img,
@@ -238,6 +242,7 @@ private:
                             std::vector<int>& cnt_buffer,
                             std::vector<char>& flag_buffer,
                             const std::vector<char>* ignore_mask);
+  bool updateDepthExtrinsicFromTf();
 
   // typedef message_filters::sync_policies::ExactTime<sensor_msgs::Image,
   // nav_msgs::Odometry> SyncPolicyImageOdom; typedef
@@ -249,6 +254,7 @@ private:
 
   ros::NodeHandle node_;
   shared_ptr<tf::TransformBroadcaster> tf_broadcaster_;
+  shared_ptr<tf::TransformListener> tf_listener_;
   shared_ptr<message_filters::Subscriber<sensor_msgs::Image>> depth_sub_;
   shared_ptr<message_filters::Subscriber<nav_msgs::Odometry>> depth_pose_sub_;
   SynchronizerImagePose sync_image_pose_;

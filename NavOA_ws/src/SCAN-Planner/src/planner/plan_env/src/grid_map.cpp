@@ -3,6 +3,7 @@
 #include <limits>
 #include <string>
 #include <tf/transform_broadcaster.h>
+#include <tf/transform_listener.h>
 
 void GridMap::initMap(ros::NodeHandle &nh)
 {
@@ -53,6 +54,8 @@ void GridMap::initMap(ros::NodeHandle &nh)
   node_.param("grid_map/sensor_type", mp_.sensor_type_, string("lidar"));
   node_.param("grid_map/cloud_is_world", mp_.cloud_is_world_, true);
   node_.param("grid_map/need_extrinsic", mp_.need_extrinsic_, true);
+  node_.param("grid_map/extrinsic_parent_frame", mp_.extrinsic_parent_frame_, string("base_link"));
+  node_.param("grid_map/extrinsic_child_frame", mp_.extrinsic_child_frame_, string("ascamera_hp60c_depth_0"));
 
   mp_.lidar_extrinsic_ <<
       1.0, 0.0, 0.0, -0.01100,
@@ -60,19 +63,17 @@ void GridMap::initMap(ros::NodeHandle &nh)
       0.0, 0.0, 1.0,  0.04412,
       0.0, 0.0, 0.0,  1.00000;
 
-  // body -> camera (optical) transform for the real robot:
-  // camera mounted 0.10 m forward, 0.50 m up, pitched -90 deg (R_y(-pi/2)),
-  // driver depth_0 frame is identity so the extrinsic carries the full rotation.
-  // If the depth cloud appears rolled 90 deg at the first hardware gate, swap to:
-  //     0.0, -1.0,  0.0,  0.10,
-  //     0.0,  0.0, -1.0,  0.00,
-  //     1.0,  0.0,  0.0,  0.50,
-  //     0.0,  0.0,  0.0,  1.00;
+  // Fallback body -> camera extrinsic. Real-robot runs should replace this from TF.
   mp_.depth_extrinsic_ <<
-      0.0,  0.0, -1.0,  0.10,
-      0.0,  1.0,  0.0,  0.00,
-      1.0,  0.0,  0.0,  0.50,
-      0.0,  0.0,  0.0,  1.00;
+      0.0,  0.017452406437,  0.999847695156,  0.10,
+     -1.0,  0.0,             0.0,             0.00,
+      0.0, -0.999847695156,  0.017452406437,  0.36,
+      0.0,  0.0,             0.0,             1.00;
+
+  if (mp_.need_extrinsic_ && mp_.sensor_type_ == "depth")
+  {
+    tf_listener_.reset(new tf::TransformListener(ros::Duration(10.0)));
+  }
       
   if (mp_.sensor_type_ != "lidar" && mp_.sensor_type_ != "depth")
   {
@@ -769,6 +770,11 @@ void GridMap::depthPoseCallback(const sensor_msgs::ImageConstPtr &img,
   if (mp_.sensor_type_ != "depth")
     return;
 
+  if (mp_.need_extrinsic_ && !depth_extrinsic_initialized_)
+  {
+    updateDepthExtrinsicFromTf();
+  }
+
   /* get depth image */
   cv_bridge::CvImagePtr cv_ptr;
   cv_ptr = cv_bridge::toCvCopy(img, img->encoding);
@@ -823,6 +829,45 @@ void GridMap::depthPoseCallback(const sensor_msgs::ImageConstPtr &img,
   else
   {
     md_.occ_need_update_ = false;
+  }
+}
+
+bool GridMap::updateDepthExtrinsicFromTf()
+{
+  if (!tf_listener_)
+    return false;
+
+  tf::StampedTransform extrinsic_tf;
+  try
+  {
+    tf_listener_->lookupTransform(mp_.extrinsic_parent_frame_, mp_.extrinsic_child_frame_, ros::Time(0),
+                                  extrinsic_tf);
+
+    mp_.depth_extrinsic_.setIdentity();
+    const tf::Matrix3x3 basis = extrinsic_tf.getBasis();
+    for (int row = 0; row < 3; ++row)
+    {
+      for (int col = 0; col < 3; ++col)
+      {
+        mp_.depth_extrinsic_(row, col) = basis[row][col];
+      }
+    }
+
+    mp_.depth_extrinsic_(0, 3) = extrinsic_tf.getOrigin().x();
+    mp_.depth_extrinsic_(1, 3) = extrinsic_tf.getOrigin().y();
+    mp_.depth_extrinsic_(2, 3) = extrinsic_tf.getOrigin().z();
+    depth_extrinsic_initialized_ = true;
+
+    ROS_INFO_STREAM("[GridMap] depth extrinsic from TF " << mp_.extrinsic_parent_frame_ << " -> "
+                    << mp_.extrinsic_child_frame_ << ":\n" << mp_.depth_extrinsic_);
+    return true;
+  }
+  catch (const tf::TransformException& ex)
+  {
+    ROS_WARN_STREAM_THROTTLE(1.0, "[GridMap] depth extrinsic TF unavailable for " << mp_.extrinsic_parent_frame_
+                             << " -> " << mp_.extrinsic_child_frame_ << ", using fallback matrix until TF is ready. "
+                             << ex.what());
+    return false;
   }
 }
 
