@@ -204,6 +204,7 @@ roslaunch marl_mapping exploration.launch
 
 # 1. Restart sensors.launch (picks up existing config + new leg cov from remote)
 roslaunch runner sensors.launch
+roslaunch NavOA_ros scan_navoa.launch
 
 # 2. Record the five scenarios (same command as before)
 

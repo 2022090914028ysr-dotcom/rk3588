@@ -24,7 +24,7 @@ def read_monitor_csv(path: str) -> pd.DataFrame:
             return pd.NaT
     df['dt'] = df['time'].astype(str).map(to_dt)
     # Numeric conversions and NA handling
-    for c in ['cpu_temp_C', 'npu_temp_C', 'total_cpu_pct']:
+    for c in ['cpu_temp_C', 'npu_temp_C', 'total_cpu_pct', 'npu_usage_pct']:
         if c in df.columns:
             df[c] = pd.to_numeric(df[c], errors='coerce')
     return df.dropna(subset=['dt'])
@@ -42,11 +42,16 @@ def plot_temps(df: pd.DataFrame, out_dir: str) -> str:
     ax1.set_ylabel('Temperature (°C)')
     ax1.grid(True, alpha=0.3)
 
-    # Optionally overlay total CPU % on twin axis
-    if 'total_cpu_pct' in df.columns and df['total_cpu_pct'].notna().any():
+    # Overlay usage percentages (total CPU% and NPU usage%) on a twin axis
+    has_pct = ('total_cpu_pct' in df.columns and df['total_cpu_pct'].notna().any()) or \
+              ('npu_usage_pct' in df.columns and df['npu_usage_pct'].notna().any())
+    if has_pct:
         ax2 = ax1.twinx()
-        ax2.plot(df['dt'].values, df['total_cpu_pct'].values, label='Total CPU %', color='tab:blue', alpha=0.5)
-        ax2.set_ylabel('CPU %')
+        if 'total_cpu_pct' in df.columns and df['total_cpu_pct'].notna().any():
+            ax2.plot(df['dt'].values, df['total_cpu_pct'].values, label='Total CPU %', color='tab:blue', alpha=0.5)
+        if 'npu_usage_pct' in df.columns and df['npu_usage_pct'].notna().any():
+            ax2.plot(df['dt'].values, df['npu_usage_pct'].values, label='NPU usage %', color='tab:green', alpha=0.8)
+        ax2.set_ylabel('Usage %')
         lines1, labels1 = ax1.get_legend_handles_labels()
         lines2, labels2 = ax2.get_legend_handles_labels()
         ax1.legend(lines1 + lines2, labels1 + labels2, loc='upper left')

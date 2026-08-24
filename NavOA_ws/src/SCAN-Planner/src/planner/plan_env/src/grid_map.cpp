@@ -5,6 +5,57 @@
 #include <tf/transform_broadcaster.h>
 #include <tf/transform_listener.h>
 
+namespace {
+
+Eigen::Matrix4d tfToEigenMatrix(const tf::StampedTransform& transform)
+{
+  Eigen::Matrix4d matrix = Eigen::Matrix4d::Identity();
+  const tf::Matrix3x3 basis = transform.getBasis();
+  for (int row = 0; row < 3; ++row)
+  {
+    for (int col = 0; col < 3; ++col)
+    {
+      matrix(row, col) = basis[row][col];
+    }
+  }
+
+  matrix(0, 3) = transform.getOrigin().x();
+  matrix(1, 3) = transform.getOrigin().y();
+  matrix(2, 3) = transform.getOrigin().z();
+  return matrix;
+}
+
+double percentileFromSorted(const std::vector<uint16_t>& sorted_values, const double ratio)
+{
+  if (sorted_values.empty())
+    return 0.0;
+  if (sorted_values.size() == 1)
+    return static_cast<double>(sorted_values.front());
+
+  const double idx = ratio * static_cast<double>(sorted_values.size() - 1);
+  const size_t lo = static_cast<size_t>(std::floor(idx));
+  const size_t hi = static_cast<size_t>(std::ceil(idx));
+  if (lo == hi)
+    return static_cast<double>(sorted_values[lo]);
+
+  const double weight_hi = idx - static_cast<double>(lo);
+  const double weight_lo = 1.0 - weight_hi;
+  return weight_lo * static_cast<double>(sorted_values[lo]) +
+         weight_hi * static_cast<double>(sorted_values[hi]);
+}
+
+struct DepthDebugSample {
+  int u;
+  int v;
+  uint16_t raw_depth;
+  double filtered_depth;
+  Eigen::Vector3d pt_cur;
+  Eigen::Vector3d pt_world;
+  const char* status;
+};
+
+}
+
 void GridMap::initMap(ros::NodeHandle &nh)
 {
   node_ = nh;
@@ -18,7 +69,7 @@ void GridMap::initMap(ros::NodeHandle &nh)
   node_.param("grid_map/local_update_range_x", mp_.local_update_range_(0), x_size/2.0);
   node_.param("grid_map/local_update_range_y", mp_.local_update_range_(1), y_size/2.0);
   node_.param("grid_map/local_update_range_z", mp_.local_update_range_(2), z_size/2.0);
-  
+  node_.param("grid_map/min_obstacle_height", mp_.min_obstacle_height_, 0.15);
   node_.param("grid_map/obstacles_inflation_z_up", mp_.obstacles_inflation_z_up, -1.0);
   node_.param("grid_map/obstacles_inflation_z_down", mp_.obstacles_inflation_z_down, -1.0);
   node_.param("grid_map/double_cylinder_radius", mp_.double_cylinder_radius_, -1.0);
@@ -466,6 +517,7 @@ void GridMap::projectDepthImage()
 {
   // md_.proj_points_.clear();
   md_.proj_points_cnt = 0;
+  static bool logged_depth_debug = false;
 
   uint16_t *row_ptr;
   // int cols = current_img_.cols, rows = current_img_.rows;
@@ -528,6 +580,106 @@ void GridMap::projectDepthImage()
       md_.proj_points_[md_.proj_points_cnt++] = pt_world;
     }
   }
+
+  if (!logged_depth_debug)
+  {
+    std::vector<uint16_t> valid_depths;
+    valid_depths.reserve(rows * cols);
+    for (int v = 0; v < rows; ++v)
+    {
+      const uint16_t* row = md_.depth_image_.ptr<uint16_t>(v);
+      for (int u = 0; u < cols; ++u)
+      {
+        const uint16_t raw_depth = row[u];
+        if (raw_depth > 0)
+          valid_depths.push_back(raw_depth);
+      }
+    }
+
+    if (!valid_depths.empty())
+    {
+      std::sort(valid_depths.begin(), valid_depths.end());
+      ROS_INFO_STREAM("[GridMap] depth_image debug: rows=" << rows
+                      << " cols=" << cols
+                      << " step_bytes=" << md_.depth_image_.step[0]
+                      << " expected_step_bytes=" << cols * static_cast<int>(sizeof(uint16_t))
+                      << " continuous=" << (md_.depth_image_.isContinuous() ? "true" : "false")
+                      << " valid_count=" << valid_depths.size()
+                      << " min=" << valid_depths.front()
+                      << " p5=" << percentileFromSorted(valid_depths, 0.05)
+                      << " p50=" << percentileFromSorted(valid_depths, 0.50)
+                      << " p95=" << percentileFromSorted(valid_depths, 0.95)
+                      << " max=" << valid_depths.back());
+    }
+
+    ROS_INFO_STREAM("[GridMap] deprojection intrinsics: cx=" << mp_.cx_
+                    << " cy=" << mp_.cy_ << " fx=" << mp_.fx_ << " fy=" << mp_.fy_
+                    << " k_depth_scaling_factor=" << mp_.k_depth_scaling_factor_
+                    << " inv_factor=" << inv_factor
+                    << " mindist=" << mp_.depth_filter_mindist_
+                    << " maxdist=" << mp_.depth_filter_maxdist_);
+    ROS_INFO_STREAM("[GridMap] deprojection sensor_r =\n" << sensor_r);
+    ROS_INFO_STREAM("[GridMap] deprojection ray_pos=[" << md_.ray_pos_.x() << ", "
+                    << md_.ray_pos_.y() << ", " << md_.ray_pos_.z() << "]"
+                    << " ray_q=[" << md_.ray_q_.x() << ", " << md_.ray_q_.y() << ", "
+                    << md_.ray_q_.z() << ", " << md_.ray_q_.w() << "]");
+
+    const std::vector<std::pair<int, int>> probe_pixels = {
+        {320, 240},
+        {300, 240},
+        {340, 240},
+        {320, 220},
+        {320, 260},
+    };
+
+    for (const auto& probe : probe_pixels)
+    {
+      const int u = probe.first;
+      const int v = probe.second;
+      const uint16_t raw_depth = md_.depth_image_.at<uint16_t>(v, u);
+
+      DepthDebugSample sample;
+      sample.u = u;
+      sample.v = v;
+      sample.raw_depth = raw_depth;
+      sample.filtered_depth = raw_depth * inv_factor;
+      sample.pt_cur = Eigen::Vector3d::Zero();
+      sample.pt_world = Eigen::Vector3d::Zero();
+      sample.status = "valid";
+
+      if (raw_depth == 0)
+      {
+        sample.filtered_depth = mp_.max_ray_length_ + 0.1;
+        sample.status = "raw_zero";
+      }
+      else if (sample.filtered_depth < mp_.depth_filter_mindist_)
+      {
+        sample.status = "below_mindist";
+      }
+      else if (sample.filtered_depth > mp_.depth_filter_maxdist_)
+      {
+        sample.filtered_depth = mp_.max_ray_length_ + 0.1;
+        sample.status = "beyond_maxdist";
+      }
+
+      sample.pt_cur(0) = (u - mp_.cx_) * sample.filtered_depth / mp_.fx_;
+      sample.pt_cur(1) = (v - mp_.cy_) * sample.filtered_depth / mp_.fy_;
+      sample.pt_cur(2) = sample.filtered_depth;
+      sample.pt_world = sensor_r * sample.pt_cur + md_.ray_pos_;
+
+      ROS_INFO_STREAM("[GridMap] interior sample u=" << sample.u
+                      << " v=" << sample.v
+                      << " raw=" << sample.raw_depth
+                      << " filtered_depth=" << sample.filtered_depth
+                      << " status=" << sample.status
+                      << " pt_cur=[" << sample.pt_cur.x() << ", " << sample.pt_cur.y()
+                      << ", " << sample.pt_cur.z() << "]"
+                      << " pt_world=[" << sample.pt_world.x() << ", " << sample.pt_world.y()
+                      << ", " << sample.pt_world.z() << "]");
+    }
+
+    logged_depth_debug = true;
+  }
 }
 
 void GridMap::raycastProcess()
@@ -535,6 +687,9 @@ void GridMap::raycastProcess()
   // if (md_.proj_points_.size() == 0)
   if (md_.proj_points_cnt == 0)
     return;
+
+  ROS_INFO_ONCE("[GridMap] filter params: min_obstacle_height=%.3f ground_height=%.3f",
+                mp_.min_obstacle_height_, mp_.ground_height_);
 
   updateSlidingMap(md_.ray_pos_);
 
@@ -557,6 +712,9 @@ void GridMap::raycastProcess()
   RayCaster raycaster;
   Eigen::Vector3d half = Eigen::Vector3d(0.5, 0.5, 0.5);
   Eigen::Vector3d ray_pt, pt_w;
+
+  static int n_would_have_been_occ_but_ground = 0;
+  static int n_actually_marked_occ = 0;
 
   for (int i = 0; i < md_.proj_points_cnt; ++i)
   {
@@ -584,9 +742,15 @@ void GridMap::raycastProcess()
         pt_w = (pt_w - md_.ray_pos_) / length * mp_.max_ray_length_ + md_.ray_pos_;
         vox_idx = setCacheOccupancy(pt_w, 0);
       }
+      else if (pt_w(2) - mp_.ground_height_ < mp_.min_obstacle_height_)   // ground -> FREE
+      {
+        vox_idx = setCacheOccupancy(pt_w, 0);
+        n_would_have_been_occ_but_ground++;
+      }
       else
       {
         vox_idx = setCacheOccupancy(pt_w, 1);
+        n_actually_marked_occ++;
       }
     }
 
@@ -632,6 +796,104 @@ void GridMap::raycastProcess()
           md_.flag_traverse_[vox_idx] = md_.raycast_num_;
         }
       }
+    }
+  }
+
+  // ===== [DEBUG] one-shot classification trace =====
+  {
+    static bool logged_classify_debug = false;
+    if (!logged_classify_debug)
+    {
+      logged_classify_debug = true;
+
+      auto pct = [](const std::vector<double>& vals, double ratio) -> double {
+        if (vals.empty())
+          return 0.0;
+        std::vector<double> s = vals;
+        std::sort(s.begin(), s.end());
+        const double idx = ratio * static_cast<double>(s.size() - 1);
+        const size_t lo = static_cast<size_t>(std::floor(idx));
+        const size_t hi = static_cast<size_t>(std::ceil(idx));
+        if (lo == hi)
+          return s[lo];
+        const double wh = idx - static_cast<double>(lo);
+        return (1.0 - wh) * s[lo] + wh * s[hi];
+      };
+
+      std::vector<double> all_z, occ_z, sheet_z;
+      all_z.reserve(md_.proj_points_cnt);
+      occ_z.reserve(md_.proj_points_cnt / 2);
+      sheet_z.reserve(md_.proj_points_cnt / 2);
+
+      int n_occ = 0, n_free_clamped = 0, n_out_of_map = 0;
+      int n_occ_floor_015 = 0, n_occ_floor_005 = 0;
+      double mean_z = 0.0;
+
+      for (int i = 0; i < md_.proj_points_cnt; ++i)
+      {
+        const Eigen::Vector3d pw = md_.proj_points_[i];
+        const double z = pw(2);
+        all_z.push_back(z);
+        mean_z += z;
+
+        const double len = (pw - md_.ray_pos_).norm();
+
+        if (!isInMap(pw))
+        {
+          n_out_of_map++;
+        }
+        else if (len > mp_.max_ray_length_)
+        {
+          n_free_clamped++;
+          sheet_z.push_back(z);
+        }
+        else
+        {
+          n_occ++;
+          occ_z.push_back(z);
+          if (z <= 0.15)
+            n_occ_floor_015++;
+          if (z <= 0.05)
+            n_occ_floor_005++;
+        }
+      }
+
+      if (!all_z.empty())
+        mean_z /= all_z.size();
+
+      ROS_INFO_STREAM("[GridMap] CLASSIFY context: ray_pos=["
+                      << md_.ray_pos_.x() << ", " << md_.ray_pos_.y() << ", " << md_.ray_pos_.z()
+                      << "] max_ray_length=" << mp_.max_ray_length_
+                      << " ground_height=" << mp_.ground_height_
+                      << " resolution=" << mp_.resolution_);
+      ROS_INFO_STREAM("[GridMap] CLASSIFY A) points entering raycast=" << md_.proj_points_cnt);
+      ROS_INFO_STREAM("[GridMap] CLASSIFY B) all_z: min=" << *std::min_element(all_z.begin(), all_z.end())
+                      << " p5=" << pct(all_z, 0.05)
+                      << " p25=" << pct(all_z, 0.25)
+                      << " p50=" << pct(all_z, 0.50)
+                      << " p75=" << pct(all_z, 0.75)
+                      << " p95=" << pct(all_z, 0.95)
+                      << " max=" << *std::max_element(all_z.begin(), all_z.end())
+                      << " mean=" << mean_z);
+      ROS_INFO_STREAM("[GridMap] CLASSIFY C) n_occ=" << n_occ
+                      << " n_occ_z<=0.15=" << n_occ_floor_015
+                      << " n_occ_z<=0.05=" << n_occ_floor_005
+                      << " n_free_clamped(len>max_ray)=" << n_free_clamped
+                      << " n_out_of_map=" << n_out_of_map
+                      << " | FILTER n_would_occ_but_ground=" << n_would_have_been_occ_but_ground
+                      << " n_actually_marked_occ=" << n_actually_marked_occ);
+      ROS_INFO_STREAM("[GridMap] CLASSIFY C) occ_z: min=" << *std::min_element(occ_z.begin(), occ_z.end())
+                      << " p5=" << pct(occ_z, 0.05)
+                      << " p25=" << pct(occ_z, 0.25)
+                      << " p50=" << pct(occ_z, 0.50)
+                      << " p75=" << pct(occ_z, 0.75)
+                      << " p95=" << pct(occ_z, 0.95)
+                      << " max=" << *std::max_element(occ_z.begin(), occ_z.end())
+                      << " count=" << occ_z.size());
+      ROS_INFO_STREAM("[GridMap] CLASSIFY D) far-sheet points (len>max_ray) count=" << sheet_z.size()
+                      << " z_min=" << *std::min_element(sheet_z.begin(), sheet_z.end())
+                      << " z_max=" << *std::max_element(sheet_z.begin(), sheet_z.end())
+                      << " => these map to occ=0 (FREE), NOT occupied");
     }
   }
 
@@ -796,9 +1058,32 @@ void GridMap::depthPoseCallback(const sensor_msgs::ImageConstPtr &img,
   ray_q.normalize();
 
   Eigen::Vector3d ray_pos(sensor_pose.position.x, sensor_pose.position.y, sensor_pose.position.z);
+  Eigen::Matrix3d pose_r = ray_q.toRotationMatrix();
+
+  if (mp_.need_extrinsic_ && tf_listener_ && !pose->child_frame_id.empty() &&
+      pose->child_frame_id != mp_.extrinsic_parent_frame_)
+  {
+    try
+    {
+      tf::StampedTransform parent_tf;
+      tf_listener_->lookupTransform(pose->child_frame_id, mp_.extrinsic_parent_frame_, ros::Time(0), parent_tf);
+
+      const Eigen::Matrix4d pose_to_parent = tfToEigenMatrix(parent_tf);
+      ray_pos += pose_r * pose_to_parent.block<3, 1>(0, 3);
+      ray_q = Eigen::Quaterniond(pose_r * pose_to_parent.block<3, 3>(0, 0));
+      ray_q.normalize();
+      pose_r = ray_q.toRotationMatrix();
+    }
+    catch (const tf::TransformException& ex)
+    {
+      ROS_WARN_STREAM_THROTTLE(1.0, "[GridMap] pose child frame " << pose->child_frame_id
+                               << " does not match extrinsic parent " << mp_.extrinsic_parent_frame_
+                               << " and TF bridge lookup failed. Using raw pose frame. " << ex.what());
+    }
+  }
+
   if (mp_.need_extrinsic_)
   {
-    const Eigen::Matrix3d pose_r = ray_q.toRotationMatrix();
     ray_pos += pose_r * mp_.depth_extrinsic_.block<3, 1>(0, 3);
     ray_q = Eigen::Quaterniond(pose_r * mp_.depth_extrinsic_.block<3, 3>(0, 0));
     ray_q.normalize();
@@ -843,19 +1128,7 @@ bool GridMap::updateDepthExtrinsicFromTf()
     tf_listener_->lookupTransform(mp_.extrinsic_parent_frame_, mp_.extrinsic_child_frame_, ros::Time(0),
                                   extrinsic_tf);
 
-    mp_.depth_extrinsic_.setIdentity();
-    const tf::Matrix3x3 basis = extrinsic_tf.getBasis();
-    for (int row = 0; row < 3; ++row)
-    {
-      for (int col = 0; col < 3; ++col)
-      {
-        mp_.depth_extrinsic_(row, col) = basis[row][col];
-      }
-    }
-
-    mp_.depth_extrinsic_(0, 3) = extrinsic_tf.getOrigin().x();
-    mp_.depth_extrinsic_(1, 3) = extrinsic_tf.getOrigin().y();
-    mp_.depth_extrinsic_(2, 3) = extrinsic_tf.getOrigin().z();
+    mp_.depth_extrinsic_ = tfToEigenMatrix(extrinsic_tf);
     depth_extrinsic_initialized_ = true;
 
     ROS_INFO_STREAM("[GridMap] depth extrinsic from TF " << mp_.extrinsic_parent_frame_ << " -> "

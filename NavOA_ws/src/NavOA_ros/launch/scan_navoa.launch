@@ -21,6 +21,8 @@
   <arg name="cloud_topic" default="/LIO/clouds_lidar"/>
   <arg name="cloud_is_world" default="false"/>
   <arg name="depth_topic" default="/ascamera_hp60c/depth0/image_raw"/>
+  <arg name="extrinsic_parent_frame" default="base_link"/>
+  <arg name="extrinsic_child_frame" default="ascamera_hp60c_camera_link_0"/>
   <arg name="scan_topic" default="/scan"/>
   <arg name="cmd_vel_topic" default="/cmd_vel"/>
   <arg name="use_rknn" default="true"/>
@@ -36,6 +38,8 @@
     <arg name="cloud_topic" value="$(arg cloud_topic)"/>
     <arg name="cloud_is_world" value="$(arg cloud_is_world)"/>
     <arg name="depth_topic" value="$(arg depth_topic)"/>
+    <arg name="extrinsic_parent_frame" value="$(arg extrinsic_parent_frame)"/>
+    <arg name="extrinsic_child_frame" value="$(arg extrinsic_child_frame)"/>
     <arg name="controller_mode" value="none"/>
   </include>
 

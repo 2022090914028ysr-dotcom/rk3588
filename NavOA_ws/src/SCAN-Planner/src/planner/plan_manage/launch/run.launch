@@ -19,6 +19,8 @@
   <arg name="cloud_topic" default="$(eval '/LIO/clouds_lidar' if arg('is_real_world') else '/pcl_render_node/cloud')"/>
   <arg name="cloud_is_world" default="$(eval 'false' if arg('is_real_world') else 'true')"/>
   <arg name="depth_topic" default="$(eval '/ascamera_hp60c/depth0/image_raw' if arg('is_real_world') else '/pcl_render_node/depth')"/>
+  <arg name="extrinsic_parent_frame" default="base_link"/>
+  <arg name="extrinsic_child_frame" default="ascamera_hp60c_depth_0"/>
   <param name="body_pose_topic" value="$(arg body_pose_topic)" type="str"/>
 
   <!-- main algorithm params -->
@@ -35,6 +37,8 @@
     
     <!-- depth topic -->
     <arg name="depth_topic" value="$(arg depth_topic)"/>
+    <arg name="extrinsic_parent_frame" value="$(arg extrinsic_parent_frame)"/>
+    <arg name="extrinsic_child_frame" value="$(arg extrinsic_child_frame)"/>
     <arg name="cx" value="$(eval 317.4617919921875 if arg('is_real_world') else 321.04638671875)"/>
     <arg name="cy" value="$(eval 240.69256591796875 if arg('is_real_world') else 243.44969177246094)"/>
     <arg name="fx" value="$(eval 421.33001708984375 if arg('is_real_world') else 387.229248046875)"/>
@@ -64,7 +68,7 @@
   </group>
 
   <!-- use simulator -->
-  <include file="$(find scan_planner)/launch/simulator.xml">
+  <include unless="$(arg is_real_world)" file="$(find scan_planner)/launch/simulator.xml">
     <arg name="is_real_world" value="$(arg is_real_world)" />
     <arg name="navi_mode" value="$(arg navi_mode)" />
     <arg name="sensor_type" value="$(arg sensor_type)" />

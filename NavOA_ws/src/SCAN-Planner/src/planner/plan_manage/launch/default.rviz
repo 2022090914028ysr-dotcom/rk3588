@@ -4,6 +4,7 @@ Panels:
     Name: Displays
     Property Tree Widget:
       Expanded:
+        - /Global Options1
         - /Planning1
         - /Mapping1
         - /Mapping1/sim_map1/Autocompute Value Bounds1
@@ -48,7 +49,7 @@ Visualization Manager:
       Cell Size: 1
       Class: rviz/Grid
       Color: 160; 160; 164
-      Enabled: false
+      Enabled: true
       Line Style:
         Line Width: 0.029999999329447746
         Value: Lines
@@ -61,7 +62,7 @@ Visualization Manager:
       Plane: XY
       Plane Cell Count: 40
       Reference Frame: <Fixed Frame>
-      Value: false
+      Value: true
     - Class: rviz/Group
       Displays:
         - Class: rviz/Marker
@@ -92,7 +93,7 @@ Visualization Manager:
           Buffer Length: 1
           Class: rviz/Path
           Color: 25; 255; 0
-          Enabled: false
+          Enabled: true
           Head Diameter: 0.30000001192092896
           Head Length: 0.20000000298023224
           Length: 0.30000001192092896
@@ -109,9 +110,9 @@ Visualization Manager:
           Radius: 0.029999999329447746
           Shaft Diameter: 0.10000000149011612
           Shaft Length: 0.10000000149011612
-          Topic: /odom_visualization/path
+          Topic: /planning/path
           Unreliable: false
-          Value: false
+          Value: true
       Enabled: true
       Name: Planning
     - Class: rviz/Group
@@ -136,7 +137,7 @@ Visualization Manager:
           Color: 85; 170; 255
           Color Transformer: Intensity
           Decay Time: 0
-          Enabled: true
+          Enabled: false
           Invert Rainbow: false
           Max Color: 211; 215; 207
           Min Color: 85; 170; 255
@@ -147,16 +148,16 @@ Visualization Manager:
           Size (Pixels): 3
           Size (m): 0.05000000074505806
           Style: Flat Squares
-          Topic: /map_generator/global_cloud
+          Topic: /grid_map/occupancy
           Unreliable: false
           Use Fixed Frame: true
           Use rainbow: false
-          Value: true
+          Value: false
         - Alpha: 1
           Autocompute Intensity Bounds: true
           Autocompute Value Bounds:
-            Max Value: 0.574999988079071
-            Min Value: -0.42500001192092896
+            Max Value: 0.625
+            Min Value: 0.125
             Value: true
           Axis: Z
           Channel Name: intensity
@@ -164,7 +165,7 @@ Visualization Manager:
           Color: 255; 255; 255
           Color Transformer: AxisColor
           Decay Time: 0
-          Enabled: false
+          Enabled: true
           Invert Rainbow: false
           Max Color: 255; 255; 255
           Min Color: 0; 0; 0
@@ -179,7 +180,7 @@ Visualization Manager:
           Unreliable: false
           Use Fixed Frame: true
           Use rainbow: true
-          Value: false
+          Value: true
         - Alpha: 1
           Autocompute Intensity Bounds: true
           Autocompute Value Bounds:
@@ -229,202 +230,7 @@ Visualization Manager:
             Expand Joint Details: false
             Expand Link Details: false
             Expand Tree: false
-            FL_calf:
-              Alpha: 1
-              Show Axes: false
-              Show Trail: false
-              Value: true
-            FL_calf_rotor:
-              Alpha: 1
-              Show Axes: false
-              Show Trail: false
-            FL_calflower:
-              Alpha: 1
-              Show Axes: false
-              Show Trail: false
-              Value: true
-            FL_calflower1:
-              Alpha: 1
-              Show Axes: false
-              Show Trail: false
-              Value: true
-            FL_foot:
-              Alpha: 1
-              Show Axes: false
-              Show Trail: false
-              Value: true
-            FL_hip:
-              Alpha: 1
-              Show Axes: false
-              Show Trail: false
-              Value: true
-            FL_hip_rotor:
-              Alpha: 1
-              Show Axes: false
-              Show Trail: false
-            FL_thigh:
-              Alpha: 1
-              Show Axes: false
-              Show Trail: false
-              Value: true
-            FL_thigh_rotor:
-              Alpha: 1
-              Show Axes: false
-              Show Trail: false
-            FR_calf:
-              Alpha: 1
-              Show Axes: false
-              Show Trail: false
-              Value: true
-            FR_calf_rotor:
-              Alpha: 1
-              Show Axes: false
-              Show Trail: false
-            FR_calflower:
-              Alpha: 1
-              Show Axes: false
-              Show Trail: false
-              Value: true
-            FR_calflower1:
-              Alpha: 1
-              Show Axes: false
-              Show Trail: false
-              Value: true
-            FR_foot:
-              Alpha: 1
-              Show Axes: false
-              Show Trail: false
-              Value: true
-            FR_hip:
-              Alpha: 1
-              Show Axes: false
-              Show Trail: false
-              Value: true
-            FR_hip_rotor:
-              Alpha: 1
-              Show Axes: false
-              Show Trail: false
-            FR_thigh:
-              Alpha: 1
-              Show Axes: false
-              Show Trail: false
-              Value: true
-            FR_thigh_rotor:
-              Alpha: 1
-              Show Axes: false
-              Show Trail: false
-            Head_lower:
-              Alpha: 1
-              Show Axes: false
-              Show Trail: false
-              Value: true
-            Head_upper:
-              Alpha: 1
-              Show Axes: false
-              Show Trail: false
-              Value: true
             Link Tree Style: Links in Alphabetic Order
-            RL_calf:
-              Alpha: 1
-              Show Axes: false
-              Show Trail: false
-              Value: true
-            RL_calf_rotor:
-              Alpha: 1
-              Show Axes: false
-              Show Trail: false
-            RL_calflower:
-              Alpha: 1
-              Show Axes: false
-              Show Trail: false
-              Value: true
-            RL_calflower1:
-              Alpha: 1
-              Show Axes: false
-              Show Trail: false
-              Value: true
-            RL_foot:
-              Alpha: 1
-              Show Axes: false
-              Show Trail: false
-              Value: true
-            RL_hip:
-              Alpha: 1
-              Show Axes: false
-              Show Trail: false
-              Value: true
-            RL_hip_rotor:
-              Alpha: 1
-              Show Axes: false
-              Show Trail: false
-            RL_thigh:
-              Alpha: 1
-              Show Axes: false
-              Show Trail: false
-              Value: true
-            RL_thigh_rotor:
-              Alpha: 1
-              Show Axes: false
-              Show Trail: false
-            RR_calf:
-              Alpha: 1
-              Show Axes: false
-              Show Trail: false
-              Value: true
-            RR_calf_rotor:
-              Alpha: 1
-              Show Axes: false
-              Show Trail: false
-            RR_calflower:
-              Alpha: 1
-              Show Axes: false
-              Show Trail: false
-              Value: true
-            RR_calflower1:
-              Alpha: 1
-              Show Axes: false
-              Show Trail: false
-              Value: true
-            RR_foot:
-              Alpha: 1
-              Show Axes: false
-              Show Trail: false
-              Value: true
-            RR_hip:
-              Alpha: 1
-              Show Axes: false
-              Show Trail: false
-              Value: true
-            RR_hip_rotor:
-              Alpha: 1
-              Show Axes: false
-              Show Trail: false
-            RR_thigh:
-              Alpha: 1
-              Show Axes: false
-              Show Trail: false
-              Value: true
-            RR_thigh_rotor:
-              Alpha: 1
-              Show Axes: false
-              Show Trail: false
-            base:
-              Alpha: 1
-              Show Axes: false
-              Show Trail: false
-              Value: true
-            front_camera:
-              Alpha: 1
-              Show Axes: false
-              Show Trail: false
-            imu:
-              Alpha: 1
-              Show Axes: false
-              Show Trail: false
-            radar:
-              Alpha: 1
-              Show Axes: false
-              Show Trail: false
           Name: go2_robot
           Robot Description: robot_description
           TF Prefix: ""
@@ -436,8 +242,8 @@ Visualization Manager:
     - Alpha: 0.5
       Autocompute Intensity Bounds: true
       Autocompute Value Bounds:
-        Max Value: 2.177473306655884
-        Min Value: -0.1611430048942566
+        Max Value: 3.2646639347076416
+        Min Value: -2.5036418437957764
         Value: true
       Axis: Z
       Channel Name: intensity
@@ -445,7 +251,7 @@ Visualization Manager:
       Color: 255; 255; 255
       Color Transformer: AxisColor
       Decay Time: 0
-      Enabled: true
+      Enabled: false
       Invert Rainbow: false
       Max Color: 255; 255; 255
       Min Color: 0; 0; 0
@@ -456,11 +262,11 @@ Visualization Manager:
       Size (Pixels): 1
       Size (m): 0.009999999776482582
       Style: Points
-      Topic: /pcl_render_node/cloud
+      Topic: /grid_map/depth_cloud
       Unreliable: false
       Use Fixed Frame: true
       Use rainbow: true
-      Value: true
+      Value: false
     - Alpha: 1
       Autocompute Intensity Bounds: true
       Autocompute Value Bounds:
@@ -493,7 +299,7 @@ Visualization Manager:
   Global Options:
     Background Color: 0; 0; 0
     Default Light: true
-    Fixed Frame: world
+    Fixed Frame: odom
     Frame Rate: 30
   Name: root
   Tools:
@@ -511,7 +317,7 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz/ThirdPersonFollower
-      Distance: 26.04562759399414
+      Distance: 14.954351425170898
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
         Stereo Focal Distance: 1
@@ -519,17 +325,17 @@ Visualization Manager:
         Value: false
       Field of View: 0.7853981852531433
       Focal Point:
-        X: 0.45201992988586426
-        Y: 1.0851612091064453
-        Z: -1.9158389568328857
+        X: -3.7102324962615967
+        Y: 1.695088267326355
+        Z: -1.915842056274414
       Focal Shape Fixed Size: true
       Focal Shape Size: 0.05000000074505806
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Pitch: 1.3997966051101685
+      Pitch: 0.7847964763641357
       Target Frame: sliding_map
-      Yaw: 3.1305673122406006
+      Yaw: 2.4355664253234863
     Saved:
       - Class: rviz/ThirdPersonFollower
         Distance: 17.48538589477539
@@ -567,5 +373,5 @@ Window Geometry:
   Views:
     collapsed: false
   Width: 1848
-  X: 1152
-  Y: 867
+  X: 72
+  Y: 27

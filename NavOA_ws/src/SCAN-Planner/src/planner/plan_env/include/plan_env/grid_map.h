@@ -60,6 +60,7 @@ struct MappingParameters {
   Eigen::Vector3d local_update_range_;
   double resolution_, resolution_inv_;
   double obstacles_inflation_z_up, obstacles_inflation_z_down;
+  double min_obstacle_height_;
   double double_cylinder_radius_, double_cylinder_offset_;
   bool map_sliding_en_;
   double map_sliding_thresh_;

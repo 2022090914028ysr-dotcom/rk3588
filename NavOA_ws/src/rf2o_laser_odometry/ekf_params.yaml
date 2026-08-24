@@ -10,7 +10,10 @@ publish_tf: true
 # 坐标系
 map_frame: map
 odom_frame: odom
-base_link_frame: base_link
+base_link_frame: base_footprint  # EKF 输出 odom->base_footprint（z=0，地面投影）。
+                                 # base_link 本体在机器人 0.45m 身高处，由 sensors.launch 里的
+                                 # static_transform_publisher(base_footprint -> base_link, z=0.45) 提供。
+                                 # two_d_mode 会把 z 强制为 0，故 EKF 本身无法输出非零高度。
 world_frame: odom               # 纯里程计模式
 
 # ==============================

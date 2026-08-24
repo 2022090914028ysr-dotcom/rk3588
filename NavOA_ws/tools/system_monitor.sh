@@ -18,14 +18,24 @@ ENABLE_PSI=true           # also collect PSI (/proc/pressure/*) into a CSV
 ENABLE_PLOTS=true          # generate plots at the end (from pidstat and optional PSI)
 ENABLE_TOP5=true          # record top-5 CPU/memory CSVs each interval (set true to enable)
 
+# Processes to track in the main CSV. An entry ending in '*' is a comm prefix;
+# Linux truncates comm to 15 chars, so cartographer_node -> cartographer_no.
+WATCH_PROCESSES="python3 roslaunch rosout cartographer*"
+
+# Clock ticks per second (used to convert /proc/<pid>/stat CPU deltas to %)
+HZ=$(getconf CLK_TCK 2>/dev/null || echo 100)
+# Page size in kB (used to convert /proc/<pid>/statm resident pages to RSS)
+PAGE_KB=$(( $(getconf PAGESIZE 2>/dev/null || echo 4096) / 1024 ))
+
 # Derived paths
 SCRIPT_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
 TOP_ANALYSIS_DIR="$SCRIPT_DIR/top_analysis"
 PIDSTAT_LOG="$TOP_ANALYSIS_DIR/pidstat.log"
 PSI_CSV="$TOP_ANALYSIS_DIR/psi.csv"
 PLOTS_OUT_DIR="$(cd "$SCRIPT_DIR/.." && pwd)/tools/output/top_plots"
+TOP_TMP=$(mktemp "${TMPDIR:-/tmp}/system_monitor_top.XXXXXX")
 
-echo "time,cpu_temp_C,npu_temp_C,total_cpu_pct,proc,proc_cpu_pct,proc_rss_MB" > "$OUT"
+echo "time,cpu_temp_C,npu_temp_C,total_cpu_pct,npu_usage_pct,proc,proc_cpu_pct,proc_rss_MB" > "$OUT"
 if [ "$ENABLE_TOP5" = true ]; then
   echo "time,rank,pid,user,cpu_pct,rss_MB,cmd" > "$OUT_TOP_CPU"
   echo "time,rank,pid,user,cpu_pct,rss_MB,cmd" > "$OUT_TOP_MEM"
@@ -65,6 +75,152 @@ get_temp() {
   echo "NA"
 }
 
+# NPU utilization % (rk3588: rknpu_ondemand exposes "load@freqHz" in devfreq).
+# Returns "NA" if no NPU devfreq node is present.
+get_npu_usage() {
+  local f l v
+  for f in /sys/class/devfreq/*npu*/load; do
+    [ -r "$f" ] || continue
+    l=$(cat "$f" 2>/dev/null) || continue
+    [ -n "$l" ] || continue
+    v=${l%%@*}; v=${v//[^0-9]/}
+    [ -n "$v" ] && { echo "$v"; return; }
+  done
+  echo "NA"
+}
+
+# ---- /proc-based helpers (instantaneous CPU, robust to comm truncation) ----
+
+declare -A PREV_TICKS       # pid -> utime+stime (clock ticks) at last sample
+declare -A UID_CACHE        # uid -> username
+PREV_NS=0
+PREV_CPU_TOTAL=0
+PREV_CPU_IDLE=0
+
+# First line of /proc/stat -> "total idle" in clock ticks (idle includes iowait).
+read_cpu_stat() {
+  awk 'NR==1{print $2+$3+$4+$5+$6+$7+$8+$9, $5+$6}' /proc/stat
+}
+
+# Cumulative CPU ticks (utime+stime) for a pid -> global PROC_TICKS (-1 on failure).
+read_proc_ticks() {
+  local pid=$1 stat rest
+  IFS= read -r stat < "/proc/$pid/stat" 2>/dev/null || { PROC_TICKS=-1; return 1; }
+  rest=${stat##*) }           # strip everything through the final "comm)" field
+  set -- $rest                # state ppid ... utime stime ...
+  PROC_TICKS=$(( ${12:-0} + ${13:-0} ))
+}
+
+# Resident set size in kB -> global PROC_RSS_KB (0 if unreadable). Uses statm.
+read_proc_rss_kb() {
+  local pid=$1 size rss_pages shared
+  read -r size rss_pages shared < "/proc/$pid/statm" 2>/dev/null || { PROC_RSS_KB=0; return 0; }
+  PROC_RSS_KB=$(( rss_pages * PAGE_KB ))
+}
+
+# Match a comm name against WATCH_PROCESSES (exact, or '*' prefix).
+is_watched_comm() {
+  local c=$1 w
+  for w in $WATCH_PROCESSES; do
+    case "$w" in
+      *'*') case "$c" in "${w%\*}"*) return 0 ;; esac ;;
+      *)    [ "$c" = "$w" ] && return 0 ;;
+    esac
+  done
+  return 1
+}
+
+# Resolve pid -> username (cached), falling back to numeric uid.
+uid_to_name() {
+  local pid=$1 uid name
+  [ -r "/proc/$pid/status" ] || { echo "-"; return; }
+  uid=$(awk '/^Uid:/{print $2}' "/proc/$pid/status" 2>/dev/null)
+  [ -n "$uid" ] || { echo "-"; return; }
+  name=${UID_CACHE[$uid]:-}
+  if [ -z "$name" ]; then
+    name=$(getent passwd "$uid" 2>/dev/null | cut -d: -f1)
+    [ -z "$name" ] && name="$uid"
+    UID_CACHE[$uid]=$name
+  fi
+  echo "$name"
+}
+
+# integer tenths -> "x.y" (e.g. 1234 -> "123.4")
+fmt_tenths() {
+  local t=$1
+  printf '%d.%d' $(( t / 10 )) $(( t % 10 ))
+}
+
+# Sample all processes once and write this interval's rows.
+report_interval() {
+  local now_ns delta_ns d_total d_idle cpu_total cpu_idle
+  local pid comm ticks rss_kb cpu_tenths rss_tenths delta_ticks found=0 d
+
+  now_ns=$(date +%s%N)
+  delta_ns=$(( now_ns - PREV_NS )); PREV_NS=$now_ns
+
+  # Total CPU% from /proc/stat delta over this interval
+  read -r cpu_total cpu_idle <<< "$(read_cpu_stat)"
+  d_total=$(( cpu_total - PREV_CPU_TOTAL )); PREV_CPU_TOTAL=$cpu_total
+  d_idle=$(( cpu_idle - PREV_CPU_IDLE ));     PREV_CPU_IDLE=$cpu_idle
+  TOTAL_CPU=$(awk -v t="$d_total" -v i="$d_idle" 'BEGIN{if(t>0) printf "%.1f", 100*(t-i)/t; else print "0.0"}')
+
+  : > "$TOP_TMP"
+
+  for d in /proc/[0-9]*; do
+    pid=${d##*/}
+    [ -r "$d/comm" ] || continue
+    IFS= read -r comm < "$d/comm" 2>/dev/null || continue
+
+    read_proc_ticks "$pid" || continue
+    ticks=$PROC_TICKS
+    read_proc_rss_kb "$pid"
+    rss_kb=$PROC_RSS_KB
+
+    cpu_tenths=0
+    if [ "$delta_ns" -gt 0 ] && [ -n "${PREV_TICKS[$pid]+x}" ]; then
+      delta_ticks=$(( ticks - PREV_TICKS[$pid] ))
+      if [ "$delta_ticks" -ge 0 ]; then
+        # tenths of a % = delta_ticks * 1e12 / (HZ * delta_ns)
+        cpu_tenths=$(( delta_ticks * 1000000000000 / (HZ * delta_ns) ))
+      fi
+    fi
+    PREV_TICKS[$pid]=$ticks
+
+    if is_watched_comm "$comm"; then
+      rss_tenths=$(( (rss_kb * 10 + 512) / 1024 ))
+      echo "$TIME,$CPU_TEMP,$NPU_TEMP,$TOTAL_CPU,$NPU_USAGE,$comm,$(fmt_tenths "$cpu_tenths"),$(fmt_tenths "$rss_tenths")" >> "$OUT"
+      found=1
+    fi
+
+    printf '%s %s %s %s\n' "$cpu_tenths" "$rss_kb" "$comm" "$pid" >> "$TOP_TMP"
+  done
+
+  [ "$found" -eq 0 ] && echo "$TIME,$CPU_TEMP,$NPU_TEMP,$TOTAL_CPU,$NPU_USAGE,-,0,0" >> "$OUT"
+
+  if [ "$ENABLE_TOP5" = true ]; then
+    write_top5
+  fi
+}
+
+write_top5() {
+  local rank=0 cpu rss comm pid rss_tenths user
+  while read -r cpu rss comm pid; do
+    rank=$((rank+1))
+    rss_tenths=$(( (rss * 10 + 512) / 1024 ))
+    user=$(uid_to_name "$pid")
+    echo "$TIME,$rank,$pid,$user,$(fmt_tenths "$cpu"),$(fmt_tenths "$rss_tenths"),$comm" >> "$OUT_TOP_CPU"
+  done < <(sort -k1,1nr "$TOP_TMP" | head -5)
+
+  rank=0
+  while read -r cpu rss comm pid; do
+    rank=$((rank+1))
+    rss_tenths=$(( (rss * 10 + 512) / 1024 ))
+    user=$(uid_to_name "$pid")
+    echo "$TIME,$rank,$pid,$user,$(fmt_tenths "$cpu"),$(fmt_tenths "$rss_tenths"),$comm" >> "$OUT_TOP_MEM"
+  done < <(sort -k2,2nr "$TOP_TMP" | head -5)
+}
+
 END=$((SECONDS + DURATION))
 
 # Start optional background collectors
@@ -87,51 +243,28 @@ cleanup() {
   for p in "${PIDS_TO_KILL[@]}"; do
     kill "$p" >/dev/null 2>&1 || true
   done
+  rm -f "$TOP_TMP"
 }
-trap cleanup INT TERM
+trap cleanup INT TERM EXIT
+
+# Seed baseline samples (no output): /proc/stat and every pid's CPU ticks.
+PREV_NS=$(date +%s%N)
+read -r PREV_CPU_TOTAL PREV_CPU_IDLE <<< "$(read_cpu_stat)"
+for d in /proc/[0-9]*; do
+  pid=${d##*/}
+  [ -r "$d/comm" ] || continue
+  if read_proc_ticks "$pid"; then
+    PREV_TICKS[$pid]=$PROC_TICKS
+  fi
+done
 
 while [ $SECONDS -lt $END ]; do
+  sleep "$INTERVAL"
   TIME=$(date +%H:%M:%S)
-
   CPU_TEMP=$(get_temp cpu)
   NPU_TEMP=$(get_temp npu)
-
-  # Robustly compute total CPU usage = 100 - idle% from top's Cpu(s) line
-  TOTAL_CPU=$(LANG=C top -bn1 | awk -F',' '/Cpu\(s\)/{for(i=1;i<=NF;i++){if($i ~ / id/){gsub(/^.* /,"",$i); gsub(/ id.*/,"",$i); idle=$i}}} END{if(idle=="") idle=0; printf "%.1f", 100-idle}')
-
-  found=0
-  for P in python3 rviz cartographer cartographer_node roslaunch rosout; do
-    ps -C "$P" -o %cpu,rss --no-headers 2>/dev/null | while read CPU RSS; do
-      RSS_MB=$(awk "BEGIN {printf \"%.1f\", $RSS/1024}")
-      echo "$TIME,$CPU_TEMP,$NPU_TEMP,$TOTAL_CPU,$P,$CPU,$RSS_MB" >> "$OUT"
-      found=1
-    done
-  done
-
-  # If none of the watched processes were present, still record a baseline row
-  if [ "$found" -eq 0 ]; then
-    echo "$TIME,$CPU_TEMP,$NPU_TEMP,$TOTAL_CPU,-,0,0" >> "$OUT"
-  fi
-
-  if [ "$ENABLE_TOP5" = true ]; then
-    # Top-5 by CPU this interval
-    rank=0
-    ps -eo pid,user,pcpu,rss,comm --sort=-pcpu | awk 'NR>1 {print; count++; if(count==5) exit}' | while read PID USER PCPU RSS COMM; do
-      rank=$((rank+1))
-      RSS_MB=$(awk "BEGIN {printf \"%.1f\", $RSS/1024}")
-      echo "$TIME,$rank,$PID,$USER,$PCPU,$RSS_MB,$COMM" >> "$OUT_TOP_CPU"
-    done
-
-    # Top-5 by Memory (RSS) this interval
-    rank=0
-    ps -eo pid,user,pcpu,rss,comm --sort=-rss | awk 'NR>1 {print; count++; if(count==5) exit}' | while read PID USER PCPU RSS COMM; do
-      rank=$((rank+1))
-      RSS_MB=$(awk "BEGIN {printf \"%.1f\", $RSS/1024}")
-      echo "$TIME,$rank,$PID,$USER,$PCPU,$RSS_MB,$COMM" >> "$OUT_TOP_MEM"
-    done
-  fi
-
-  sleep $INTERVAL
+  NPU_USAGE=$(get_npu_usage)
+  report_interval
 done
 
 # Finish: wait briefly for background tools

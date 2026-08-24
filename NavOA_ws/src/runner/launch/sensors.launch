@@ -21,7 +21,13 @@
       <param name="pub_mono8"    type="boolean" value="false"/>
       <param name="pub_tfTree"   type="boolean" value="true"/>
     </node>
-
+    
+    <!-- Physical camera mount: base_link is 0.45 m above the floor and the
+       camera lens center is 0.36 m above the floor, so the camera sits
+       0.09 m below base_link. The image is upright, so the TF keeps the same
+       optical-frame rotation and only updates the z translation. -->
+    <node pkg="tf2_ros" type="static_transform_publisher" name="base_link_to_camera"
+      args="0.10 0.00 -0.09 -0.500000000 0.500000000 -0.500000000 0.500000000 base_link ascamera_hp60c_camera_link_0" />
   <!--  <node pkg="ascamera" name="depth_to_laserscan" type="depth_to_laserscan.py" output="screen">
       <param name="depth_topic"  type="str"   value="/ascamera_hp60c/depth0/image_raw"/>
       <param name="scan_rows"      type="int"   value="0"/>
@@ -54,9 +60,17 @@
   </node>
 
   <node pkg="tf2_ros" type="static_transform_publisher" name="base_link_to_laser"
-      args="0 0 0.2 0 0 0 base_link laser_frame" />
+      args="0 0 0.15 0 0 0 base_link laser_frame" />
   <node pkg="tf2_ros" type="static_transform_publisher" name="base_link_to_imu"
-      args="0 0 0 0 0 0 base_link imu_link" />
+      args="0 0 -0.15 0 0 0 base_link imu_link" />
+
+  <!-- Body height: base_link sits 0.45 m above the floor. The EKF is 2D
+       (two_d_mode) and forces z=0 on its odom->base_footprint output, so the
+       0.45 m body height is expressed here as a static lift base_footprint ->
+       base_link. All child frames (laser +0.5, imu +0.3, camera -0.09) stay
+       relative to base_link, so their absolute heights remain unchanged. -->
+  <node pkg="tf2_ros" type="static_transform_publisher" name="base_footprint_to_base_link"
+      args="0 0 0.45 0 0 0 base_footprint base_link" />
 
   <!-- 2-way merge: /camscan + /scan -> /mergescan  (ultrasonic removed; used as virtual bumper in vel_filter) -->
   <!-- <node pkg="ascamera" name="scan_merger" type="scan_merge.py" output="screen">

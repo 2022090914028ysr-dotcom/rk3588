@@ -12,10 +12,12 @@
   <arg name="fx"/>
   <arg name="fy"/>
   <arg name="world_frame" default="world"/>
+  <arg name="extrinsic_parent_frame" default="base_link"/>
+  <arg name="extrinsic_child_frame" default="ascamera_hp60c_depth_0"/>
 
   <!-- public parameters -->
-  <arg name="max_vel" default="0.30"/>
-  <arg name="max_acc" default="0.30"/>
+  <arg name="max_vel" default="0.20"/>
+  <arg name="max_acc" default="0.20"/>
   <arg name="planning_horizon" default="3.5"/>
 
   <!-- main node -->
@@ -28,6 +30,8 @@
     <param name="grid_map/cloud_is_world" value="$(arg cloud_is_world)"/>
     <remap from="/grid_map/depth" to="$(arg depth_topic)"/>
     <param name="grid_map/need_extrinsic" value="$(arg is_real_world)" type="bool"/>
+    <param name="grid_map/extrinsic_parent_frame" value="$(arg extrinsic_parent_frame)" type="str"/>
+    <param name="grid_map/extrinsic_child_frame" value="$(arg extrinsic_child_frame)" type="str"/>
 
     <!-- planning fsm -->
     <param name="fsm/navi_mode" value="$(arg navi_mode)" type="int"/>
@@ -48,8 +52,11 @@
     <param name="grid_map/double_cylinder_radius" value="0.15" />
     <param name="grid_map/double_cylinder_offset" value="0.0" />
     <param name="grid_map/obstacles_inflation_z_up" value="0.1" />
-    <param name="grid_map/obstacles_inflation_z_down" value="0.1" />
+    <param name="grid_map/obstacles_inflation_z_down" value="0.10" />
+    <param name="grid_map/min_obstacle_height" value="0.15" />
+
     <param name="grid_map/body_height" value="0.45" />
+    <param name="grid_map/ground_height" value="0.05" />
 
     <!-- depth camera intrinsics -->
     <param name="grid_map/cx" value="$(arg cx)"/>
@@ -58,8 +65,8 @@
     <param name="grid_map/fy" value="$(arg fy)"/>
 
     <!-- depth -->
-    <param name="grid_map/depth_filter_maxdist"   value="3.0"/>
-    <param name="grid_map/depth_filter_mindist"   value="0.3"/>
+    <param name="grid_map/depth_filter_maxdist"   value="2.5"/>
+    <param name="grid_map/depth_filter_mindist"   value="0.25"/>
     <param name="grid_map/depth_filter_margin"    value="1"/>
     <param name="grid_map/k_depth_scaling_factor" value="1000.0"/>
     <param name="grid_map/skip_pixel" value="2"/>
