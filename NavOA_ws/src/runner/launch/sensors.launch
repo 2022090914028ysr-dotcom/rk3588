@@ -70,7 +70,7 @@
        base_link. All child frames (laser +0.5, imu +0.3, camera -0.09) stay
        relative to base_link, so their absolute heights remain unchanged. -->
   <node pkg="tf2_ros" type="static_transform_publisher" name="base_footprint_to_base_link"
-      args="0 0 0.45 0 0 0 base_footprint base_link" />
+      args="0 0 -0.45 0 0 0 base_footprint base_link" />
 
   <!-- 2-way merge: /camscan + /scan -> /mergescan  (ultrasonic removed; used as virtual bumper in vel_filter) -->
   <!-- <node pkg="ascamera" name="scan_merger" type="scan_merge.py" output="screen">
@@ -143,13 +143,13 @@
   </node>
 
   <!-- NavOA navigation stack (move_base + velocity filter + status + goal timeout) -->
-  <include file="$(find NavOA_ros)/launch/navoa_nav_only.launch">
+  <!-- <include file="$(find NavOA_ros)/launch/navoa_nav_only.launch">
     <arg name="use_sim_time"       value="false"/>
     <arg name="enable_map_server"  value="false"/>
     <arg name="global_map_topic"   value="/map"/>
     <arg name="launch_rviz"        value="$(arg launch_rviz)"/>
 
-  </include>
+  </include> -->
   
   <node pkg = "rosbridge_server" type="rosbridge_websocket" name="rosbridge_websocket" output="screen">
     <param name="port" value="9090"/>
