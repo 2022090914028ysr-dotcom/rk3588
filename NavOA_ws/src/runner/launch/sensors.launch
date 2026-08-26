@@ -54,10 +54,12 @@
   </node>
 
   <node pkg="tf2_ros" type="static_transform_publisher" name="base_link_to_laser"
-      args="0 0 0.2 0 0 0 base_link laser_frame" />
-  <node pkg="tf2_ros" type="static_transform_publisher" name="base_link_to_imu"
-      args="0 0 0 0 0 0 base_link imu_link" />
+      args="0 0 0.0 0 0 0 base_link laser_frame" />
+  <node pkg="tf2_ros" type="static_transform_publisher" name="base_footprint_to_imu"
+      args="0 0 0 0 0 0 base_footprint imu_link" />
 
+  <node pkg="tf2_ros" type="static_transform_publisher" name="base_footprint_to_base_link"
+      args="0 0 0.36 0 0 0 base_footprint base_link" />
   <!-- 2-way merge: /camscan + /scan -> /mergescan  (ultrasonic removed; used as virtual bumper in vel_filter) -->
   <!-- <node pkg="ascamera" name="scan_merger" type="scan_merge.py" output="screen">
     <param name="topics"        type="yaml"  value="['/scan', '/camscan','/voscan']"/>
@@ -66,12 +68,12 @@
     <param name="timeout"       type="double" value="1.0"/>
     <param name="pub_rate"     type="double" value="10"/>
   </node> -->
-  <include file="$(find rf2o_laser_odometry)/launch/rf2o_laser_odometry.launch" />
+  <!-- <include file="$(find rf2o_laser_odometry)/launch/rf2o_laser_odometry.launch" /> -->
   <!-- EKF fusion: rf2o (/odom_rf2o) + leg (SMX/Odom) + IMU (/imu/data) -> /odom + odom->base_link TF.
        When the EKF is ON it is the SOLE publisher of /odom AND odom->base_link TF, so:
          - the relays below must stay OFF (EKF supplies /odom directly), and
          - rf2o publish_tf AND the leg node publish_tf must BOTH be false. -->
-  <include file="$(find rf2o_laser_odometry)/launch/ekf_fusion.launch" />
+  <!-- <include file="$(find rf2o_laser_odometry)/launch/ekf_fusion.launch" /> -->
 
   <!-- ODOM SOURCE — relay to /odom so move_base's local planner gets velocity.
        EKF mode (default): EKF publishes /odom directly -> keep BOTH relays off.
@@ -93,12 +95,28 @@
        Reconnect: if the leg drops out and resumes, re-anchors it to rf2o's CURRENT pose.
        Persistent node: the latch must stay alive to re-deliver the reset to a
        restarted fusion_estimator_node. -->
-  <node pkg="NavOA_ros" type="align_leg_origin.py" name="align_leg_origin"
+  <!-- <node pkg="NavOA_ros" type="align_leg_origin.py" name="align_leg_origin"
         output="screen" required="false">
     <param name="delay_s" value="3.0" />
     <param name="leg_topic" value="SMX/Odom" />
     <param name="rf2o_topic" value="/odom_rf2o" />
     <param name="dropout_timeout" value="1.0" />
+  </node> -->
+
+  <!-- Leg odometry ground/flattening bridge. The leg's x/y/yaw are correct but
+       its body z is INVERTED (-0.45) and its pitch/roll are ~180deg flipped.
+       Two outputs, both yaw-only with z=0:
+         1) TF odom -> base_footprint (ground); the static base_footprint ->
+            base_link (+0.45, above) lifts the body back up.
+         2) /SMX/Odom_flat odometry, which Cartographer subscribes to so the
+            inverted z never leaks into map -> odom.
+       Remote leg node MUST have publish_tf=false (topic only, no TF). -->
+  <node pkg="runner" type="leg_odom_footprint_broadcaster.py" name="leg_odom_footprint_broadcaster"
+        output="screen" required="false">
+    <param name="odom_topic" value="SMX/Odom" />
+    <param name="odom_frame" value="odom" />
+    <param name="footprint_frame" value="base_footprint" />
+    <param name="flat_odom_topic" value="/SMX/Odom_flat" />
   </node>
 
   
@@ -129,13 +147,13 @@
   </node>
 
   <!-- NavOA navigation stack (move_base + velocity filter + status + goal timeout) -->
-  <include file="$(find NavOA_ros)/launch/navoa_nav_only.launch">
+  <!-- <include file="$(find NavOA_ros)/launch/navoa_nav_only.launch">
     <arg name="use_sim_time"       value="false"/>
     <arg name="enable_map_server"  value="false"/>
     <arg name="global_map_topic"   value="/map"/>
     <arg name="launch_rviz"        value="$(arg launch_rviz)"/>
 
-  </include>
+  </include> -->
   
   <node pkg = "rosbridge_server" type="rosbridge_websocket" name="rosbridge_websocket" output="screen">
     <param name="port" value="9090"/>

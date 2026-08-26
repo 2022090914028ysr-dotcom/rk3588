@@ -11,7 +11,7 @@
 
   <arg name="use_sim_time" default="false"/>
   <arg name="enable_map_server" default="false"/>
-  <arg name="map_file" default="$(find cartographer_ros)/../../../map/meeting_room/corridor.yaml" />
+  <arg name="map_file" default="$(find cartographer_ros)/../../../map/meeting_room/legodom.yaml" />
   <arg name="global_map_topic" default="/map"/>
   <arg name="move_base_cmd_topic" default="/move_base_cmd_vel"/>
   <!-- Navigation recovery: do not allow planning or local avoidance to hang forever. -->
