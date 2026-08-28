@@ -1,0 +1,7 @@
+image: /home/ubuntu/Robit_SlamNav/NavOA_ws/src/carto_ws/map/meeting_room/legodom2.pgm
+resolution: 0.050000
+origin: [-16.844258, -10.417282, 0.000000]
+negate: 0
+occupied_thresh: 0.65
+free_thresh: 0.196
+

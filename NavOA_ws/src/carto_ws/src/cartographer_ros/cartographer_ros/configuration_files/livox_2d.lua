@@ -38,7 +38,7 @@ MAP_BUILDER.use_trajectory_builder_2d = true
 
 TRAJECTORY_BUILDER_2D.num_accumulated_range_data = 1
 -- 2D 建图参数
-TRAJECTORY_BUILDER_2D.submaps.num_range_data = 35
+TRAJECTORY_BUILDER_2D.submaps.num_range_data = 60
 TRAJECTORY_BUILDER_2D.min_range = 0.3
 TRAJECTORY_BUILDER_2D.max_range = 8.0
 TRAJECTORY_BUILDER_2D.missing_data_ray_length = 1.5
@@ -70,7 +70,7 @@ POSE_GRAPH.optimization_problem.odometry_translation_weight = 1e4
 POSE_GRAPH.optimization_problem.odometry_rotation_weight    = 1e4
 
 -- Make the grid sticky: hits persist, misses erode slowly.
-TRAJECTORY_BUILDER_2D.submaps.range_data_inserter.probability_grid_range_data_inserter.hit_probability  = 0.62
+TRAJECTORY_BUILDER_2D.submaps.range_data_inserter.probability_grid_range_data_inserter.hit_probability  = 0.58
 TRAJECTORY_BUILDER_2D.submaps.range_data_inserter.probability_grid_range_data_inserter.miss_probability = 0.49
 
 TRAJECTORY_BUILDER_2D.ceres_scan_matcher.occupied_space_weight = 1.0
