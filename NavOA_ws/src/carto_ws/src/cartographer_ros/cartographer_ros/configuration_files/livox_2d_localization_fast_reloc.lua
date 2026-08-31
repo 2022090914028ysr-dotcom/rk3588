@@ -4,7 +4,7 @@ options.publish_tracked_pose = true
 options.use_odometry = true          -- rf2o is not running in localization mode (if true rf2o is running)
 options.provide_odom_frame = false     -- Cartographer provides map→odom→base_link TF without external odometry
 options.published_frame = "odom" --for rf2o make it odom_frame = "odom"                 --for rf2o make it odom
-options.publish_to_tf = true
+options.publish_to_tf = false
 -- =====================================================
 -- [新增] 请改用这行！这是限制算法内部线程的正确位置
 MAP_BUILDER.num_background_threads = 4
@@ -47,7 +47,7 @@ POSE_GRAPH.constraint_builder.fast_correlative_scan_matcher.linear_search_window
 POSE_GRAPH.constraint_builder.fast_correlative_scan_matcher.angular_search_window = math.rad(30.)
 POSE_GRAPH.constraint_builder.fast_correlative_scan_matcher.branch_and_bound_depth = 7
 
-POSE_GRAPH.constraint_builder.global_localization_min_score = 0.55
+POSE_GRAPH.constraint_builder.global_localization_min_score = 0.55 
 POSE_GRAPH.constraint_builder.min_score = 0.55
 
 POSE_GRAPH.constraint_builder.sampling_ratio = 0.3
