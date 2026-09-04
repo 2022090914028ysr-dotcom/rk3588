@@ -1,10 +1,14 @@
 digraph G {
-"base_link" -> "imu_link"[label="Broadcaster: /base_link_to_imu\nAverage rate: 10000.000 Hz\nMost recent transform: 0.000 ( 1786613416.424 sec old)\nBuffer length: 0.000 sec\n"];
-"odom" -> "base_link"[label="Broadcaster: /fusion_estimator_node\nAverage rate: 199.998 Hz\nMost recent transform: 1786613416.384 ( 0.039 sec old)\nBuffer length: 4.910 sec\n"];
-"base_link" -> "laser_frame"[label="Broadcaster: /base_link_to_laser\nAverage rate: 10000.000 Hz\nMost recent transform: 0.000 ( 1786613416.424 sec old)\nBuffer length: 0.000 sec\n"];
-"map" -> "odom"[label="Broadcaster: /cartographer_node\nAverage rate: 86.212 Hz\nMost recent transform: 1786613416.419 ( 0.004 sec old)\nBuffer length: 4.953 sec\n"];
+"odom" -> "base_footprint"[label="Broadcaster: /leg_odom_footprint_broadcaster\nAverage rate: 200.187 Hz\nMost recent transform: 1788160292.125 ( 0.026 sec old)\nBuffer length: 5.330 sec\n"];
+"odom" -> "sliding_map"[label="Broadcaster: /scan_planner_node\nAverage rate: 20.191 Hz\nMost recent transform: 1788160292.145 ( 0.007 sec old)\nBuffer length: 5.299 sec\n"];
+"base_link" -> "laser_frame"[label="Broadcaster: /base_link_to_laser\nAverage rate: 10000.000 Hz\nMost recent transform: 0.000 ( 1788160292.151 sec old)\nBuffer length: 0.000 sec\n"];
+"base_footprint" -> "base_link"[label="Broadcaster: /base_footprint_to_base_link\nAverage rate: 10000.000 Hz\nMost recent transform: 0.000 ( 1788160292.151 sec old)\nBuffer length: 0.000 sec\n"];
+"base_footprint" -> "imu_link"[label="Broadcaster: /base_footprint_to_imu\nAverage rate: 10000.000 Hz\nMost recent transform: 0.000 ( 1788160292.151 sec old)\nBuffer length: 0.000 sec\n"];
+"base_link" -> "ascamera_hp60c_camera_link_0"[label="Broadcaster: /base_link_to_camera\nAverage rate: 10000.000 Hz\nMost recent transform: 0.000 ( 1788160292.151 sec old)\nBuffer length: 0.000 sec\n"];
+"ascamera_hp60c_camera_link_0" -> "ascamera_hp60c_color_0"[label="Broadcaster: /ascamera_hp60c\nAverage rate: 10000.000 Hz\nMost recent transform: 0.000 ( 1788160292.151 sec old)\nBuffer length: 0.000 sec\n"];
+"ascamera_hp60c_camera_link_0" -> "ascamera_hp60c_depth_0"[label="Broadcaster: /ascamera_hp60c\nAverage rate: 10000.000 Hz\nMost recent transform: 0.000 ( 1788160292.151 sec old)\nBuffer length: 0.000 sec\n"];
 edge [style=invis];
  subgraph cluster_legend { style=bold; color=black; label ="view_frames Result";
-"Recorded at time: 1786613416.424"[ shape=plaintext ] ;
- }->"map";
+"Recorded at time: 1788160292.151"[ shape=plaintext ] ;
+ }->"odom";
 }

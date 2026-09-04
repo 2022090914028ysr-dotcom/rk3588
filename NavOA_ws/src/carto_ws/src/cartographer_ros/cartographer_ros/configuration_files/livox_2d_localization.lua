@@ -65,6 +65,7 @@ options.publish_tracked_pose = true
 options.use_odometry = true          -- rf2o is not running in localization mode (if true rf2o is running)
 options.provide_odom_frame = false     -- Cartographer provides map→odom→base_link TF without external odometry
 options.published_frame = "odom" --for rf2o make it odom_frame = "odom"--for rf2o make it odom
+options.publish_to_tf = false
 -- | Parameter Name           | Description |
 -- | :---                     | :---        |
 -- | max_submaps_to_keep      | Maximum number of recent submaps retained for loop closure. |
@@ -87,6 +88,15 @@ POSE_GRAPH.constraint_builder.min_score = 0.60      -- 局部内匹配时的最�
 POSE_GRAPH.constraint_builder.global_localization_min_score = 0.60   -- 全局定位最低分，高分数减少误匹配，但过高可能导致无法重定位，适当降低以增加成功率
 -- POSE_GRAPH.constraint_builder.global_localization_min_score = 0.45
 -- POSE_GRAPH.constraint_builder.min_score = 0.55
+
+-- =====================================================
+-- [新增] 里程计一致性校验：全局定位候选位姿在创建约束前，用可信里程计
+-- 校验其与上一节点之间的相对运动是否一致。不一致（如重复结构导致的错误
+-- 高分匹配）则直接拒绝，约束不会进入位姿图，避免位姿被拉偏。
+-- =====================================================
+POSE_GRAPH.constraint_builder.global_localization_odometry_check_enabled = true   -- 开启里程计校验（关闭即为原始行为）
+POSE_GRAPH.constraint_builder.global_localization_max_odometry_translation_error = 0.5        -- 相对平移允许的最大误差（米）
+POSE_GRAPH.constraint_builder.global_localization_max_odometry_rotation_error = math.rad(30.) -- 相对旋转允许的最大误差（弧度）
 -- below: what you dont need to change unless you know what you are doing
 -- | max_distance_meters      | Distance threshold (in meters) for new node insertion. |
 -- | max_angle_radians        | Angular threshold (in radians) for new node insertion. |

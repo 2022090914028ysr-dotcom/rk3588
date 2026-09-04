@@ -174,6 +174,7 @@ install(DIRECTORY launch urdf configuration_files
 )
 
 install(PROGRAMS scripts/tf_remove_frames.py scripts/cartographer_guard.py scripts/mode_manager.py
+  scripts/localization_jump_guard.py
   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
 

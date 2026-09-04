@@ -49,11 +49,11 @@
     <param name="grid_map/sliding_map_size_y" value="10.0" />
     <param name="grid_map/sliding_map_size_z" value="5.0" />
     <param name="grid_map/map_sliding_thresh" value="0.2"/>
-    <param name="grid_map/double_cylinder_radius" value="0.15" />
+    <param name="grid_map/double_cylinder_radius" value="0.20" />
     <param name="grid_map/double_cylinder_offset" value="0.0" />
     <param name="grid_map/obstacles_inflation_z_up" value="0.1" />
     <param name="grid_map/obstacles_inflation_z_down" value="0.10" />
-    <param name="grid_map/min_obstacle_height" value="0.15" />
+    <param name="grid_map/min_obstacle_height" value="0.05" />
 
     <param name="grid_map/body_height" value="0.45" />
     <param name="grid_map/ground_height" value="0.05" />
@@ -90,10 +90,10 @@
 
     <!-- trajectory optimization -->
     <param name="optimization/lambda_smooth" value="1.0" type="double"/>
-    <param name="optimization/lambda_collision" value="1.0" type="double"/>
+    <param name="optimization/lambda_collision" value="100.0" type="double"/>
     <param name="optimization/lambda_feasibility" value="0.1" type="double"/>
     <param name="optimization/lambda_fitness" value="1.0" type="double"/>
-    <param name="optimization/dist0" value="0.2" type="double"/>
+    <param name="optimization/dist0" value="0.4" type="double"/>
     <param name="optimization/max_vel" value="$(arg max_vel)" type="double"/>
     <param name="optimization/vel_tolerance" value="1.0" type="double"/>
     <param name="optimization/max_acc" value="$(arg max_acc)" type="double"/>

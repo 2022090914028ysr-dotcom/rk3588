@@ -4,10 +4,10 @@ options.publish_tracked_pose = true
 options.use_odometry = true          -- rf2o is not running in localization mode (if true rf2o is running)
 options.provide_odom_frame = false     -- Cartographer provides map→odom→base_link TF without external odometry
 options.published_frame = "odom" --for rf2o make it odom_frame = "odom"                 --for rf2o make it odom
-
+options.publish_to_tf = true
 -- =====================================================
 -- [新增] 请改用这行！这是限制算法内部线程的正确位置
-MAP_BUILDER.num_background_threads = 4
+MAP_BUILDER.num_background_threads = 6
 
 -- ==================== 以下保持原样 ====================
 
@@ -40,16 +40,26 @@ TRAJECTORY_BUILDER.pure_localization_trimmer = {
 POSE_GRAPH.optimize_every_n_nodes = 20
 
 -- 采样率
+POSE_GRAPH.global_constraint_search_after_n_seconds = 10   -- force global match every node
+
 POSE_GRAPH.global_sampling_ratio = 0.01
 
--- POSE_GRAPH.constraint_builder.sampling_ratio = 0.05
 
--- 约束构建
+-- =====================================================
+-- [新增] 里程计一致性校验：全局定位候选位姿在创建约束前，用可信里程计
+-- 校验其与上一节点之间的相对运动是否一致。不一致（如重复结构导致的错误
+-- 高分匹配）则直接拒绝，约束不会进入位姿图，避免位姿被拉偏。
+-- =====================================================
+POSE_GRAPH.constraint_builder.global_localization_odometry_check_enabled = true   -- 开启里程计校验（关闭即为原始行为）
+POSE_GRAPH.constraint_builder.global_localization_max_odometry_translation_error = 1.0        -- 相对平移允许的最大误差（米）
+POSE_GRAPH.constraint_builder.global_localization_max_odometry_rotation_error = math.rad(30.) -- 相对旋转允许的最大误差（弧度）
+
+-- POSE_GRAPH.constraint_builder.sampling_ratio = 0.05-- 约束构建
 POSE_GRAPH.constraint_builder.fast_correlative_scan_matcher.linear_search_window = 5.0
 POSE_GRAPH.constraint_builder.fast_correlative_scan_matcher.angular_search_window = math.rad(30.)
 POSE_GRAPH.constraint_builder.fast_correlative_scan_matcher.branch_and_bound_depth = 7
 
-POSE_GRAPH.constraint_builder.global_localization_min_score = 0.45
+POSE_GRAPH.constraint_builder.global_localization_min_score = 0.55 
 POSE_GRAPH.constraint_builder.min_score = 0.55
 
 POSE_GRAPH.constraint_builder.sampling_ratio = 0.3

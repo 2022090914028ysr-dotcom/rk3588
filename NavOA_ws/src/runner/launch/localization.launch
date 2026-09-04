@@ -16,9 +16,9 @@
 
   <!-- Map file paths (update these to match your saved map) -->
   <arg name="pbstream_file"
-       default="$(find cartographer_ros)/../../../map/meeting_room/corridor.pbstream"/>
+       default="$(find cartographer_ros)/../../../map/meeting_room/legodom2.pbstream"/>
   <arg name="map_yaml"
-       default="$(find cartographer_ros)/../../../map/meeting_room/corridor.yaml"/>
+       default="$(find cartographer_ros)/../../../map/meeting_room/legodom2.yaml"/>
   <arg name="cartographer_config"
        default="livox_2d_localization_fast_reloc.lua"/>
 
@@ -39,7 +39,7 @@
                -load_state_filename $(arg pbstream_file)"
         output="screen">
     <remap from="scan" to="/scan" />
-    <remap from="odom" to="/odom" />
+    <remap from="odom" to="/SMX/Odom_flat" />  <!-- leg-only: flattened leg odometry (z=0) -->
   </node>
 
   <!-- Cartographer occupancy grid (remapped to avoid conflict with map_server) -->

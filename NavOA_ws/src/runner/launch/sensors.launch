@@ -61,17 +61,11 @@
 
   <node pkg="tf2_ros" type="static_transform_publisher" name="base_link_to_laser"
       args="0 0 0.15 0 0 0 base_link laser_frame" />
-  <node pkg="tf2_ros" type="static_transform_publisher" name="base_link_to_imu"
-      args="0 0 -0.15 0 0 0 base_link imu_link" />
+  <node pkg="tf2_ros" type="static_transform_publisher" name="base_footprint_to_imu"
+      args="0 0 0.40 0 0 0 base_footprint imu_link" />
 
-  <!-- Body height: base_link sits 0.45 m above the floor. The EKF is 2D
-       (two_d_mode) and forces z=0 on its odom->base_footprint output, so the
-       0.45 m body height is expressed here as a static lift base_footprint ->
-       base_link. All child frames (laser +0.5, imu +0.3, camera -0.09) stay
-       relative to base_link, so their absolute heights remain unchanged. -->
   <node pkg="tf2_ros" type="static_transform_publisher" name="base_footprint_to_base_link"
-      args="0 0 -0.45 0 0 0 base_footprint base_link" />
-
+      args="0 0 0.45 0 0 0 base_footprint base_link" />
   <!-- 2-way merge: /camscan + /scan -> /mergescan  (ultrasonic removed; used as virtual bumper in vel_filter) -->
   <!-- <node pkg="ascamera" name="scan_merger" type="scan_merge.py" output="screen">
     <param name="topics"        type="yaml"  value="['/scan', '/camscan','/voscan']"/>
@@ -85,7 +79,7 @@
        When the EKF is ON it is the SOLE publisher of /odom AND odom->base_link TF, so:
          - the relays below must stay OFF (EKF supplies /odom directly), and
          - rf2o publish_tf AND the leg node publish_tf must BOTH be false. -->
-  <include file="$(find rf2o_laser_odometry)/launch/ekf_fusion.launch" />
+  <!-- <include file="$(find rf2o_laser_odometry)/launch/ekf_fusion.launch" /> -->
 
   <!-- ODOM SOURCE — relay to /odom so move_base's local planner gets velocity.
        EKF mode (default): EKF publishes /odom directly -> keep BOTH relays off.
@@ -115,8 +109,22 @@
     <param name="dropout_timeout" value="1.0" />
   </node>
 
-  
-  
+  <!-- Leg odometry ground/flattening bridge. The leg's x/y/yaw are correct but
+       its body z is INVERTED (-0.45) and its pitch/roll are ~180deg flipped.
+       Two outputs, both yaw-only with z=0:
+         1) TF odom -> base_footprint (ground); the static base_footprint ->
+            base_link (+0.45, above) lifts the body back up.
+         2) /SMX/Odom_flat odometry, which Cartographer subscribes to so the
+            inverted z never leaks into map -> odom.
+       Remote leg node MUST have publish_tf=false (topic only, no TF). -->
+  <node pkg="runner" type="leg_odom_footprint_broadcaster.py" name="leg_odom_footprint_broadcaster"
+        output="screen" required="false">
+    <param name="odom_topic" value="SMX/Odom" />
+    <param name="odom_frame" value="odom" />
+    <param name="footprint_frame" value="base_footprint" />
+    <param name="flat_odom_topic" value="/SMX/Odom_flat" />
+  </node>
+
   <node pkg="NavOA_ros" name="multi_ultrasonic_scan" type="multi_ultrasonic_scan.py" output="screen" if="$(arg use_ultrasonic)" />
   <!-- Bridge /cmd_vel and IMU over /dev/ttyS6 to the other PC -->
   <!-- <node pkg="NavOA_ros" type="serial_cmd_vel_imu_bridge.py" name="serial_cmd_vel_imu_bridge" output="screen">

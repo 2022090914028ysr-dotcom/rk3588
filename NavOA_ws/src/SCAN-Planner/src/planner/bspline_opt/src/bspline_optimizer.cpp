@@ -73,6 +73,20 @@ namespace scan_planner
     bool occ, last_occ = false;
     bool flag_got_start = false, flag_got_end = false, flag_got_end_maybe = false;
     int i_end = (int)init_points.cols() - order_ - ((int)init_points.cols() - 2 * order_) / 3; // only check closed 2/3 points.
+
+    /*** TEMP DIAGNOSTIC: log collision segmentation of the initial path (one replan only) ***/
+    static bool seg_log_done = false;
+    const bool do_seg_log = (flag_first_init && !seg_log_done);
+    if (do_seg_log)
+    {
+      const Eigen::Vector3d p_start = init_points.col(0);
+      const Eigen::Vector3d p_goal = init_points.col(init_points.cols() - 1);
+      printf("\n[SEG-DIAG] start=(%.3f, %.3f, %.3f) goal=(%.3f, %.3f, %.3f) n_pts=%d order=%d res=%.4f step_size=%.4f i_end=%d\n",
+             p_start(0), p_start(1), p_start(2),
+             p_goal(0), p_goal(1), p_goal(2),
+             (int)init_points.cols(), order_, grid_map_->getResolution(), step_size, i_end);
+    }
+
     for (int i = order_; i <= i_end; ++i)
     {
       for (double a = 1.0; a >= 0.0; a -= step_size)
@@ -80,6 +94,11 @@ namespace scan_planner
         Eigen::Vector3d sample_pt = a * init_points.col(i - 1) + (1 - a) * init_points.col(i);
         double sample_yaw = estimateSegmentYaw(init_points.col(i - 1), init_points.col(i));
         occ = grid_map_->getInflateOccupancy(sample_pt, sample_yaw);
+        if (do_seg_log)
+        {
+          printf("  [SEG-DIAG] i=%d a=%.3f pos=(%.3f, %.3f, %.3f) yaw=%.3f occ=%d\n",
+                 i, a, sample_pt(0), sample_pt(1), sample_pt(2), sample_yaw, (int)occ);
+        }
         // cout << setprecision(5);
         // cout << (a * init_points.col(i-1) + (1-a) * init_points.col(i)).transpose() << " occ1=" << occ << endl;
 
@@ -122,6 +141,12 @@ namespace scan_planner
             ROS_WARN("Skip invalid collision segment: in_id=%d, out_id=%d.", in_id, out_id);
         }
       }
+    }
+
+    if (do_seg_log)
+    {
+      printf("[SEG-DIAG] total collision segments = %zu\n", segment_ids.size());
+      seg_log_done = true;
     }
 
     /*** a star search ***/

@@ -14,6 +14,7 @@ catkin_install_python(PROGRAMS
   script/runner_node.py
   script/mode_manager.py
   script/status_state.py
+  script/leg_odom_footprint_broadcaster.py
   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
 

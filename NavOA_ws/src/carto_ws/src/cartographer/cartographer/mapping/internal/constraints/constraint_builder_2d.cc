@@ -47,6 +47,7 @@ static auto* kConstraintsSearchedMetric = metrics::Counter::Null();
 static auto* kConstraintsFoundMetric = metrics::Counter::Null();
 static auto* kGlobalConstraintsSearchedMetric = metrics::Counter::Null();
 static auto* kGlobalConstraintsFoundMetric = metrics::Counter::Null();
+static auto* kGlobalConstraintsOdometryRejectedMetric = metrics::Counter::Null();
 static auto* kQueueLengthMetric = metrics::Gauge::Null();
 static auto* kConstraintScoresMetric = metrics::Histogram::Null();
 static auto* kGlobalConstraintScoresMetric = metrics::Histogram::Null();
@@ -77,7 +78,8 @@ ConstraintBuilder2D::~ConstraintBuilder2D() {
 void ConstraintBuilder2D::MaybeAddConstraint(
     const SubmapId& submap_id, const Submap2D* const submap,
     const NodeId& node_id, const TrajectoryNode::Data* const constant_data,
-    const transform::Rigid2d& initial_relative_pose) {
+    const transform::Rigid2d& initial_relative_pose,
+    const GlobalLocalizationOdometry& odometry_check) {
   if (initial_relative_pose.translation().norm() >
       options_.max_constraint_distance()) {
     return;
@@ -103,7 +105,7 @@ void ConstraintBuilder2D::MaybeAddConstraint(
   constraint_task->SetWorkItem([=]() ABSL_LOCKS_EXCLUDED(mutex_) {
     ComputeConstraint(submap_id, submap, node_id, false, /* match_full_submap */
                       constant_data, initial_relative_pose, *scan_matcher,
-                      constraint);
+                      odometry_check, constraint);
   });
   constraint_task->AddDependency(scan_matcher->creation_task_handle);
   auto constraint_task_handle =
@@ -113,7 +115,9 @@ void ConstraintBuilder2D::MaybeAddConstraint(
 
 void ConstraintBuilder2D::MaybeAddGlobalConstraint(
     const SubmapId& submap_id, const Submap2D* const submap,
-    const NodeId& node_id, const TrajectoryNode::Data* const constant_data) {
+    const NodeId& node_id, const TrajectoryNode::Data* const constant_data,
+    const transform::Rigid2d& initial_relative_pose,
+    const GlobalLocalizationOdometry& odometry_check) {
   absl::MutexLock locker(&mutex_);
   if (when_done_) {
     LOG(WARNING)
@@ -127,8 +131,8 @@ void ConstraintBuilder2D::MaybeAddGlobalConstraint(
   auto constraint_task = absl::make_unique<common::Task>();
   constraint_task->SetWorkItem([=]() ABSL_LOCKS_EXCLUDED(mutex_) {
     ComputeConstraint(submap_id, submap, node_id, true, /* match_full_submap */
-                      constant_data, transform::Rigid2d::Identity(),
-                      *scan_matcher, constraint);
+                      constant_data, initial_relative_pose, *scan_matcher,
+                      odometry_check, constraint);
   });
   constraint_task->AddDependency(scan_matcher->creation_task_handle);
   auto constraint_task_handle =
@@ -191,6 +195,7 @@ void ConstraintBuilder2D::ComputeConstraint(
     const TrajectoryNode::Data* const constant_data,
     const transform::Rigid2d& initial_relative_pose,
     const SubmapScanMatcher& submap_scan_matcher,
+    const GlobalLocalizationOdometry& odometry_check,
     std::unique_ptr<ConstraintBuilder2D::Constraint>* constraint) {
   CHECK(submap_scan_matcher.fast_correlative_scan_matcher);
   const transform::Rigid2d initial_pose =
@@ -239,6 +244,113 @@ void ConstraintBuilder2D::ComputeConstraint(
     score_histogram_.Add(score);
   }
 
+  // Stage 1: odometry-aware gate for loop-closure constraints.
+  //
+  // Before a match is refined by Ceres and turned into an INTER_SUBMAP
+  // constraint, verify that the motion it implies is consistent with trusted
+  // odometry (or, for the frozen-map direction that has no odometry, with the
+  // assumption that the localization is already correct). This rejects
+  // geometrically good but incorrect matches in repetitive environments before
+  // they can contaminate the pose graph. It covers full-submap (global) matches
+  // AND cross-trajectory local matches (loop closures that land in the
+  // "recently connected" local-search window); same-trajectory local
+  // refinements are left untouched.
+  const bool cross_trajectory =
+      node_id.trajectory_id != submap_id.trajectory_id;
+  // The gate only fires once the localization has actually been established
+  // (the trajectories tied by a real loop closure). Before that the pose-graph
+  // estimate is the unlocalized initial guess, so any correct relocalization
+  // implies a large correction and must be allowed through.
+  if (odometry_check.localization_established &&
+      (match_full_submap || cross_trajectory) &&
+      options_.global_localization_odometry_check_enabled()) {
+    if (odometry_check.has_odometry) {
+      // The node's own trajectory has odometry: verify the motion this match
+      // implies between the previous and current node is consistent with it.
+      const transform::Rigid2d global_relative_motion =
+          odometry_check.previous_global_pose_2d.inverse() * pose_estimate;
+      const double translation_error =
+          (global_relative_motion.translation() -
+           odometry_check.relative_odometry_2d.translation())
+              .norm();
+      const double rotation_error = std::abs(common::NormalizeAngleDifference(
+          global_relative_motion.rotation().angle() -
+          odometry_check.relative_odometry_2d.rotation().angle()));
+      const bool odometry_inconsistent =
+          translation_error >
+              options_.global_localization_max_odometry_translation_error() ||
+          rotation_error >
+              options_.global_localization_max_odometry_rotation_error();
+      if (odometry_inconsistent) {
+        kGlobalConstraintsOdometryRejectedMetric->Increment();
+      }
+      // Always emit the gate decision at INFO level so both ACCEPT and REJECT
+      // are visible in /rosout (and via carto_loger.py) without requiring
+      // GLOG_v=1 or log_matches.
+      std::ostringstream info;
+      info << "[GlobalLoc] node: " << node_id << " submap: " << submap_id
+           << " mode=" << (match_full_submap ? "GLOBAL" : "LOCAL-cross")
+           << std::fixed << " scan_score: " << std::setprecision(4) << score
+           << " odom_translation: " << std::setprecision(4)
+           << odometry_check.relative_odometry_2d.translation().norm()
+           << " odom_rotation: " << std::setprecision(4)
+           << odometry_check.relative_odometry_2d.rotation().angle()
+           << " global_relative_translation: " << std::setprecision(4)
+           << global_relative_motion.translation().norm()
+           << " global_relative_rotation: " << std::setprecision(4)
+           << global_relative_motion.rotation().angle()
+           << " translation_error: " << std::setprecision(4)
+           << translation_error << " rotation_error: " << std::setprecision(4)
+           << rotation_error
+           << " decision: " << (odometry_inconsistent ? "REJECT" : "ACCEPT")
+           << " reason: "
+           << (odometry_inconsistent
+                   ? "odometry inconsistent with global motion"
+                   : "odometry consistent");
+      LOG(INFO) << info.str();
+      if (odometry_inconsistent) {
+        return;
+      }
+    } else if (odometry_check.reverse_direction) {
+      // Reverse direction: a frozen-map node matched against a live submap
+      // (either in the local-search window or via full-submap matching). The
+      // frozen trajectory has no odometry, so instead reject a match whose
+      // correction is far larger than the trusted localization could plausibly
+      // have drifted. Genuine relocalization is handled by the forward
+      // direction (odometry-gated above).
+      const transform::Rigid2d correction =
+          initial_pose.inverse() * pose_estimate;
+      const double correction_translation = correction.translation().norm();
+      const double correction_rotation =
+          std::abs(correction.normalized_angle());
+      const bool correction_inconsistent =
+          correction_translation >
+              options_.global_localization_max_odometry_translation_error() ||
+          correction_rotation >
+              options_.global_localization_max_odometry_rotation_error();
+      if (correction_inconsistent) {
+        kGlobalConstraintsOdometryRejectedMetric->Increment();
+      }
+      std::ostringstream info;
+      info << "[GlobalLoc] node: " << node_id << " submap: " << submap_id
+           << " mode=" << (match_full_submap ? "GLOBAL" : "LOCAL-cross")
+           << " reverse=true" << std::fixed
+           << " scan_score: " << std::setprecision(4) << score
+           << " correction_translation: " << std::setprecision(4)
+           << correction_translation << " correction_rotation: "
+           << std::setprecision(4) << correction_rotation
+           << " decision: " << (correction_inconsistent ? "REJECT" : "ACCEPT")
+           << " reason: "
+           << (correction_inconsistent
+                   ? "large correction inconsistent with trusted localization"
+                   : "correction consistent");
+      LOG(INFO) << info.str();
+      if (correction_inconsistent) {
+        return;
+      }
+    }
+  }
+
   // Use the CSM estimate as both the initial and previous pose. This has the
   // effect that, in the absence of better information, we prefer the original
   // CSM estimate.
@@ -250,6 +362,17 @@ void ConstraintBuilder2D::ComputeConstraint(
 
   const transform::Rigid2d constraint_transform =
       ComputeSubmapPose(*submap).inverse() * pose_estimate;
+  // Diagnostic: log every constraint that is actually created, local or global,
+  // so a pose jump can be attributed to the correct match path. For global
+  // matches this is preceded by the gate's ACCEPT/REJECT line above.
+  {
+    const transform::Rigid2d correction = initial_pose.inverse() * pose_estimate;
+    LOG(INFO) << "[MatchResult] node " << node_id << " submap " << submap_id
+              << " type=" << (match_full_submap ? "GLOBAL" : "LOCAL")
+              << " score=" << score
+              << " correction_translation=" << correction.translation().norm()
+              << " correction_rotation=" << correction.normalized_angle();
+  }
   constraint->reset(new Constraint{submap_id,
                                    node_id,
                                    {transform::Embed3D(constraint_transform),
@@ -327,6 +450,8 @@ void ConstraintBuilder2D::RegisterMetrics(metrics::FamilyFactory* factory) {
       counts->Add({{"search_region", "global"}, {"matcher", "searched"}});
   kGlobalConstraintsFoundMetric =
       counts->Add({{"search_region", "global"}, {"matcher", "found"}});
+  kGlobalConstraintsOdometryRejectedMetric =
+      counts->Add({{"search_region", "global"}, {"matcher", "odometry_rejected"}});
   auto* queue_length = factory->NewGaugeFamily(
       "mapping_constraints_constraint_builder_2d_queue_length", "Queue length");
   kQueueLengthMetric = queue_length->Add({});
