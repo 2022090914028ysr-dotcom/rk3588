@@ -63,6 +63,39 @@ message ConstraintBuilderOptions {
   // the global-localization-implied rotation over the previous-node interval.
   double global_localization_max_odometry_rotation_error = 17;
 
+  // Number of top candidates extracted by the fast-correlative scan matcher
+  // during kidnap-recovery global localization. These are deduplicated and
+  // validated for ambiguity before a single candidate is accepted.
+  int32 global_localization_recovery_num_candidates = 18;
+
+  // Minimum score margin between the best and the runner-up distinct
+  // hypothesis required to accept a recovery localization as unambiguous.
+  double global_localization_recovery_min_score_margin = 19;
+
+  // Minimum translational separation (meters) for two candidates to be
+  // considered distinct hypotheses during recovery deduplication.
+  double global_localization_recovery_min_separation = 20;
+
+  // Minimum angular separation (radians) for two candidates to be considered
+  // distinct hypotheses during recovery deduplication.
+  double global_localization_recovery_min_angular_separation = 21;
+
+  // Number of consecutive, spatially-consistent recovery localizations
+  // required before the localization is declared recovered and normal
+  // odometry-gated constraint checking resumes.
+  int32 global_localization_recovery_num_confirmations = 22;
+
+  // Maximum translational distance (meters) between consecutive recovery
+  // hypotheses for them to count as the same physical localization.
+  double global_localization_recovery_confirmation_distance = 23;
+
+  // Minimum scan score for an odometry-inconsistent global match to be treated
+  // as a relocalization candidate instead of being rejected outright. A match
+  // this confident is likely a genuine re-detection of a distinctive place, so
+  // it is routed through temporal confirmation, letting a robot that was
+  // wrongly localized recover once it moves somewhere distinctive.
+  double global_localization_relocalization_min_score = 24;
+
   // Options for the internally used scan matchers.
   mapping.scan_matching.proto.FastCorrelativeScanMatcherOptions2D
       fast_correlative_scan_matcher_options = 9;

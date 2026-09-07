@@ -162,11 +162,41 @@ Node::Node(
   wall_timers_.push_back(node_handle_.createWallTimer(
       ::ros::WallDuration(kConstraintPublishPeriodSec),
       &Node::PublishConstraintList, this));
+
+  // Subscribe to the foot-contact / kidnap status published by the leg-odometry
+  // system. This is a global subscription (not per-trajectory), so it is set up
+  // once in the constructor.
+  kidnap_status_subscriber_ =
+      node_handle_.subscribe<sim2real_msg::KidnapStatus>(
+          kKidnapStatusTopic, kInfiniteSubscriberQueueSize,
+          boost::function<void(const sim2real_msg::KidnapStatus::ConstPtr&)>(
+              [this](const sim2real_msg::KidnapStatus::ConstPtr& msg) {
+                HandleKidnapStatus(msg);
+              }));
 }
 
 Node::~Node() { FinishAllTrajectories(); }
 
 ::ros::NodeHandle* Node::node_handle() { return &node_handle_; }
+
+void Node::HandleKidnapStatus(const sim2real_msg::KidnapStatus::ConstPtr& msg) {
+  absl::MutexLock lock(&mutex_);
+  // The raw on_ground value is torque-derived and can have occasional false
+  // positives/negatives. Only update the trusted state after
+  // kOnGroundConsecutiveThreshold consecutive identical readings, so a single
+  // contradictory sample never flips the localization-state decision.
+  const bool raw_on_ground = msg->on_ground;
+  if (raw_on_ground == last_on_ground_) {
+    ++on_ground_consecutive_count_;
+  } else {
+    last_on_ground_ = raw_on_ground;
+    on_ground_consecutive_count_ = 1;
+  }
+  if (on_ground_consecutive_count_ >= kOnGroundConsecutiveThreshold) {
+    trusted_on_ground_ = raw_on_ground;
+  }
+  map_builder_bridge_.SetKidnapStatus(msg->kidnapped, trusted_on_ground_);
+}
 
 bool Node::HandleSubmapQuery(
     ::cartographer_ros_msgs::SubmapQuery::Request& request,

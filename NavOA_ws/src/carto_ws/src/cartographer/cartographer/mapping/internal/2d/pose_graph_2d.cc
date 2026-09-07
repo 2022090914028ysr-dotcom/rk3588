@@ -258,6 +258,12 @@ void PoseGraph2D::AddLandmarkData(int trajectory_id,
   });
 }
 
+void PoseGraph2D::SetKidnapStatus(const bool kidnap_active,
+                                  const bool robot_on_ground) {
+  kidnap_active_.store(kidnap_active, std::memory_order_relaxed);
+  robot_on_ground_.store(robot_on_ground, std::memory_order_relaxed);
+}
+
 void PoseGraph2D::ComputeConstraint(const NodeId& node_id,
                                     const SubmapId& submap_id) {
   bool maybe_add_local_constraint = false;
@@ -282,15 +288,44 @@ void PoseGraph2D::ComputeConstraint(const NodeId& node_id,
         data_.trajectories_connected_via_loop_closure_.count(std::make_pair(
             std::min(node_id.trajectory_id, submap_id.trajectory_id),
             std::max(node_id.trajectory_id, submap_id.trajectory_id))) > 0;
-    if (node_id.trajectory_id == submap_id.trajectory_id ||
-        node_time <
-            last_connection_time +
-                common::FromSeconds(
-                    options_.global_constraint_search_after_n_seconds())) {
-      // If the node and the submap belong to the same trajectory or if there
-      // has been a recent global constraint that ties that node's trajectory to
-      // the submap's trajectory, it suffices to do a match constrained to a
-      // local search window.
+    const bool recovery_unconfirmed =
+        kidnap_active_.load(std::memory_order_relaxed) &&
+        robot_on_ground_.load(std::memory_order_relaxed) &&
+        constraint_builder_.RecoveryUnconfirmed();
+    // Forward direction = a live node (trajectory has odometry) matched against
+    // a frozen-map submap (trajectory has no odometry). This is the direction
+    // that actually re-localizes the live robot. The reverse direction
+    // (frozen-map node against a live submap) is not useful during recovery:
+    // the live submap's pose is itself uncertain after a kidnap, and forcing a
+    // full-submap match for every frozen-map node whenever a live submap
+    // finishes floods the queue and churns the recovery confirmation.
+    const bool forward_direction =
+        optimization_problem_->odometry_data().HasTrajectory(
+            node_id.trajectory_id) &&
+        !optimization_problem_->odometry_data().HasTrajectory(
+            submap_id.trajectory_id);
+    if (node_id.trajectory_id == submap_id.trajectory_id) {
+      // Same trajectory: a local-window refinement is sufficient.
+      maybe_add_local_constraint = true;
+    } else if (recovery_unconfirmed && forward_direction) {
+      // Kidnap recovery in progress (robot placed down but not yet
+      // re-localized): force a full-submap global match on every forward
+      // cross-trajectory node so the temporal confirmation completes quickly,
+      // instead of waiting on the sparse global_sampling_ratio.
+      maybe_add_global_constraint = true;
+    } else if (constraint_builder_.RelocalizationInProgress() &&
+               forward_direction) {
+      // A confident but odometry-inconsistent global match has been seen, i.e.
+      // the localization is likely stuck at a wrong similar structure. Force a
+      // full-submap global match on every forward cross-trajectory node so the
+      // self-relocalization confirmation completes promptly.
+      maybe_add_global_constraint = true;
+    } else if (node_time <
+               last_connection_time +
+                   common::FromSeconds(
+                       options_.global_constraint_search_after_n_seconds())) {
+      // There has been a recent global constraint that ties that node's
+      // trajectory to the submap's trajectory, so a local-window match suffices.
       maybe_add_local_constraint = true;
     } else if (global_localization_samplers_[node_id.trajectory_id]->Pulse()) {
       maybe_add_global_constraint = true;
@@ -307,6 +342,13 @@ void PoseGraph2D::ComputeConstraint(const NodeId& node_id,
   const auto build_odometry_check = [this](const NodeId& node_id,
                                            const SubmapId& submap_id) {
     constraints::GlobalLocalizationOdometry odometry_check;
+    // Copy the latest kidnap status (written on the ROS thread) into the
+    // value-type passed into the asynchronous constraint task, so the gate sees
+    // a consistent snapshot of the robot state at scheduling time.
+    odometry_check.kidnap_active =
+        kidnap_active_.load(std::memory_order_relaxed);
+    odometry_check.robot_on_ground =
+        robot_on_ground_.load(std::memory_order_relaxed);
     const auto& odometry_data = optimization_problem_->odometry_data();
     odometry_check.reverse_direction =
         !odometry_data.HasTrajectory(node_id.trajectory_id) &&

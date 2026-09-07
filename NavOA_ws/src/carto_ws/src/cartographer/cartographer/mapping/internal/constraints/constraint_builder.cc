@@ -48,6 +48,27 @@ proto::ConstraintBuilderOptions CreateConstraintBuilderOptions(
   options.set_global_localization_max_odometry_rotation_error(
       parameter_dictionary->GetDouble(
           "global_localization_max_odometry_rotation_error"));
+  options.set_global_localization_recovery_num_candidates(
+      parameter_dictionary->GetInt(
+          "global_localization_recovery_num_candidates"));
+  options.set_global_localization_recovery_min_score_margin(
+      parameter_dictionary->GetDouble(
+          "global_localization_recovery_min_score_margin"));
+  options.set_global_localization_recovery_min_separation(
+      parameter_dictionary->GetDouble(
+          "global_localization_recovery_min_separation"));
+  options.set_global_localization_recovery_min_angular_separation(
+      parameter_dictionary->GetDouble(
+          "global_localization_recovery_min_angular_separation"));
+  options.set_global_localization_recovery_num_confirmations(
+      parameter_dictionary->GetInt(
+          "global_localization_recovery_num_confirmations"));
+  options.set_global_localization_recovery_confirmation_distance(
+      parameter_dictionary->GetDouble(
+          "global_localization_recovery_confirmation_distance"));
+  options.set_global_localization_relocalization_min_score(
+      parameter_dictionary->GetDouble(
+          "global_localization_relocalization_min_score"));
   *options.mutable_fast_correlative_scan_matcher_options() =
       scan_matching::CreateFastCorrelativeScanMatcherOptions2D(
           parameter_dictionary->GetDictionary("fast_correlative_scan_matcher")

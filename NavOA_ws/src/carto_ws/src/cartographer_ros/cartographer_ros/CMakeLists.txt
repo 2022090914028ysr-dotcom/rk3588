@@ -26,6 +26,7 @@ set(PACKAGE_DEPENDENCIES
   roscpp
   roslib
   sensor_msgs
+  sim2real_msg
   std_msgs
   tf2
   tf2_eigen

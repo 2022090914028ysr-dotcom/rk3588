@@ -54,12 +54,33 @@ POSE_GRAPH.constraint_builder.global_localization_odometry_check_enabled = true 
 POSE_GRAPH.constraint_builder.global_localization_max_odometry_translation_error = 1.0        -- 相对平移允许的最大误差（米）
 POSE_GRAPH.constraint_builder.global_localization_max_odometry_rotation_error = math.rad(30.) -- 相对旋转允许的最大误差（弧度）
 
+-- =====================================================
+-- [Stage 2] 绑架恢复 (Kidnap-Aware Global Localization Recovery)
+-- 机器人被抬起(悬空)时暂停全局定位约束；放回地面后在恢复模式下用
+-- Top-N + 去重 + 分数差/空间分离 + 时间一致性确认 来重新定位，
+-- 而不是用普通里程计一致性作为硬性拒绝。
+-- =====================================================
+POSE_GRAPH.constraint_builder.global_localization_recovery_num_candidates = 3          -- 恢复模式下提取的 Top-N 候选数
+POSE_GRAPH.constraint_builder.global_localization_recovery_min_score_margin = 0.08     -- 最佳与次佳不同假设间的最小分数差
+POSE_GRAPH.constraint_builder.global_localization_recovery_min_separation = 1.0        -- 判定为不同假设的最小平移分离（米）
+POSE_GRAPH.constraint_builder.global_localization_recovery_min_angular_separation = math.rad(30.) -- 最小角度分离（弧度）
+POSE_GRAPH.constraint_builder.global_localization_recovery_num_confirmations = 3       -- 确认恢复所需的连续一致次数
+POSE_GRAPH.constraint_builder.global_localization_recovery_confirmation_distance = 0.5 -- 相邻恢复假设的最大平移距离（米）
+
+-- =====================================================
+-- [Stage 2b] 错误定位自校正 (Self-relocalization)
+-- 当里程计一致性校验发现一个"与里程计矛盾但分数极高"的全局匹配时，
+-- 不再直接拒绝，而是进入时间一致性确认。这样当机器人被错误定位在
+-- 相似结构、随后移动到有辨识度的位置时，能够自动纠正回正确位置。
+-- =====================================================
+POSE_GRAPH.constraint_builder.global_localization_relocalization_min_score = 0.70     -- 触发自校正所需的最低全局匹配分数
+
 -- POSE_GRAPH.constraint_builder.sampling_ratio = 0.05-- 约束构建
 POSE_GRAPH.constraint_builder.fast_correlative_scan_matcher.linear_search_window = 5.0
 POSE_GRAPH.constraint_builder.fast_correlative_scan_matcher.angular_search_window = math.rad(30.)
 POSE_GRAPH.constraint_builder.fast_correlative_scan_matcher.branch_and_bound_depth = 7
 
-POSE_GRAPH.constraint_builder.global_localization_min_score = 0.55 
+POSE_GRAPH.constraint_builder.global_localization_min_score = 0.55
 POSE_GRAPH.constraint_builder.min_score = 0.55
 
 POSE_GRAPH.constraint_builder.sampling_ratio = 0.3

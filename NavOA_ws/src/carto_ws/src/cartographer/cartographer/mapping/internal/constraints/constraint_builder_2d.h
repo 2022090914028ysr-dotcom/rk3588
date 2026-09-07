@@ -22,6 +22,8 @@
 #include <functional>
 #include <limits>
 #include <map>
+#include <set>
+#include <utility>
 #include <vector>
 
 #include "Eigen/Core"
@@ -54,6 +56,15 @@ transform::Rigid2d ComputeSubmapPose(const Submap2D& submap);
 // data) and passed by value into the asynchronous constraint computation so
 // that no mutable state is shared across threads.
 struct GlobalLocalizationOdometry {
+  // Whether the robot has been lifted (kidnap) since the last successful
+  // localization, as reported by the foot-contact / leg-odometry system.
+  bool kidnap_active = false;
+
+  // Whether the robot's feet are currently in contact with the ground. When
+  // 'kidnap_active' is true, a false value means the robot is still airborne
+  // (LIFTED) and a true value means it has been placed down again (RECOVERY).
+  bool robot_on_ground = true;
+
   // Whether a valid previous node and odometry interval are available. When
   // false the odometry gate is a no-op and the candidate is accepted.
   bool has_odometry = false;
@@ -152,6 +163,19 @@ class ConstraintBuilder2D {
   // Returns the number of consecutive finished nodes.
   int GetNumFinishedNodes();
 
+  // Returns true while a confident-but-odometry-inconsistent global match is
+  // being confirmed (a self-relocalization attempt after a wrong lock). The pose
+  // graph uses this to force full-submap global matches so the confirmation
+  // completes promptly instead of waiting on the sparse global_sampling_ratio.
+  bool RelocalizationInProgress();
+
+  // Returns true while a kidnap recovery is still unconfirmed (the robot has
+  // been placed back down but localization has not yet been re-established).
+  // The pose graph uses this to force full-submap global matches so the
+  // recovery confirmation completes promptly, even though the trajectories are
+  // still connected via a pre-kidnap loop closure.
+  bool RecoveryUnconfirmed();
+
   // Delete data related to 'submap_id'.
   void DeleteScanMatcher(const SubmapId& submap_id);
 
@@ -184,6 +208,30 @@ class ConstraintBuilder2D {
       ABSL_LOCKS_EXCLUDED(mutex_);
 
   void RunWhenDoneCallback() ABSL_LOCKS_EXCLUDED(mutex_);
+
+  // --- Kidnap-recovery temporal-confirmation helpers -----------------------
+  // These are guarded by recovery_mutex_ (distinct from mutex_) so a thread
+  // blocked on recovery_mutex_ never holds mutex_ and vice versa.
+
+  // Returns whether the localization has been re-confirmed after a kidnap, i.e.
+  // whether normal odometry-gated constraint checking should resume.
+  bool RecoveryConfirmed() ABSL_LOCKS_EXCLUDED(recovery_mutex_);
+
+  // Resets the recovery confirmation state (on LIFTED, or when leaving the
+  // recovery mode back to normal).
+  void ResetRecoveryConfirmation() ABSL_LOCKS_EXCLUDED(recovery_mutex_);
+
+  // Resets the self-relocalization confirmation state.
+  void ResetRelocalizationState() ABSL_LOCKS_EXCLUDED(relocalization_mutex_);
+
+  // Resolves the deferred full-submap (global) matches accumulated for each
+  // node since the last WhenDone. For every node it compares the best match
+  // across all submaps (not within a single submap), so a symmetric environment
+  // where several distinct rooms each produce one high-scoring peak is detected
+  // as ambiguous. Startup accepts only an unambiguous winner; recovery
+  // additionally requires temporal confirmation. Accepted matches are refined
+  // with Ceres and appended to *result.
+  void ResolvePendingGlobalMatches(Result* result) ABSL_LOCKS_EXCLUDED(mutex_);
 
   const constraints::proto::ConstraintBuilderOptions options_;
   common::ThreadPoolInterface* thread_pool_;
@@ -219,6 +267,49 @@ class ConstraintBuilder2D {
 
   // Histogram of scan matcher scores.
   common::Histogram score_histogram_ ABSL_GUARDED_BY(mutex_);
+
+  // Temporal-confirmation state for kidnap recovery.
+  struct RecoveryState {
+    bool confirmed = false;       // localization re-established after a kidnap.
+    bool hypothesis_set = false;  // a recovery candidate has been accepted.
+    transform::Rigid2d hypothesis = transform::Rigid2d::Identity();
+    int consecutive_count = 0;
+  };
+  absl::Mutex recovery_mutex_;
+  RecoveryState recovery_state_ ABSL_GUARDED_BY(recovery_mutex_);
+
+  // Temporal-confirmation state for self-relocalization after a wrong lock.
+  struct RelocalizationState {
+    bool active = false;  // an unconfirmed relocalization attempt is in flight.
+    bool hypothesis_set = false;
+    transform::Rigid2d hypothesis = transform::Rigid2d::Identity();
+    int consecutive_count = 0;
+  };
+  absl::Mutex relocalization_mutex_;
+  RelocalizationState relocalization_state_
+      ABSL_GUARDED_BY(relocalization_mutex_);
+
+  // Deferred full-submap (global) match candidates, aggregated across submaps
+  // at WhenDone so cross-submap ambiguity can be assessed. Filled on the
+  // constraint-computation threads, drained by ResolvePendingGlobalMatches.
+  struct PendingGlobalMatch {
+    NodeId node_id;
+    SubmapId submap_id;
+    float score = 0.f;
+    transform::Rigid2d pose_estimate = transform::Rigid2d::Identity();
+    const Submap2D* submap = nullptr;
+    const TrajectoryNode::Data* constant_data = nullptr;
+    bool recovery = false;       // recovery_unconfirmed (vs. initial localization).
+    bool relocalization = false;  // self-relocalization after a wrong lock.
+  };
+  std::vector<PendingGlobalMatch> pending_global_matches_ ABSL_GUARDED_BY(mutex_);
+
+  // NodeIds that produced at least one odometry-consistent full-submap global
+  // match in the current WhenDone cycle. A relocalization candidate for such a
+  // node is a symmetric-room fluke (the robot is tracking fine at its current
+  // place), not a genuine wrong-lock, so it must be suppressed.
+  std::set<NodeId> nodes_with_consistent_global_match_
+      ABSL_GUARDED_BY(mutex_);
 };
 
 }  // namespace constraints

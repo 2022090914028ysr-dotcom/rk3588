@@ -123,7 +123,9 @@
     <param name="odom_frame" value="odom" />
     <param name="footprint_frame" value="base_footprint" />
     <param name="flat_odom_topic" value="/SMX/Odom_flat" />
+    <!-- <remap from="/SMX/Odom_flat" to="odom" /> -->
   </node>
+
 
   <node pkg="NavOA_ros" name="multi_ultrasonic_scan" type="multi_ultrasonic_scan.py" output="screen" if="$(arg use_ultrasonic)" />
   <!-- Bridge /cmd_vel and IMU over /dev/ttyS6 to the other PC -->

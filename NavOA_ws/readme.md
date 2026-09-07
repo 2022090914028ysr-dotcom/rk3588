@@ -196,6 +196,16 @@ taskset -c 5,6,7 roslaunch cartographer_ros livox_2d.launch
 roslaunch NavOA_ros navoa_nav_only.launch
 
 roslaunch cartographer_ros cartographer_guard_imu_score.launch
+
+rosrun cartographer_ros carto_loger.py --only GlobalLoc,KIDNAP,STARTUP,MatchResult
+
+# just the kidnap/startup state machine (no odometry-gate noise)
+rosrun cartographer_ros carto_loger.py --only KIDNAP,STARTUP
+
+# just Stage-1 gate + diagnostic (what you ran before)
+rosrun cartographer_ros carto_loger.py --only GlobalLoc
+
+
 roslaunch lidar_ros lidar_full.launch
 
 roslaunch marl_mapping exploration.launch
@@ -204,6 +214,7 @@ roslaunch marl_mapping exploration.launch
 
 # 1. Restart sensors.launch (picks up existing config + new leg cov from remote)
 roslaunch runner sensors.launch
+
 roslaunch NavOA_ros scan_navoa.launch
 
 # 2. Record the five scenarios (same command as before)

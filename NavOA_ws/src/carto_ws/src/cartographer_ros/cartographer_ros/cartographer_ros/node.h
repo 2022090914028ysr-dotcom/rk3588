@@ -49,6 +49,7 @@
 #include "sensor_msgs/MultiEchoLaserScan.h"
 #include "sensor_msgs/NavSatFix.h"
 #include "sensor_msgs/PointCloud2.h"
+#include "sim2real_msg/KidnapStatus.h"
 #include "tf2_ros/transform_broadcaster.h"
 
 namespace cartographer_ros {
@@ -108,6 +109,7 @@ class Node {
       const sensor_msgs::MultiEchoLaserScan::ConstPtr& msg);
   void HandlePointCloud2Message(int trajectory_id, const std::string& sensor_id,
                                 const sensor_msgs::PointCloud2::ConstPtr& msg);
+  void HandleKidnapStatus(const sim2real_msg::KidnapStatus::ConstPtr& msg);
 
   // Serializes the complete Node state.
   void SerializeState(const std::string& filename,
@@ -193,6 +195,15 @@ class Node {
   // These ros::ServiceServers need to live for the lifetime of the node.
   std::vector<::ros::ServiceServer> service_servers_;
   ::ros::Publisher scan_matched_point_cloud_publisher_;
+  ::ros::Subscriber kidnap_status_subscriber_;
+
+  // Kidnap-status filtering state (guarded by mutex_). The raw on_ground value
+  // is torque-derived and can have occasional false positives/negatives, so the
+  // trusted state is only updated after kOnGroundConsecutiveThreshold
+  // consecutive identical readings.
+  bool trusted_on_ground_ ABSL_GUARDED_BY(mutex_) = true;
+  bool last_on_ground_ ABSL_GUARDED_BY(mutex_) = true;
+  int on_ground_consecutive_count_ ABSL_GUARDED_BY(mutex_) = 0;
 
   struct TrajectorySensorSamplers {
     TrajectorySensorSamplers(const double rangefinder_sampling_ratio,
