@@ -15,13 +15,13 @@
        before cartographer_node (and set options.publish_to_tf = false in the
        fast + slow localization .lua files so cartographer_node stops
        broadcasting map→odom itself). -->
-  <node name="localization_jump_guard" pkg="cartographer_ros"
+  <!-- <node name="localization_jump_guard" pkg="cartographer_ros"
         type="localization_jump_guard.py" output="screen">
     <param name="base_frame"           value="base_footprint"/>
     <param name="max_jump_translation" value="0.5"/>
     <param name="max_jump_rotation"    value="30.0"/>
     <param name="publish_rate"         value="100.0"/>
-  </node>
+  </node> -->
 
   <!-- cartographer_node loads the .pbstream and auto-starts a trajectory
        using the FAST Lua (livox_2d_localization_fast_reloc.lua). The
@@ -31,7 +31,7 @@
        the runtime score / offset / rotation guards. -->
   <node name="cartographer_node" pkg="cartographer_ros" type="cartographer_node"
         args="-configuration_directory $(find cartographer_ros)/configuration_files
-               -configuration_basename livox_2d_localization_fast_reloc.lua
+               -configuration_basename livox_2d_onehour_loc.lua
                -load_state_filename $(arg load_state_filename)" output="screen">
     <remap from="scan" to="/scan" />
     <!-- <remap from="odom" to="/odom" />                 EKF mode (default): fused odom -->

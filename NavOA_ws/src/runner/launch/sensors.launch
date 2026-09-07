@@ -147,13 +147,13 @@
   </node>
 
   <!-- NavOA navigation stack (move_base + velocity filter + status + goal timeout) -->
-  <!-- <include file="$(find NavOA_ros)/launch/navoa_nav_only.launch">
+  <include file="$(find NavOA_ros)/launch/navoa_nav_only.launch">
     <arg name="use_sim_time"       value="false"/>
     <arg name="enable_map_server"  value="false"/>
     <arg name="global_map_topic"   value="/map"/>
     <arg name="launch_rviz"        value="$(arg launch_rviz)"/>
 
-  </include> -->
+  </include>
   
   <node pkg = "rosbridge_server" type="rosbridge_websocket" name="rosbridge_websocket" output="screen">
     <param name="port" value="9090"/>

@@ -15,9 +15,9 @@
   <arg name="global_map_topic" default="/map"/>
   <arg name="move_base_cmd_topic" default="/move_base_cmd_vel"/>
   <!-- Navigation recovery: do not allow planning or local avoidance to hang forever. -->
-  <arg name="oscillation_timeout" default="15.0"/>
-  <arg name="oscillation_distance" default="0.15"/>
-  <arg name="max_planning_retries" default="3"/>
+  <arg name="oscillation_timeout" default="0.0"/>
+  <arg name="oscillation_distance" default="0.0"/>
+  <arg name="max_planning_retries" default="-1"/>
   <arg name="path_progress_timeout" default="25.0"/>
   <arg name="path_progress_distance" default="0.20"/>
   <arg name="path_replan_cooldown" default="5.0"/>
@@ -50,7 +50,7 @@
     <param name="planner_frequency" value="0.0" />
     <!-- Enable costmap recovery/replanning. Rotation recovery stays disabled
          because NavOA, rather than move_base cmd_vel, controls the robot. -->
-    <param name="recovery_behavior_enabled" value="true" />
+    <param name="recovery_behavior_enabled" value="false" />
     <param name="clearing_rotation_allowed" value="false" />
 
     <rosparam file="$(find NavOA_ros)/example/gazebo_limo/config/costmap_common_params.yaml" command="load" ns="global_costmap" />
