@@ -1,9 +1,9 @@
 global_costmap:
   global_frame: map
   robot_base_frame: base_link
-  update_frequency: 5.0
-  publish_frequency: 2.0
-  transform_tolerance: 1  
+  update_frequency: 5          # 5 → 1：全局层无需高频更新，省 CPU
+  publish_frequency: 5        # 2 → 1
+  transform_tolerance: 0.5
   
   
 
@@ -30,7 +30,7 @@ global_costmap:
   # blocked route.
   obstacle_layer:
     enabled: true
-    observation_sources: scan
+    observation_sources: scan depth_cloud
     footprint_clearing_enabled: true
     combination_method: 1
     scan:
@@ -45,14 +45,25 @@ global_costmap:
       observation_persistence: 0.0
       obstacle_range: 2.5
       raytrace_range: 3.0
-    
+    # 深度相机障碍物点云（ground_segmentation 已剔除地面），只标记；清除交给激光
+    depth_cloud:
+      data_type: PointCloud2
+      topic: /obstacle_points
+      marking: true
+      clearing: false
+      min_obstacle_height: 0.05
+      max_obstacle_height: 2.0
+      obstacle_range: 2.5
+      raytrace_range: 3.0
+      expected_update_rate: 0.0
+      observation_persistence: 0.0   # 全局层更新慢，持久期略长
     
   inflation_layer:
     # Match the local costmap.  The previous 0.35 m radius could surround the
     # robot with stale inflated costs even after the physical obstacle moved.
-    inflation_radius: 0.25
+    inflation_radius: 0.12
     cost_scaling_factor: 10.0
-    inscribed_radius: 0.15
+    inscribed_radius: 0.10
     
   # 可选：发布话题配置
   always_send_full_costmap: true  
