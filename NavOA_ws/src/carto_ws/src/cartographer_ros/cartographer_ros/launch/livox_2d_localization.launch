@@ -1,10 +1,10 @@
 <?xml version="1.0"?>
 <launch>
-  <arg name="load_state_filename" default="$(find cartographer_ros)/../../../map/meeting_room/legodom2.pbstream" />
+  <arg name="load_state_filename" default="$(find cartographer_ros)/../../../map/meeting_room/nav.pbstream" />
   <arg name="launch_rviz" default="true" />
   <param name="/use_sim_time" value="false" />
 
-  <arg name="map_file" default="$(find cartographer_ros)/../../../map/meeting_room/legodom2.yaml" />
+  <arg name="map_file" default="$(find cartographer_ros)/../../../map/meeting_room/nav.yaml" />
   <node name="map_server" pkg="map_server" type="map_server"
         args="$(arg map_file)" output="screen">
     <!-- map_server publishes on /map and /map_metadata by default -->

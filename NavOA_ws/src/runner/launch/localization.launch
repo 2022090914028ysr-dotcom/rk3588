@@ -16,9 +16,9 @@
 
   <!-- Map file paths (update these to match your saved map) -->
   <arg name="pbstream_file"
-       default="$(find cartographer_ros)/../../../map/meeting_room/legodom2.pbstream"/>
+       default="$(find cartographer_ros)/../../../map/meeting_room/nav.pbstream"/>
   <arg name="map_yaml"
-       default="$(find cartographer_ros)/../../../map/meeting_room/legodom2.yaml"/>
+       default="$(find cartographer_ros)/../../../map/meeting_room/nav.yaml"/>
   <arg name="cartographer_config"
        default="livox_2d_localization_fast_reloc.lua"/>
 
