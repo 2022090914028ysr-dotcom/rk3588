@@ -1,0 +1,57 @@
+# Loaded into BOTH costmap namespaces by navoa_nav_only.launch.
+# Laser and camera own separate grids: a laser cannot erase an object below its beam.
+obstacle_layer:
+  enabled: false
+  track_unknown_space: false
+  combination_method: 1
+  footprint_clearing_enabled: true
+  observation_sources: scan
+  scan:
+    data_type: LaserScan
+    topic: /scan
+    marking: true
+    clearing: true
+    inf_is_valid: true
+    min_obstacle_height: -0.2
+    max_obstacle_height: 2.0
+    obstacle_range: 4.5
+    raytrace_range: 5.0
+    observation_persistence: 0.0
+    expected_update_rate: 0.0
+
+depth_voxel_layer:
+  enabled: true
+  track_unknown_space: false
+  combination_method: 1
+  footprint_clearing_enabled: true
+  # Noetic supports at most 16 vertical voxels. Include the measured camera origin.
+  origin_z: -0.10
+  z_resolution: 0.15
+  z_voxels: 16
+  max_obstacle_height: 2.0
+  unknown_threshold: 15
+  mark_threshold: 0
+  publish_voxel_map: false
+  observation_sources: depth_mark depth_clear
+  depth_mark:
+    data_type: PointCloud2
+    topic: /obstacle_points
+    # Cloud retains the sensor frame: default observation origin is the camera.
+    marking: true
+    clearing: false
+    min_obstacle_height: -0.1
+    max_obstacle_height: 2.0
+    obstacle_range: 2.5
+    observation_persistence: 0.0
+    expected_update_rate: 0.0
+  depth_clear:
+    data_type: PointCloud2
+    topic: /depth/clearing_points
+    marking: false
+    clearing: true
+    # Do not discard floor/background endpoints before 3-D raytracing.
+    min_obstacle_height: -10.0
+    max_obstacle_height: 10.0
+    raytrace_range: 3.0
+    observation_persistence: 0.0
+    expected_update_rate: 0.0

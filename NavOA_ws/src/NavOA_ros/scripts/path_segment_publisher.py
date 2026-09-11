@@ -136,7 +136,7 @@ class PathToGoalFollower:
                 2.0, "Global planner returned an empty path (%d/%d).",
                 self.empty_plan_count, self.empty_plan_threshold)
             if self.empty_plan_count >= self.empty_plan_threshold:
-                self._trigger_replan('empty-global-plan', clear_costmaps=True)
+                self._trigger_replan('empty-global-plan', clear_costmaps=False)
             return
 
         self.empty_plan_count = 0

@@ -1,5 +1,6 @@
 <launch>
     <arg name="use_sim_time" default="false"/>
+    <arg name="use_depth_obstacles" default="false"/>
     <param name="use_sim_time" value="$(arg use_sim_time)"/>
     <!-- Ensure Python can import the embedded NavOA package -->
     <env name="PYTHONPATH" value="$(find NavOA_ros)/NavOA:$(optenv PYTHONPATH)"/>
@@ -90,7 +91,14 @@
       <param name="camscan_slow_distance" value="0.40" />
     </node>
 
-    <node name='NavOA_control' pkg="NavOA_ros" type="NavOA_node.py" output="screen" launch-prefix="python3">
+    <!-- NavOA uses cvxpy/torch from the project's control environment. Keep ROS
+         modules visible while avoiding the system Python that lacks cvxpy. -->
+    <node name='NavOA_control' pkg="NavOA_ros" type="NavOA_node.py" output="screen"
+          launch-prefix="$(env HOME)/miniconda3/envs/control/bin/python3">
+        <env name="PYTHONPATH" value="/opt/ros/noetic/lib/python3/dist-packages:$(env HOME)/Robit_SlamNav/NavOA_ws/src/NavOA_ros/src"/>
+      <param name="use_depth_obstacles" value="$(arg use_depth_obstacles)"/>
+      <param name="depth_obstacle_topic" value="/obstacle_points"/>
+      <param name="depth_obstacle_timeout" value="1.5"/>
       <param name="require_explicit_goal" value="true" />
       <param name="return_to_previous_goal_enabled" value="$(arg return_to_previous_goal_enabled)" />
       <param name="goal_timeout_button_enabled" value="$(arg goal_timeout_button_enabled)" />

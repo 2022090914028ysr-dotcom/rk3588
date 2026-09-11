@@ -19,6 +19,7 @@ import numpy as np
 import traceback
 from NavOA.util import get_transform
 import tf
+from depth_obstacle_input import DepthObstacleInput, merge_obstacles
 from std_msgs.msg import Float32, Bool, Int32MultiArray
 
 
@@ -212,6 +213,12 @@ class NavOA_core:
         )
 
         self.listener = tf.TransformListener()
+        self.depth_input = None
+        if rospy.get_param('~use_depth_obstacles', False):
+            self.depth_input = DepthObstacleInput(
+                self.listener, self.map_frame,
+                rospy.get_param('~depth_obstacle_topic', '/obstacle_points'),
+                float(rospy.get_param('~depth_obstacle_timeout', 1.5)))
 
         # subscriber
         rospy.Subscriber("/scan", LaserScan, self.scan_callback)
@@ -337,6 +344,15 @@ class NavOA_core:
                 r.sleep()
                 continue
 
+            depth_points = None
+            if self.depth_input is not None:
+                depth_points, depth_fresh = self.depth_input.snapshot(rospy.Time.now())
+                if not depth_fresh:
+                    rospy.logwarn_throttle(2.0, '[NavOA] Waiting for fresh depth observations; autonomous command held')
+                    self.vel_pub.publish(Twist())
+                    r.sleep()
+                    continue
+
             if self._publish_heading_alignment_if_needed():
                 r.sleep()
                 continue
@@ -347,7 +363,8 @@ class NavOA_core:
 
             # --- 增加异常捕获，防止规划器崩溃 ---
             try:
-                action, info = self.NavOA_planner(self.robot_state, self.obstacle_points)
+                obstacles = merge_obstacles(self.obstacle_points, depth_points)
+                action, info = self.NavOA_planner(self.robot_state, obstacles)
                 
                 self.stop = info["stop"]
                 self.arrive = info["arrive"]

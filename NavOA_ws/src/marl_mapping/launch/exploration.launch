@@ -24,7 +24,7 @@
   <arg name="idle_wait" default="1.0" />
   <arg name="post_reach_wait" default="2.5" />
   <arg name="min_frontier_size" default="5" />
-  <arg name="exploration_method" default="whitest" />
+  <arg name="exploration_method" default="nearest" />
   <arg name="inflation_cells" default="6" />
 
   <arg name="regional_explore" default="true" />

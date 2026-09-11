@@ -1,55 +1,21 @@
 local_costmap:
-  global_frame: map
+  # Odom is continuous through map->odom localization corrections.
+  global_frame: odom
   robot_base_frame: base_link
-  update_frequency: 5.0            # 10 → 5：降频省 CPU
-  publish_frequency: 2.0          # 10 → 2：降频省 CPU
-  transform_tolerance: 1
-
-
+  update_frequency: 5.0
+  publish_frequency: 2.0
+  transform_tolerance: 0.5
   static_map: false
   rolling_window: true
+  track_unknown_space: false
   width: 6.0
   height: 6.0
   resolution: 0.05
-
-
   plugins:
-
     - {name: obstacle_layer, type: "costmap_2d::ObstacleLayer"}
+    - {name: depth_voxel_layer, type: "costmap_2d::VoxelLayer"}
     - {name: inflation_layer, type: "costmap_2d::InflationLayer"}
-
-
-
-
-
-  obstacle_layer:
-    enabled: true
-    observation_sources: scan depth_cloud
-    scan:
-      data_type: LaserScan
-      topic: /scan
-      marking: true
-      clearing: true
-      inf_is_valid: true
-      max_obstacle_height: 2.0
-      min_obstacle_height: 0.0
-      expected_update_rate: 0
-      obstacle_range: 2.5
-      raytrace_range: 3.0
-    # 深度相机障碍物点云（ground_segmentation 已剔除地面），只标记；清除交给激光
-    depth_cloud:
-      data_type: PointCloud2
-      topic: /obstacle_points
-      marking: true
-      clearing: false
-      min_obstacle_height: 0.05
-      max_obstacle_height: 2.0
-      obstacle_range: 2.5
-      raytrace_range: 3.0
-      expected_update_rate: 0.0
-      observation_persistence: 0.3   # 短暂保留，丢帧即清除，避免幽灵障碍
-
   inflation_layer:
     enabled: true
-    inflation_radius: 0.25
-    cost_scaling_factor: 10.0
+    inflation_radius: 0.30
+    cost_scaling_factor: 8.0

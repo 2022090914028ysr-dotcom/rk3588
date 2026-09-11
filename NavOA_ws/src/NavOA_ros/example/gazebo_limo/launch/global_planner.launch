@@ -31,6 +31,8 @@
     <rosparam file="$(find NavOA_ros)/example/gazebo_limo/config/local_costmap_params.yaml" command="load" />
 
     <rosparam file="$(find NavOA_ros)/example/gazebo_limo/config/global_costmap_params.yaml" command="load" />
+    <rosparam file="$(find NavOA_ros)/example/gazebo_limo/config/depth_obstacle_layers.yaml" command="load" ns="global_costmap" />
+    <rosparam file="$(find NavOA_ros)/example/gazebo_limo/config/depth_obstacle_layers.yaml" command="load" ns="local_costmap" />
     <rosparam file="$(find NavOA_ros)/example/gazebo_limo/config/global_planner_params.yaml" command="load" />
     <rosparam file="$(find NavOA_ros)/param/base_local_planner_params.yaml" command="load" />
 

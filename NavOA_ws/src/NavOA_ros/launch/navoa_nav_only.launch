@@ -14,15 +14,20 @@
   <arg name="map_file" default="$(find cartographer_ros)/../../../map/meeting_room/nav.yaml" />
   <arg name="global_map_topic" default="/map"/>
   <arg name="move_base_cmd_topic" default="/move_base_cmd_vel"/>
+  <arg name="enable_depth_obstacles" default="true"/>
+  <arg name="use_depth_obstacles" default="false"/>
+  <arg name="publish_camera_tf" default="true"/>
+  <arg name="depth_stamp_mode" default="sensor"/>
+  <arg name="planner_frequency" default="1.0"/>
   <!-- Navigation recovery: do not allow planning or local avoidance to hang forever. -->
   <arg name="oscillation_timeout" default="0.0"/>
   <arg name="oscillation_distance" default="0.0"/>
   <arg name="max_planning_retries" default="-1"/>
-  <arg name="path_progress_timeout" default="25.0"/>
+  <arg name="path_progress_timeout" default="125.0"/>
   <arg name="path_progress_distance" default="0.20"/>
   <arg name="path_replan_cooldown" default="5.0"/>
-  <arg name="path_max_replan_attempts" default="3"/>
-  <arg name="empty_plan_threshold" default="3"/>
+  <arg name="path_max_replan_attempts" default="99"/>
+  <arg name="empty_plan_threshold" default="99"/>
   <arg name="path_segment_length" default="0.5"/>
   <arg name="path_reach_tolerance" default="0.25"/>
   <arg name="clear_costmaps_service" default="/move_base/clear_costmaps"/>
@@ -42,21 +47,19 @@
     <param name="max_planning_retries" value="$(arg max_planning_retries)" />
     <param name="transform_tolerance" value="1.0" />
     <param name="controller_frequency" value="5.0" />
-    <param name="controller_patience" value="15.0" />
+    <param name="controller_patience" value="130.0" />
     <param name="planner_patience" value="5.0" />
     <param name="base_global_planner" value="global_planner/GlobalPlanner" />
-    <!-- Plan on a new goal/recovery event instead of continuously refreshing
-         the global plan while NavOA is following split goals. -->
-    <param name="planner_frequency" value="0.0" />
-    <!-- Enable costmap recovery/replanning. Rotation recovery stays disabled
-         because NavOA, rather than move_base cmd_vel, controls the robot. -->
-    <param name="recovery_behavior_enabled" value="false" />
+    <param name="planner_frequency" value="$(arg planner_frequency)" />
+    <param name="recovery_behavior_enabled" value="true" />
     <param name="clearing_rotation_allowed" value="false" />
 
     <rosparam file="$(find NavOA_ros)/example/gazebo_limo/config/costmap_common_params.yaml" command="load" ns="global_costmap" />
     <rosparam file="$(find NavOA_ros)/example/gazebo_limo/config/costmap_common_params.yaml" command="load" ns="local_costmap" />
     <rosparam file="$(find NavOA_ros)/example/gazebo_limo/config/local_costmap_params.yaml" command="load" />
     <rosparam file="$(find NavOA_ros)/example/gazebo_limo/config/global_costmap_params.yaml" command="load" />
+    <rosparam file="$(find NavOA_ros)/example/gazebo_limo/config/depth_obstacle_layers.yaml" command="load" ns="global_costmap" />
+    <rosparam file="$(find NavOA_ros)/example/gazebo_limo/config/depth_obstacle_layers.yaml" command="load" ns="local_costmap" />
     <rosparam file="$(find NavOA_ros)/example/gazebo_limo/config/global_planner_params.yaml" command="load" />
     <rosparam file="$(find NavOA_ros)/param/base_local_planner_params.yaml" command="load" />
 
@@ -66,9 +69,14 @@
     <param name="global_costmap/static_layer/subscribe_to_updates" value="true" />
   </node>
 
+  <!-- Camera driver and localization still start externally. Source dut_ws too.
+       Set enable_depth_obstacles:=false if the detector is already running. -->
+
+
   <!-- NavOA control and path splitting, without localization bringup. -->
   <include file="$(find NavOA_ros)/example/gazebo_limo/launch/NavOA_gazebo_limo.launch">
     <arg name="use_sim_time" value="$(arg use_sim_time)"/>
+    <arg name="use_depth_obstacles" value="$(arg use_depth_obstacles)"/>
 
     <arg name="vel_filter_cmd_out_topic" value="/cmd_vel"/>
     <arg name="ultrasonic_evade_lateral_speed" value="0.5"/>
