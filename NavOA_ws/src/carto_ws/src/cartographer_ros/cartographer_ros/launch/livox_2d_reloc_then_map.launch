@@ -1,0 +1,79 @@
+<?xml version="1.0"?>
+<!--
+  livox_2d_reloc_then_map.launch
+
+  工作流：加载地图 -> 纯定位 15s -> 保存当前 map->base TF -> 无缝切换建图轨迹扩展地图。
+  由 reloc_then_map.py 状态机编排（单个 cartographer_node）。
+
+  cartographer_node 用 -start_trajectory_with_default_topics false 启动，
+  只加载 .pbstream 不自动建图；两条轨迹均由 /start_trajectory 服务按需启动
+  （livox_2d_reloc.lua -> livox_2d_map_continue.lua）。
+
+  运行状态：
+      rostopic echo /reloc_then_map/state
+      rostopic echo /reloc_then_map/status
+      rostopic echo /reloc_then_map/locked_pose     # 15s 时保存的 map 系位姿
+  控制：
+      rosservice call /reloc_then_map/save_map true  # 保存合并地图（旧图+新扩展）
+      rosservice call /reloc_then_map/proceed {}     # 跳过剩余定位时间 / 错误态重试
+-->
+<launch>
+  <arg name="load_state_filename" default="$(find cartographer_ros)/../../../map/meeting_room/meeting_room.pbstream" />
+  <arg name="configuration_directory" default="$(find cartographer_ros)/configuration_files" />
+  <arg name="configuration_basename"  default="livox_2d_reloc.lua" />
+  <arg name="launch_rviz" default="true" />
+  <arg name="output_dir" default="$(find cartographer_ros)/../../../map/meeting_room" />
+
+  <param name="/use_sim_time" value="false" />
+
+  <!-- ============================================================ -->
+  <!-- cartographer_node：加载地图，不自动启动轨迹                      -->
+  <!-- ============================================================ -->
+  <node name="cartographer_node" pkg="cartographer_ros" type="cartographer_node"
+        args="-configuration_directory $(arg configuration_directory)
+               -configuration_basename $(arg configuration_basename)
+               -load_state_filename $(arg load_state_filename)
+               -start_trajectory_with_default_topics false" output="screen">
+    <remap from="scan" to="/scan" />
+    <!-- EKF 模式（默认）：融合 odom -->
+    <!-- <remap from="odom" to="/odom" /> -->
+    <!-- rf2o-only：取消上面注释，注释下面 -->
+    <!-- <remap from="odom" to="/odom_rf2o" /> -->
+    <!-- 腿部里程计 -->
+    <remap from="odom" to="/SMX/Odom_flat" />
+  </node>
+
+  <!-- include_unfrozen_submaps=true：建图阶段 /map 实时显示扩展区域 -->
+  <node name="cartographer_occupancy_grid_node" pkg="cartographer_ros"
+        type="cartographer_occupancy_grid_node"
+        args="-resolution 0.05 -include_unfrozen_submaps=true" />
+
+  <!-- ============================================================ -->
+  <!-- 定位->建图 状态机控制器                                        -->
+  <!-- ============================================================ -->
+  <node pkg="cartographer_ros" type="reloc_then_map.py" name="reloc_then_map"
+        output="screen" respawn="true">
+
+    <param name="configuration_directory" value="$(arg configuration_directory)" />
+    <param name="reloc_config" value="livox_2d_reloc.lua" />
+    <param name="map_config"   value="livox_2d_map_continue.lua" />
+
+    <param name="output_dir" value="$(arg output_dir)" />
+    <param name="output_name" value="map_continued" />
+    <param name="auto_save_on_exit" value="false" />
+
+    <!-- 定位时长：15s 后保存当前 TF 并切换建图 -->
+    <param name="localize_seconds" value="15.0" />
+    <param name="tracking_frame" value="base_footprint" />
+    <param name="tf_timeout" value="1.0" />
+
+    <!-- 可选初始位姿（map 系），加速定位。取消注释并按需设置：
+    <param name="initial_pose_x"      value="0.0" />
+    <param name="initial_pose_y"      value="0.0" />
+    <param name="initial_pose_yaw_deg" value="0.0" />
+    -->
+  </node>
+
+  <node if="$(arg launch_rviz)" name="rviz" pkg="rviz" type="rviz" required="false"
+        args="-d $(find cartographer_ros)/configuration_files/demo_2d.rviz" />
+</launch>

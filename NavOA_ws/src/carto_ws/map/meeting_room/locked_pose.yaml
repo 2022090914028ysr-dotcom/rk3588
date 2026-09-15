@@ -1,0 +1,5 @@
+map_frame: map
+tracking_frame: base_footprint
+x: 0.002305
+y: -0.002496
+yaw_deg: 0.0983
