@@ -75,8 +75,8 @@
       <param name="enable_ultrasonic_bumper" value="true" />
       <param name="ultrasonic_stop_distance" value="0.16" />
       <param name="ultrasonic_slow_distance" value="0.16" />
-      <param name="ultrasonic_side_stop_distance" value="0.13" />
-      <param name="ultrasonic_blend_distance" value="0.13" />
+      <param name="ultrasonic_side_stop_distance" value="0.35" />
+      <param name="ultrasonic_blend_distance" value="0.20" />
       <param name="ultrasonic_evade_lateral_speed" value="$(arg ultrasonic_evade_lateral_speed)" />
       <param name="ultrasonic_linear_evade" value="true" />
       <param name="reverse_side_stop_distance" value="$(arg reverse_side_stop_distance)" />

@@ -80,7 +80,7 @@ TRAJECTORY_BUILDER.pure_localization_trimmer = {
   max_submaps_to_keep = 3,  -- 10 个 node 一个子图，3 个子图相当于保留 30 个 node，每个node 0.2 秒钟，保留 6 秒钟的历史数据，足够进行局部匹配和重定位
 }
 MAP_BUILDER.num_background_threads = 4    -- 增加后台线程数（根据CPU核心数调整）
-POSE_GRAPH.global_sampling_ratio = 0.02   -- 发生全局匹配的概率，0-1之间，值越大，发生全局匹配的概率越高。0.1 表示 10% 的概率进行全局匹配。
+POSE_GRAPH.global_sampling_ratio = 0.1   -- 发生全局匹配的概率，0-1之间，值越大，发生全局匹配的概率越高。0.1 表示 10% 的概率进行全局匹配。
 POSE_GRAPH.optimize_every_n_nodes = 2  -- 每插入 2 个 node 就进行一次全局优化，增加频率可以更快地修正位姿，但过高可能增加计算负担，适当调整以平衡速度和精度.
 TRAJECTORY_BUILDER_2D.submaps.num_range_data = 30     -- 30 个 node 完成一个子图，多一些更稳定。
 
@@ -102,7 +102,7 @@ POSE_GRAPH.constraint_builder.fast_correlative_scan_matcher.angular_search_windo
 POSE_GRAPH.constraint_builder.fast_correlative_scan_matcher.branch_and_bound_depth = 12 -- 深度9，平衡精度与速度
 
 -- global 触发后相关参数 
-POSE_GRAPH.global_constraint_search_after_n_seconds = 10-- 如果 5 秒没有成功匹配过，5秒后强制进行一次全局约束搜索，帮助快速发现丢失并重定位
+POSE_GRAPH.global_constraint_search_after_n_seconds = 3-- 如果 5 秒没有成功匹配过，5秒后强制进行一次全局约束搜索，帮助快速发现丢失并重定位
 
 -- local 触发后相关参数
 -- 重定位分数阈值（降低阈值更容易匹配成功）
