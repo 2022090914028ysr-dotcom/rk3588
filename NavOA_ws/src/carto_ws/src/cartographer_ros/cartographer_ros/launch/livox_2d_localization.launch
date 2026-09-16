@@ -46,8 +46,8 @@
     <remap from="map" to="/carto_submap_viz" />
   </node>
 
-  <node if="$(arg launch_rviz)" name="rviz" pkg="rviz" type="rviz" required="true"
-      args="-d $(find cartographer_ros)/configuration_files/demo_2d.rviz" />
+  <!-- <node if="$(arg launch_rviz)" name="rviz" pkg="rviz" type="rviz" required="true"
+      args="-d $(find cartographer_ros)/configuration_files/demo_2d.rviz" /> -->
     
         
 </launch>

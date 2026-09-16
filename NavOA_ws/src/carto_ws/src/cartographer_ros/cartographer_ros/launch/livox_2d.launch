@@ -22,7 +22,7 @@
 
  <include file="$(find rf2o_laser_odometry)/launch/rf2o_laser_odometry.launch" />
  
- <node pkg="NavOA_ros" name="multi_ultrasonic_scan" type="multi_ultrasonic_scan.py" output="screen" /> -->
+ <node pkg="NavOA_ros" name="multi_ultrasonic_scan" type="multi_ultrasonic_scan" output="screen" /> -->
 
   <node name="cartographer_node" pkg="cartographer_ros" type="cartographer_node" 
         args="-configuration_directory $(find cartographer_ros)/configuration_files

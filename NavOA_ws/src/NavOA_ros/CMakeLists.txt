@@ -17,10 +17,15 @@ find_package(catkin REQUIRED COMPONENTS
   std_srvs
   actionlib_msgs
   tf
+  tf2_ros
+  tf2_geometry_msgs
   rosgraph_msgs
   cartographer_ros_msgs
   dynamic_reconfigure
 )
+
+find_package(Boost REQUIRED COMPONENTS system)
+find_package(Threads REQUIRED)
 
 ## System dependencies are found with CMake's conventions
 # find_package(Boost REQUIRED COMPONENTS system)
@@ -128,6 +133,20 @@ include_directories(
   ${catkin_INCLUDE_DIRS}
 )
 
+## C++ executables (ports of the Python nodes; the launch files now start
+## these instead of the .py scripts)
+add_executable(vel_filter src/vel_filter.cpp)
+add_executable(multi_ultrasonic_scan src/multi_ultrasonic_scan.cpp)
+add_executable(path_segment_publisher src/path_segment_publisher.cpp)
+
+add_dependencies(vel_filter ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+add_dependencies(multi_ultrasonic_scan ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+add_dependencies(path_segment_publisher ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+
+target_link_libraries(vel_filter ${catkin_LIBRARIES})
+target_link_libraries(multi_ultrasonic_scan ${catkin_LIBRARIES} ${Boost_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT})
+target_link_libraries(path_segment_publisher ${catkin_LIBRARIES} ${Boost_LIBRARIES})
+
 ## Declare a C++ library
 # add_library(${PROJECT_NAME}
 #   src/${PROJECT_NAME}/NavOA_ros.cpp
@@ -188,6 +207,11 @@ catkin_install_python(PROGRAMS
   scripts/imu_mux.py
   scripts/multi_ultrasonic_scan.py
   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+)
+
+## Install C++ executables
+install(TARGETS vel_filter multi_ultrasonic_scan path_segment_publisher
+  RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
 
 ## Mark executables for installation

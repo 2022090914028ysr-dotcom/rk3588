@@ -79,7 +79,7 @@
     <arg name="use_depth_obstacles" value="$(arg use_depth_obstacles)"/>
 
     <arg name="vel_filter_cmd_out_topic" value="/cmd_vel"/>
-    <arg name="ultrasonic_evade_lateral_speed" value="0.3"/>
+    <arg name="ultrasonic_evade_lateral_speed" value="0.2"/>
     <arg name="return_to_previous_goal_enabled" value="false"/>
     <arg name="path_progress_timeout" value="$(arg path_progress_timeout)"/>
     <arg name="path_progress_distance" value="$(arg path_progress_distance)"/>

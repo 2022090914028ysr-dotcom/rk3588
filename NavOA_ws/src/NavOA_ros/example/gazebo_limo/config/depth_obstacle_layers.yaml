@@ -11,7 +11,7 @@ stvl_layer:
 
   # 时间衰减（核心）
   decay_model: 0        # 0=linear, 1=exponential, 2=publish（以你的版本枚举为准）
-  voxel_decay: 0.5      # 秒；看不到 0.3s 后开始衰减
+  voxel_decay: 5      # 秒；看不到 0.3s 后开始衰减
 
   # 观测源
   observation_sources: depth_mark depth_clear

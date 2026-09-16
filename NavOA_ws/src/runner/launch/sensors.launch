@@ -121,7 +121,7 @@
 
   
   
-  <node pkg="NavOA_ros" name="multi_ultrasonic_scan" type="multi_ultrasonic_scan.py" output="screen" if="$(arg use_ultrasonic)" />
+  <node pkg="NavOA_ros" name="multi_ultrasonic_scan" type="multi_ultrasonic_scan" output="screen" if="$(arg use_ultrasonic)" />
   <!-- Bridge /cmd_vel and IMU over /dev/ttyS6 to the other PC -->
   <!-- <node pkg="NavOA_ros" type="serial_cmd_vel_imu_bridge.py" name="serial_cmd_vel_imu_bridge" output="screen">
     <param name="serial_port" value="/dev/ttyS1" />

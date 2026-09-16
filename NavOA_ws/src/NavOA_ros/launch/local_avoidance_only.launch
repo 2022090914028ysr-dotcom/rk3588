@@ -23,7 +23,7 @@
   <!-- Optional scan merger (/scan + /Ultrasound_scan -> /merged_scan) -->
   <include if="$(arg use_merged_scan)" file="$(find NavOA_ros)/example/gazebo_limo/launch/merged.launch" />
 
-  <node name="vel_filter" pkg="NavOA_ros" type="vel_filter.py" output="screen" launch-prefix="python3">
+  <node name="vel_filter" pkg="NavOA_ros" type="vel_filter" output="screen">
     <param name="scan_topic" value="$(arg scan_topic)" />
     <param name="cmd_in_topic" value="$(arg cmd_in_topic)" />
     <param name="cmd_out_topic" value="$(arg cmd_out_topic)" />

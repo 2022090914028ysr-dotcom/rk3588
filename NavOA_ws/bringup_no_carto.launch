@@ -31,7 +31,7 @@
   <node name="map_server" pkg="map_server" type="map_server"
         args="$(arg map_file)" output="screen" />
 
-  <node pkg="NavOA_ros" name="multi_ultrasonic_scan" type="multi_ultrasonic_scan.py" output="screen" />
+  <node pkg="NavOA_ros" name="multi_ultrasonic_scan" type="multi_ultrasonic_scan" output="screen" />
   
   <!-- <node if="$(arg launch_rviz)" name="rviz" pkg="rviz" type="rviz" required="false"
       args="-d $(find cartographer_ros)/configuration_files/demo_2d.rviz" /> -->
