@@ -59,7 +59,6 @@
     <rosparam file="$(find NavOA_ros)/example/gazebo_limo/config/local_costmap_params.yaml" command="load" />
     <rosparam file="$(find NavOA_ros)/example/gazebo_limo/config/global_costmap_params.yaml" command="load" />
     <rosparam file="$(find NavOA_ros)/example/gazebo_limo/config/depth_obstacle_layers.yaml" command="load" ns="global_costmap" />
-    <rosparam file="$(find NavOA_ros)/example/gazebo_limo/config/depth_obstacle_layers.yaml" command="load" ns="local_costmap" />
     <rosparam file="$(find NavOA_ros)/example/gazebo_limo/config/global_planner_params.yaml" command="load" />
     <rosparam file="$(find NavOA_ros)/param/base_local_planner_params.yaml" command="load" />
 
@@ -79,7 +78,7 @@
     <arg name="use_depth_obstacles" value="$(arg use_depth_obstacles)"/>
 
     <arg name="vel_filter_cmd_out_topic" value="/cmd_vel"/>
-    <arg name="ultrasonic_evade_lateral_speed" value="0.2"/>
+    <arg name="ultrasonic_evade_lateral_speed" value="0.07"/>
     <arg name="return_to_previous_goal_enabled" value="false"/>
     <arg name="path_progress_timeout" value="$(arg path_progress_timeout)"/>
     <arg name="path_progress_distance" value="$(arg path_progress_distance)"/>

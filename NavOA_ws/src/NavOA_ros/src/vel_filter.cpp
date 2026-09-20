@@ -58,7 +58,10 @@ public:
     wz_scale_ = pnh_.param("wz_scale", 1.0);
 
     enable_auto_reverse_ = pnh_.param("enable_auto_reverse", false);
-    auto_reverse_speed_ = pnh_.param("auto_reverse_speed", -0.1);
+    front_reverse_trigger_distance_ = pnh_.param("front_reverse_trigger_distance", 0.25);
+    front_reverse_duration_ = pnh_.param("front_reverse_duration", 1.0);
+    front_reverse_pause_duration_ = pnh_.param("front_reverse_pause_duration", 0.5);
+    front_reverse_speed_ = pnh_.param("front_reverse_speed", -0.5);
 
     stop_turn_when_forward_blocked_ = pnh_.param("stop_turn_when_forward_blocked", true);
 
@@ -86,9 +89,6 @@ public:
     ultrasonic_evade_lateral_speed_ = pnh_.param("ultrasonic_evade_lateral_speed", 0.10);
     ultrasonic_linear_evade_ = pnh_.param("ultrasonic_linear_evade", true);
     ultrasonic_timeout_ = ros::Duration(pnh_.param("ultrasonic_timeout", 1.0));
-
-    reverse_side_stop_distance_ = pnh_.param("reverse_side_stop_distance", 0.35);
-    reverse_side_hold_duration_ = pnh_.param("reverse_side_hold_duration", 0.5);
 
     enable_camscan_bias_ = pnh_.param("enable_camscan_bias", true);
     camscan_topic_ = pnh_.param<std::string>("camscan_topic", "/camscan");
@@ -123,9 +123,8 @@ public:
     _forward_stop_latched_ = false;
     _last_turn_sign_ = 1.0;
     _last_mode_ = "idle";
-    _reverse_last_vy_ = 0.0;
-    _reverse_hold_until_ = ros::Time(0);
-    _reverse_evade_vy_ = 0.0;
+    _front_rev_state_ = FRONT_REV_IDLE;
+    _front_rev_until_ = ros::Time(0);
 
     cmd_sub_ = nh_.subscribe(cmd_in_topic_, 10, &VelocityFilter::callback, this);
     scan_sub_ = nh_.subscribe(scan_topic_, 10, &VelocityFilter::scan_callback, this);
@@ -479,6 +478,51 @@ private:
     return std::fabs(ultrasonic_evade_lateral_speed_) * std::max(0.0, std::min(1.0, scale));
   }
 
+  // Front-triggered timed reverse: when the front ultrasonic distance drops
+  // below front_reverse_trigger_distance_, reverse at front_reverse_speed_ for
+  // front_reverse_duration_ seconds, then hold still for
+  // front_reverse_pause_duration_ seconds before normal filtering resumes.
+  void apply_front_timed_reverse(geometry_msgs::Twist& twist, std::string& mode,
+                                 double d_front_us)
+  {
+    if (!enable_auto_reverse_ || !allow_reverse_)
+      return;
+
+    ros::Time now = ros::Time::now();
+    if (_front_rev_state_ == FRONT_REV_IDLE)
+    {
+      if (std::isfinite(d_front_us) && d_front_us < front_reverse_trigger_distance_)
+      {
+        _front_rev_state_ = FRONT_REV_REVERSING;
+        _front_rev_until_ = now + ros::Duration(front_reverse_duration_);
+      }
+    }
+    if (_front_rev_state_ == FRONT_REV_REVERSING && now >= _front_rev_until_)
+    {
+      _front_rev_state_ = FRONT_REV_PAUSE;
+      _front_rev_until_ = now + ros::Duration(front_reverse_pause_duration_);
+    }
+    else if (_front_rev_state_ == FRONT_REV_PAUSE && now >= _front_rev_until_)
+    {
+      _front_rev_state_ = FRONT_REV_IDLE;
+    }
+
+    if (_front_rev_state_ == FRONT_REV_REVERSING)
+    {
+      twist.linear.x = -std::fabs(front_reverse_speed_);
+      twist.linear.y = 0.0;
+      twist.angular.z = 0.0;
+      mode = "us_timed_reverse";
+    }
+    else if (_front_rev_state_ == FRONT_REV_PAUSE)
+    {
+      twist.linear.x = 0.0;
+      twist.linear.y = 0.0;
+      twist.angular.z = 0.0;
+      mode = "us_timed_reverse_pause";
+    }
+  }
+
   // Ultrasonic + camscan virtual bumper with active evasion.
   void apply_ultrasonic_bumper(geometry_msgs::Twist& twist, std::string& mode)
   {
@@ -489,6 +533,11 @@ private:
     double d_front = us_get_valid("front");
     double d_left = us_get_valid("left");
     double d_right = us_get_valid("right");
+
+    // ---- front timed reverse (highest priority) ----
+    apply_front_timed_reverse(twist, mode, d_front);
+    if (mode != "pass_through")
+      return;
 
     bool cam_front_only = false;
     if (enable_camscan_bumper_)
@@ -522,16 +571,6 @@ private:
     // ---- no trigger: maybe just slow-down ----
     if (!(front_blocked || left_blocked || right_blocked))
     {
-      _reverse_evade_vy_ = 0.0;
-      ros::Time now = ros::Time::now();
-      if (reverse_side_stop_distance_ > 0.0 && now < _reverse_hold_until_ &&
-          std::fabs(_reverse_last_vy_) > 0.001)
-      {
-        twist.linear.y = _reverse_last_vy_;
-        mode = "us_reverse_hold";
-        return;
-      }
-
       if (std::isfinite(d_front) && d_front < eff_slow_dist)
       {
         if (twist.linear.x > 0.0)
@@ -549,55 +588,14 @@ private:
     }
 
     // ---- determine evasive action ----
+    // Front blocks normally drive the timed reverse state machine above; this
+    // branch is only reached when auto reverse is disabled (or reverse is not
+    // allowed), or when only the camscan sees a close front obstacle.
     if (front_blocked)
     {
-      if (enable_auto_reverse_ && allow_reverse_)
-      {
-        double orig_wz = twist.angular.z;
-        twist.linear.x = -std::fabs(auto_reverse_speed_);
-        twist.angular.z = 0.0;
-        mode = cam_front_only ? "cam_reverse" : "us_reverse";
-
-        if (reverse_side_stop_distance_ > 0.0)
-        {
-          if (std::fabs(_reverse_evade_vy_) < 0.001)
-          {
-            bool rev_left = std::isfinite(d_left) && d_left < reverse_side_stop_distance_;
-            bool rev_right = std::isfinite(d_right) && d_right < reverse_side_stop_distance_;
-            double lat = std::fabs(ultrasonic_evade_lateral_speed_);
-            if (rev_left && rev_right)
-              _reverse_evade_vy_ = (d_right > d_left) ? lat : -lat;
-            else if (rev_left)
-              _reverse_evade_vy_ = lat;
-            else if (rev_right)
-              _reverse_evade_vy_ = -lat;
-            else
-            {
-              if (orig_wz > 0.03)
-                _reverse_evade_vy_ = lat;
-              else if (orig_wz < -0.03)
-                _reverse_evade_vy_ = -lat;
-            }
-          }
-          twist.linear.y = _reverse_evade_vy_;
-
-          if (_reverse_evade_vy_ > 0.001 && std::isfinite(d_right) &&
-              d_right < ultrasonic_side_stop_distance_)
-            twist.linear.y = 0.0;
-          else if (_reverse_evade_vy_ < -0.001 && std::isfinite(d_left) &&
-                   d_left < ultrasonic_side_stop_distance_)
-            twist.linear.y = 0.0;
-        }
-
-        _reverse_last_vy_ = twist.linear.y;
-        _reverse_hold_until_ = ros::Time::now() + ros::Duration(reverse_side_hold_duration_);
-      }
-      else
-      {
-        twist.linear.x = 0.0;
-        twist.angular.z = 0.0;
-        mode = cam_front_only ? "cam_front_stop" : "us_front_stop";
-      }
+      twist.linear.x = 0.0;
+      twist.angular.z = 0.0;
+      mode = cam_front_only ? "cam_front_stop" : "us_front_stop";
     }
     else if (left_blocked && right_blocked)
     {
@@ -736,7 +734,8 @@ private:
   bool pivot_at_max_angular_speed_;
   double wz_scale_;
   bool enable_auto_reverse_;
-  double auto_reverse_speed_;
+  double front_reverse_trigger_distance_, front_reverse_duration_;
+  double front_reverse_pause_duration_, front_reverse_speed_;
   bool stop_turn_when_forward_blocked_;
   bool enable_free_space_steer_;
   double steer_scan_half_angle_, steer_deadzone_, steer_gain_, steer_max_angular_;
@@ -749,7 +748,6 @@ private:
   double ultrasonic_blend_distance_, ultrasonic_evade_forward_speed_, ultrasonic_evade_lateral_speed_;
   bool ultrasonic_linear_evade_;
   ros::Duration ultrasonic_timeout_;
-  double reverse_side_stop_distance_, reverse_side_hold_duration_;
   bool enable_camscan_bias_, enable_camscan_bumper_;
   std::string camscan_topic_, raw_scan_topic_;
   double camscan_front_threshold_, camscan_bias_gain_, camscan_stop_distance_, camscan_slow_distance_;
@@ -767,8 +765,15 @@ private:
   bool _has_valid_cmd_, _timeout_published_, _steer_block_latched_, _forward_stop_latched_;
   double _last_turn_sign_;
   std::string _last_mode_;
-  double _reverse_last_vy_, _reverse_evade_vy_;
-  ros::Time _reverse_hold_until_;
+
+  enum FrontReverseState
+  {
+    FRONT_REV_IDLE,
+    FRONT_REV_REVERSING,
+    FRONT_REV_PAUSE
+  };
+  FrontReverseState _front_rev_state_;
+  ros::Time _front_rev_until_;
 
   // ---- ros handles ----
   ros::Subscriber cmd_sub_, scan_sub_, us_front_sub_, us_left_sub_, us_right_sub_;

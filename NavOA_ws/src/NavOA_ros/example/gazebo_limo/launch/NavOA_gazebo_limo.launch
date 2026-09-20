@@ -29,9 +29,11 @@
     <arg name="heading_align_kp" default="1.2"/>
     <arg name="heading_align_min_distance" default="0.30"/>
     <arg name="vel_filter_cmd_out_topic" default="/cmd_vel"/>
-    <arg name="ultrasonic_evade_lateral_speed" default="0.2"/>
-    <arg name="reverse_side_stop_distance" default="0.25"/>
-    <arg name="reverse_side_hold_duration" default="2.5"/>
+    <arg name="ultrasonic_evade_lateral_speed" default="0.15"/>
+    <arg name="front_reverse_trigger_distance" default="0.23"/>
+    <arg name="front_reverse_duration" default="1.0"/>
+    <arg name="front_reverse_pause_duration" default="0.5"/>
+    <arg name="front_reverse_speed" default="-0.3"/>
 
     <!-- Path-level recovery shared by manual navigation and exploration. -->
     <arg name="path_progress_timeout" default="25.0"/>
@@ -79,10 +81,11 @@
       <param name="ultrasonic_blend_distance" value="0.20" />
       <param name="ultrasonic_evade_lateral_speed" value="$(arg ultrasonic_evade_lateral_speed)" />
       <param name="ultrasonic_linear_evade" value="false" />
-      <param name="reverse_side_stop_distance" value="$(arg reverse_side_stop_distance)" />
-      <param name="reverse_side_hold_duration" value="$(arg reverse_side_hold_duration)" />
       <param name="enable_auto_reverse" value="true" />
-      <param name="auto_reverse_speed" value="-0.5" />
+      <param name="front_reverse_trigger_distance" value="$(arg front_reverse_trigger_distance)" />
+      <param name="front_reverse_duration" value="$(arg front_reverse_duration)" />
+      <param name="front_reverse_pause_duration" value="$(arg front_reverse_pause_duration)" />
+      <param name="front_reverse_speed" value="$(arg front_reverse_speed)" />
       <param name="enable_camscan_bias" value="false" />
       <param name="camscan_front_threshold" value="0.50" />
       <param name="camscan_bias_gain" value="0.50" />

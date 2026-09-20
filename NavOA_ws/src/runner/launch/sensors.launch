@@ -19,7 +19,13 @@
       <param name="confiPath"    type="str" value="$(arg argPath)"/>
       <param name="color_pcl"    type="boolean" value="false"/>
       <param name="pub_mono8"    type="boolean" value="false"/>
-      <param name="pub_tfTree"   type="boolean" value="true"/>
+      <!-- pub_tfTree=false: the driver's own camera_link_0 -> ascamera_hp60c_depth_0
+           TF is an orphan tree (camera_link_0 has no parent) and competes with the
+           calibrated base_link -> ascamera_hp60c_depth_0 static TF published by
+           obstacle_detection.launch. Two parents for one frame intermittently splits
+           the TF graph, so ground_segmentation drops frames with "two or more
+           unconnected trees". Keep a single parent (base_link) only. -->
+      <param name="pub_tfTree"   type="boolean" value="false"/>
     </node>
 
   <!--  <node pkg="ascamera" name="depth_to_laserscan" type="depth_to_laserscan.py" output="screen">

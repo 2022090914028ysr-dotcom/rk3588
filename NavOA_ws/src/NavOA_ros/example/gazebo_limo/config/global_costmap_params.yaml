@@ -1,7 +1,10 @@
 global_costmap:
   global_frame: map
   robot_base_frame: base_link
-  update_frequency: 1.0
+  # 2Hz: GlobalPlanner 是进程内插件,直接读 costmap,update_frequency 即障碍标记
+  # 进入规划视野的延迟上限(1Hz≈1s → 2Hz≈500ms)。经用户确认覆盖原 1Hz 约束;
+  # 带宽开销不变(publish 保持 1Hz 全图发布,订阅者仅 RViz)。
+  update_frequency: 2
   publish_frequency: 1.0
   transform_tolerance: 0.5
 
@@ -24,8 +27,14 @@ global_costmap:
 
   inflation_layer:
     enabled: true
-    # >= circumscribed radius of the 0.30 x 0.30 m footprint
-    inflation_radius: 0.10
-    cost_scaling_factor: 8.0
+    # 走廊居中规划的关键:膨胀梯度要延伸到远离障碍的区域,势能谷底才会落在
+    # 两侧障碍的正中间。footprint 0.36x0.36 → 内切半径 0.18/外接 0.255,
+    # 原 0.10 连内切半径都不到(贴边路径几何不安全),且 10cm 外代价场是平的,
+    # planner 无论 cost_factor 多大都只会走几何最短的贴边路径。
+    # 0.55m + csf 3.0: 距障碍 0.25m 代价 ~205、0.40m ~132、0.55m ~83,
+    # 配合 GlobalPlanner cost_factor=5,路径明显被推向走廊中线。
+    # 想更"居中"可继续加大半径(如 0.8~1.0)或把 csf 降到 2.5。
+    inflation_radius: 0.25
+    cost_scaling_factor: 2
 
   always_send_full_costmap: true

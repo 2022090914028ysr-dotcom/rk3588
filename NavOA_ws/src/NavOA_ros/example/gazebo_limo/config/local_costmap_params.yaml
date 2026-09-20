@@ -2,8 +2,11 @@ local_costmap:
   # Odom 在 map->odom 定位修正期间保持连续
   global_frame: odom
   robot_base_frame: base_link
-  update_frequency: 5.0
-  publish_frequency: 2.0
+  # 局部避障由 NavOA 直接融合 /obstacle_points 完成,move_base 的 cmd_vel 已重映射到
+  # 虚拟话题;local costmap 无任何外部订阅者。update/publish 置 0 关闭其定时器,
+  # 省下的 CPU 让给 global costmap 的 3Hz 更新。如需恢复改为 5.0/5.0。
+  update_frequency: 0.0
+  publish_frequency: 0.0
   transform_tolerance: 0.5
 
   static_map: false
@@ -16,7 +19,6 @@ local_costmap:
 
   plugins:
     - {name: obstacle_layer,  type: "costmap_2d::ObstacleLayer"}
-    - {name: stvl_layer,      type: "spatio_temporal_voxel_layer/SpatioTemporalVoxelLayer"}
     - {name: inflation_layer, type: "costmap_2d::InflationLayer"}
 
   obstacle_layer:
