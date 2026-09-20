@@ -1,0 +1,55 @@
+<launch>
+  <arg name="input_pointcloud_topic" default="/ascamera_hp60c/depth0/points"/>
+  <arg name="publish_camera_tf" default="true"/>
+  <!-- HP60C point cloud header is ascamera_hp60c_depth_0 on this robot. -->
+  <!-- The camera owns camera_link -> depth_0; connect the base to camera_link. -->
+  <arg name="camera_frame" default="ascamera_hp60c_ascamera_0"/>
+  <arg name="stamp_mode" default="sensor"/>
+  <!-- Existing extrinsics retained; disable this publisher if URDF owns the TF. -->
+  <node if="$(arg publish_camera_tf)" pkg="tf2_ros" type="static_transform_publisher"
+        name="base_link_to_camera"
+        args="0.10 0.00 -0.09 -1.5708 0.0 -1.8108 base_link $(arg camera_frame)"/>
+  <node name="ground_segmentation" pkg="depth_obstacle_detector"
+        type="ground_segmentation_node" output="screen">
+    <env name="OPENBLAS_NUM_THREADS" value="1"/>
+    <env name="OMP_NUM_THREADS" value="1"/>
+    <param name="input_pointcloud_topic" value="$(arg input_pointcloud_topic)"/>
+    <param name="target_frame" value="map"/>
+    <param name="temporal_frame" value="odom"/>
+    <param name="stamp_mode" value="$(arg stamp_mode)"/>
+    <param name="height_min" value="0.11"/>
+    <!-- LiDAR scans at about 0.45 m. Depth is the complementary low-obstacle
+         source, so exclude tall walls/furniture already represented by LiDAR.
+         This prevents the 100-point DUNE budget from being consumed twice and
+         avoids projecting a full 3-D facade into a false 2-D wall. -->
+    <param name="height_max" value="0.40"/>
+    <param name="ground_search_height" value="0.10"/>
+    <param name="distance_threshold" value="0.025"/>
+    <param name="min_range" value="0.15"/>
+    <param name="max_range" value="2.5"/>
+    <!-- Legacy costmap clearing is disabled below; keep the crop wide enough
+         for robust ground/obstacle classification. -->
+    <param name="clearing_range" value="5.0"/>
+    <!-- The HP60C driver publishes an unorganized ~307k-point cloud. The
+         detector applies stride^2 for height=1, so stride 4 yields roughly
+         19k points and keeps the callback below the sensor period. -->
+    <param name="pixel_stride" value="4"/>
+    <param name="voxel_size" value="0.05"/>
+    <param name="min_points_per_voxel" value="2"/>
+    <param name="plane_fit_max_points" value="4000"/>
+    <param name="max_rate" value="10.0"/>
+    <!-- Voxel density filtering plus measured rays handle noise/ghosts. -->
+    <param name="temporal_min_hits" value="1"/>
+    <param name="temporal_cell_size" value="0.10"/>
+    <param name="transform_timeout" value="0.3"/>
+    <!-- Drop backlogged raw frames. The latest-frame worker prevents queue buildup. -->
+    <!-- Do not hide backlog by accepting stale points; the NavOA safety gate
+         also stops when no fresh depth frame is available. -->
+    <param name="max_cloud_age" value="0.45"/>
+    <param name="publish_clearing_points" value="true"/>
+    <!-- Sparse measured endpoints feed the FoV-aware memory, never costmaps. -->
+    <param name="clearing_pixel_stride" value="8"/>
+  </node>
+  <!-- /obstacle_points is fused with /scan directly inside NavOA. Dynamic
+       depth is deliberately not written into either navigation costmap. -->
+</launch>

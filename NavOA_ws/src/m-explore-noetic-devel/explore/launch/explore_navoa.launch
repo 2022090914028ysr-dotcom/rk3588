@@ -1,0 +1,42 @@
+<launch>
+  <!--
+    Frontier exploration integrated with the NavOA navigation stack.
+
+    Requires (already running):
+      1. cartographer SLAM  (carto_ws: livox_2d.launch)  -> /map + map->odom TF
+      2. move_base + NavOA  (NavOA_ros: navoa_nav_only.launch)
+
+    IMPORTANT: explore must subscribe to move_base's GLOBAL COSTMAP, not to
+    cartographer's raw /map. Cartographer publishes continuous probabilities
+    (fresh free cells are gray, ~49, not 0), while frontier detection needs
+    trinary cells (FREE_SPACE == 0). The move_base static layer trinarizes
+    the map (lethal_cost_threshold: 50) and adds the inflation layer, which
+    is exactly what relocateGoal() uses to validate published goals.
+
+    Goal flow:
+      explore -> move_base action -> /move_base/GlobalPlanner/plan
+      -> path_segment_publisher (/split_goal) -> NavOA_control -> vel_filter
+      -> /cmd_vel
+  -->
+  <node pkg="explore_lite" type="explore" respawn="false" name="explore" output="screen">
+    <param name="robot_base_frame" value="base_link"/>
+    <param name="costmap_topic" value="/move_base/global_costmap/costmap"/>
+    <param name="costmap_updates_topic" value="/move_base/global_costmap/costmap_updates"/>
+    <param name="visualize" value="true"/>
+    <param name="planner_frequency" value="1.0"/>
+    <param name="progress_timeout" value="30.0"/>
+    <param name="potential_scale" value="3.0"/>
+    <param name="orientation_scale" value="0.0"/>
+    <param name="gain_scale" value="1.0"/>
+    <param name="transform_tolerance" value="0.5"/>
+    <param name="min_frontier_size" value="0.2"/>
+    <!-- Blacklisted frontier goals expire after this many seconds, so a region
+         that was unreachable (blocked obstacle / narrow passage) can be
+         reconsidered once the robot gets around to it later. -->
+    <param name="blacklist_timeout" value="60.0"/>
+    <!-- Radius searched around a frontier centroid for a plannable goal cell
+         (free and outside the obstacle inflation region). Frontiers with no
+         plannable cell inside this radius are blacklisted. -->
+    <param name="goal_search_radius" value="1.2"/>
+  </node>
+</launch>
