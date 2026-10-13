@@ -149,10 +149,10 @@ Important: After finishing mapping and before killing the current SLAM terminal,
 #Save MAP-----------------------------
 ```
 rosservice call /write_state \
-"filename: '/home/ubuntu/Robit_SlamNav/NavOA_ws/src/NavOA_ros/example/gazebo_limo/maps/limo_map.pbstream'
+"filename: '/userdata/app/Robit_SlamNav/NavOA_ws/src/NavOA_ros/example/gazebo_limo/maps/limo_map.pbstream'
 include_unfinished_submaps: true"
 ```
-rosrun map_server map_saver -f /home/ubuntu/Robit_SlamNav/NavOA_ws/src/NavOA_ros/example/gazebo_limo/maps/limo_carto
+rosrun map_server map_saver -f /userdata/app/Robit_SlamNav/NavOA_ws/src/NavOA_ros/example/gazebo_limo/maps/limo_carto
 
 # Must save as `.pbstream` format, and modify the save path to your own address.
 
@@ -171,9 +171,9 @@ export DISPLAY=:0
 
 tmux attach -t robot_start
 
-taskset -c 1,2 python3  /home/ubuntu/Robit_SlamNav/NavOA_ws/src/NavOA_ros/scripts/pub.py
+taskset -c 1,2 python3  /userdata/app/Robit_SlamNav/NavOA_ws/src/NavOA_ros/scripts/pub.py
 
-taskset -c 1,2 python3 /home/ubuntu/Robit_SlamNav/NavOA_ws/src/NavOA_ros/scripts/maplocation.py
+taskset -c 1,2 python3 /userdata/app/Robit_SlamNav/NavOA_ws/src/NavOA_ros/scripts/maplocation.py
 
 taskset -c 5,6 roslaunch NavOA_ros NavOA_gazebo_limo_all.launch
 
@@ -185,3 +185,8 @@ taskset -c 6,7 python Ros_control/cmd_vel_bridge.py
 
 did some correction 
 **[File Content End]**
+
+
+##################### For BOE BOT ###########
+
+Use i forward, (,)backward, j/l to turn, and k or Space to stop. Press Ctrl-C to exit.

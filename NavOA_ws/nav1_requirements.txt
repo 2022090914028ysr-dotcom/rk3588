@@ -1,7 +1,7 @@
 # Nav1 requirements
 
 matplotlib 
-
+pyserial
 pyyaml 
 rospkg 
 cvxpy
@@ -13,4 +13,4 @@ colorama
 dill
 gctl==1.2
 scikit-learn
-empy
+empy==3.3.4

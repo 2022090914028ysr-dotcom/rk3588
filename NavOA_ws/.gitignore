@@ -1,0 +1,37 @@
+# Catkin and CMake build products
+/build/
+/devel/
+/install/
+/build_isolated/
+/devel_isolated/
+/install_isolated/
+**/build/
+**/devel/
+**/install/
+
+# ROS runtime data and logs
+.ros/
+log/
+logs/
+**/log/
+**/logs/
+*.log
+
+# ROS bag recordings
+*.bag
+*.bag.active
+*.db3
+*.mcap
+
+# Python-generated cache files
+__pycache__/
+*.py[cod]
+
+# CMake and Ninja generated metadata
+CMakeFiles/
+CMakeCache.txt
+cmake_install.cmake
+CTestTestfile.cmake
+build.ninja
+.ninja_deps
+.ninja_log

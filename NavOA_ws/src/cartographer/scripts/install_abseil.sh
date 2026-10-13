@@ -23,7 +23,8 @@ sudo apt-get update
 sudo apt-get install -y ninja-build stow git cmake
 
 # Download Abseil if not present
-ABSEIL_SRC="/home/ubuntu/Robit_SlamNav/NavOA_ws/src/cartographer/abseil-cpp"
+SCRIPT_DIR=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
+ABSEIL_SRC="${SCRIPT_DIR}/../abseil-cpp"
 if [ ! -d "$ABSEIL_SRC" ]; then
   git clone https://github.com/abseil/abseil-cpp.git "$ABSEIL_SRC"
 fi
@@ -37,6 +38,8 @@ mkdir -p build
 cd build
 cmake -G Ninja \
   -DCMAKE_BUILD_TYPE=Release \
+  -DCMAKE_CXX_STANDARD=17 \
+  -DCMAKE_CXX_STANDARD_REQUIRED=ON \
   -DCMAKE_POSITION_INDEPENDENT_CODE=ON \
   -DCMAKE_INSTALL_PREFIX=/usr/local/stow/absl \
   ..
