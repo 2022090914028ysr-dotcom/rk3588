@@ -2,15 +2,19 @@
 
 import rospy
 from geometry_msgs.msg import Twist
+import rospkg
 import sys
 import os
 import threading
 
-# Add the real_robot_cmd directory to the Python path
-sys.path.append(os.path.join(os.path.dirname(__file__), 'real_robot_cmd'))
+# rosrun/roslaunch executes the generated devel-space wrapper, not this source file.
+motor_scripts_path = os.path.join(
+    rospkg.RosPack().get_path('NavOA_ros'), 'scripts', 'real_robot_cmd'
+)
+sys.path.insert(0, motor_scripts_path)
 
 try:
-    from real_robot_cmd.robot_control import RobotController
+    from robot_control import RobotController
     MOTOR_CONTROL_AVAILABLE = True
 except ImportError as e:
     rospy.logerr("Failed to import RobotController: %s", str(e))
